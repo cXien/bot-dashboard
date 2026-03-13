@@ -43,7 +43,10 @@ const DISCORD_CLIENT_ID     = process.env.DISCORD_CLIENT_ID;
 const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const DISCORD_REDIRECT_URI  = process.env.DISCORD_REDIRECT_URI;
 const GUILD_ID              = process.env.GUILD_ID;
-const ADMIN_ROLE_ID         = process.env.ADMIN_ROLE_ID;
+// Soporta múltiples roles separados por coma en ADMIN_ROLE_IDS
+// Ejemplo: ADMIN_ROLE_IDS=123456789,987654321
+const ADMIN_ROLE_IDS = (process.env.ADMIN_ROLE_IDS || process.env.ADMIN_ROLE_ID || '')
+  .split(',').map(r => r.trim()).filter(Boolean);
 
 function discordGet(endpoint, token) {
   return new Promise((resolve, reject) => {
@@ -131,7 +134,8 @@ app.get('/auth/callback', async (req, res) => {
     // Verifica que el usuario está en el servidor y tiene rol de admin
     const member = await discordBotGet(`/guilds/${GUILD_ID}/members/${user.id}`);
     if (!member?.roles) return res.redirect('/login?error=not_in_server');
-    if (!member.roles.includes(ADMIN_ROLE_ID)) return res.redirect('/login?error=no_permission');
+    const hasRole = member.roles.some(r => ADMIN_ROLE_IDS.includes(r));
+    if (!hasRole) return res.redirect('/login?error=no_permission');
 
     req.session.user = {
       id:       user.id,
