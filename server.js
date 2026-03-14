@@ -30,6 +30,11 @@ const Loan           = model('Loan',           new Schema({ userId: String, guil
 const ChannelsConfig = model('ChannelsConfig', new Schema({ guildId: String, logs: String, modLogs: String, welcome: String, levels: String, verification: String, tiktok: String, security: String, invites: String }));
 const RewardsConfig  = model('RewardsConfig',  new Schema({ guildId: String, initialCoins: Number, trivia_easy: Number, trivia_medium: Number, trivia_hard: Number, misiones_reward: Number, max_loss_per_day: Number, max_bets_per_hour: Number, logsChannelId: String }));
 const CasinoLog      = model('CasinoLog',      new Schema({ userId: String, guildId: String, game: String, bet: Number, result: String, profit: Number, timestamp: { type: Date, default: Date.now } }));
+const Arm            = model('Arm',            new Schema({ userId: String, guildId: String, itemId: String, name: String, skin: String, type: String, emoji: String, rarity: String, rarityName: String, rarityEmoji: String, rarityColor: Number, wear: String, wearTag: String, basePrice: Number, sellPrice: Number, caseId: String, tradeId: String, obtainedAt: { type: Date, default: Date.now } }));
+const MarketListing  = model('MarketListing',  new Schema({ guildId: String, sellerId: String, itemId: String, name: String, skin: String, rarity: String, rarityName: String, rarityColor: Number, wear: String, wearTag: String, price: Number, status: String, buyerId: String, listedAt: { type: Date, default: Date.now }, expiresAt: Date, soldAt: Date }));
+const ArmCurrentPrice= model('ArmCurrentPrice',new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, rarityColor: Number, currentPrice: Number, openPrice24h: Number, high24h: Number, low24h: Number, volume24h: { type: Number, default: 0 }, lastUpdated: Date }));
+const ArmPrice       = model('ArmPrice',       new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, open: Number, high: Number, low: Number, close: Number, volume: Number, timestamp: { type: Date, default: Date.now } }));
+const MarketTx       = model('MarketTx',       new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, price: Number, sellerId: String, buyerId: String, timestamp: { type: Date, default: Date.now } }));
 
 // ── Discord helpers ────────────────────────────────────────────────────────
 const GUILD_ID       = process.env.GUILD_ID;
@@ -293,6 +298,212 @@ app.get('/api/bans', requireAuth, async (req, res) => {
       total: bans.length, pages: Math.ceil(bans.length / limit),
     });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+// ── API: Casino ────────────────────────────────────────────────────────────
+app.get('/api/casino', requireAuth, async (req, res) => {
+  try {
+    const { page = 1, game = 'all' } = req.query;
+    const limit = 20;
+    const filter = { guildId: GUILD_ID };
+    if (game !== 'all') filter.game = game;
+
+    const since7d  = new Date(Date.now() - 7  * 24 * 60 * 60 * 1000);
+    const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const [logs, total, stats, activityRaw, topWinners, topLosers] = await Promise.all([
+      CasinoLog.find(filter).sort({ timestamp: -1 }).skip((page-1)*limit).limit(limit).lean(),
+      CasinoLog.countDocuments(filter),
+      CasinoLog.aggregate([
+        { $match: { guildId: GUILD_ID } },
+        { $group: { _id: null, totalBets: { $sum: 1 }, totalBetAmount: { $sum: '$bet' }, houseProfit: { $sum: { $multiply: ['$profit', -1] } }, wins: { $sum: { $cond: [{ $gt: ['$profit', 0] }, 1, 0] } } } }
+      ]),
+      // Actividad por día últimos 7 días
+      CasinoLog.aggregate([
+        { $match: { guildId: GUILD_ID, timestamp: { $gte: since7d } } },
+        { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } }, count: { $sum: 1 }, volume: { $sum: '$bet' } } },
+        { $sort: { _id: 1 } }
+      ]),
+      // Top ganadores (mayor profit acumulado)
+      CasinoLog.aggregate([
+        { $match: { guildId: GUILD_ID, profit: { $gt: 0 } } },
+        { $group: { _id: '$userId', totalProfit: { $sum: '$profit' }, wins: { $sum: 1 } } },
+        { $sort: { totalProfit: -1 } }, { $limit: 5 }
+      ]),
+      // Top perdedores (mayor pérdida acumulada)
+      CasinoLog.aggregate([
+        { $match: { guildId: GUILD_ID } },
+        { $group: { _id: '$userId', netProfit: { $sum: '$profit' }, bets: { $sum: 1 } } },
+        { $sort: { netProfit: 1 } }, { $limit: 5 }
+      ]),
+    ]);
+
+    // Enriquecer logs con usernames
+    const enrichedLogs = await Promise.all(logs.map(async l => {
+      const u = await getUser(l.userId);
+      return { ...l, username: u.username, avatar: u.avatar };
+    }));
+
+    // Enriquecer top traders
+    const enrichWinners = await Promise.all(topWinners.map(async w => {
+      const u = await getUser(w._id);
+      return { userId: w._id, username: u.username, avatar: u.avatar, totalProfit: w.totalProfit, wins: w.wins };
+    }));
+    const enrichLosers = await Promise.all(topLosers.map(async l => {
+      const u = await getUser(l._id);
+      return { userId: l._id, username: u.username, avatar: u.avatar, netProfit: l.netProfit, bets: l.bets };
+    }));
+
+    // Formatear actividad por día (rellenar días sin datos)
+    const activityMap = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      activityMap[d.toISOString().split('T')[0]] = { count: 0, volume: 0 };
+    }
+    activityRaw.forEach(a => { if (activityMap[a._id]) activityMap[a._id] = { count: a.count, volume: a.volume }; });
+
+    const s = stats[0] || { totalBets: 0, totalBetAmount: 0, houseProfit: 0, wins: 0 };
+
+    res.json({
+      logs: enrichedLogs, total, pages: Math.ceil(total / limit),
+      stats: { ...s, winRate: s.totalBets > 0 ? ((s.wins / s.totalBets) * 100).toFixed(1) : 0 },
+      activity: activityMap,
+      topWinners: enrichWinners,
+      topLosers:  enrichLosers,
+    });
+  } catch (e) { console.error('[casino]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+// ── API: Armas ─────────────────────────────────────────────────────────────
+app.get('/api/arms', requireAuth, async (req, res) => {
+  try {
+    const { tab = 'inventory', page = 1, rarity = 'all' } = req.query;
+    const limit = 15;
+
+    if (tab === 'inventory') {
+      const filter = { guildId: GUILD_ID };
+      if (rarity !== 'all') filter.rarity = rarity;
+      const [arms, total] = await Promise.all([
+        Arm.find(filter).sort({ obtainedAt: -1 }).skip((page-1)*limit).limit(limit).lean(),
+        Arm.countDocuments(filter),
+      ]);
+      const enriched = await Promise.all(arms.map(async a => {
+        const u = await getUser(a.userId);
+        return { ...a, username: u.username, avatar: u.avatar };
+      }));
+      return res.json({ items: enriched, total, pages: Math.ceil(total / limit) });
+    }
+
+    if (tab === 'prices') {
+      const filter = { guildId: GUILD_ID };
+      if (rarity !== 'all') filter.rarity = rarity;
+      const prices = await ArmCurrentPrice.find(filter).sort({ volume24h: -1, rarity: 1 }).lean();
+      return res.json({ items: prices, total: prices.length, pages: 1 });
+    }
+
+    if (tab === 'cases') {
+      // Historial de cajas — agrupado por caseId
+      const [caseStats, recentOpens] = await Promise.all([
+        Arm.aggregate([
+          { $match: { guildId: GUILD_ID } },
+          { $group: { _id: '$caseId', count: { $sum: 1 }, rarities: { $push: '$rarity' } } },
+          { $sort: { count: -1 } }
+        ]),
+        Arm.find({ guildId: GUILD_ID }).sort({ obtainedAt: -1 }).limit(20).lean(),
+      ]);
+      const enrichedOpens = await Promise.all(recentOpens.map(async a => {
+        const u = await getUser(a.userId);
+        return { ...a, username: u.username, avatar: u.avatar };
+      }));
+      return res.json({ caseStats, recentOpens: enrichedOpens });
+    }
+
+    if (tab === 'collectors') {
+      const collectors = await Arm.aggregate([
+        { $match: { guildId: GUILD_ID } },
+        { $group: {
+          _id: '$userId',
+          total: { $sum: 1 },
+          totalValue: { $sum: '$sellPrice' },
+          special:    { $sum: { $cond: [{ $eq: ['$rarity', 'special'] },   1, 0] } },
+          covert:     { $sum: { $cond: [{ $eq: ['$rarity', 'covert'] },    1, 0] } },
+          classified: { $sum: { $cond: [{ $eq: ['$rarity', 'classified'] },1, 0] } },
+        }},
+        { $sort: { totalValue: -1 } }, { $limit: 15 }
+      ]);
+      const enriched = await Promise.all(collectors.map(async (c, i) => {
+        const u = await getUser(c._id);
+        return { rank: i+1, userId: c._id, username: u.username, avatar: u.avatar, total: c.total, totalValue: c.totalValue, special: c.special, covert: c.covert, classified: c.classified };
+      }));
+      return res.json({ items: enriched });
+    }
+
+    res.json({ items: [], total: 0, pages: 0 });
+  } catch (e) { console.error('[arms]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+// ── API: Mercado ───────────────────────────────────────────────────────────
+app.get('/api/market', requireAuth, async (req, res) => {
+  try {
+    const { tab = 'listings', page = 1, itemId } = req.query;
+    const limit = 15;
+
+    if (tab === 'listings') {
+      const [listings, total] = await Promise.all([
+        MarketListing.find({ guildId: GUILD_ID, status: 'active' }).sort({ listedAt: -1 }).skip((page-1)*limit).limit(limit).lean(),
+        MarketListing.countDocuments({ guildId: GUILD_ID, status: 'active' }),
+      ]);
+      const enriched = await Promise.all(listings.map(async l => {
+        const seller = await getUser(l.sellerId);
+        return { ...l, sellerName: seller.username, sellerAvatar: seller.avatar };
+      }));
+      return res.json({ items: enriched, total, pages: Math.ceil(total / limit) });
+    }
+
+    if (tab === 'history') {
+      const [txs, total] = await Promise.all([
+        MarketTx.find({ guildId: GUILD_ID }).sort({ timestamp: -1 }).skip((page-1)*limit).limit(limit).lean(),
+        MarketTx.countDocuments({ guildId: GUILD_ID }),
+      ]);
+      const enriched = await Promise.all(txs.map(async t => {
+        const [buyer, seller] = await Promise.all([getUser(t.buyerId), getUser(t.sellerId)]);
+        return { ...t, buyerName: buyer.username, sellerName: seller.username };
+      }));
+      return res.json({ items: enriched, total, pages: Math.ceil(total / limit) });
+    }
+
+    if (tab === 'chart') {
+      // Gráfica de precios para un item específico
+      const id = itemId || '';
+      const priceHistory = await ArmPrice.find({ guildId: GUILD_ID, itemId: id }).sort({ timestamp: -1 }).limit(48).lean();
+      const currentPrice = await ArmCurrentPrice.findOne({ guildId: GUILD_ID, itemId: id }).lean();
+      // Top items por volumen para el selector
+      const topItems = await ArmCurrentPrice.find({ guildId: GUILD_ID }).sort({ volume24h: -1 }).limit(20).lean();
+      return res.json({ history: priceHistory.reverse(), current: currentPrice, topItems });
+    }
+
+    if (tab === 'traders') {
+      const since7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      const [topBuyers, topSellers, totalVolume] = await Promise.all([
+        MarketTx.aggregate([
+          { $match: { guildId: GUILD_ID, timestamp: { $gte: since7d } } },
+          { $group: { _id: '$buyerId', spent: { $sum: '$price' }, count: { $sum: 1 } } },
+          { $sort: { spent: -1 } }, { $limit: 10 }
+        ]),
+        MarketTx.aggregate([
+          { $match: { guildId: GUILD_ID, timestamp: { $gte: since7d } } },
+          { $group: { _id: '$sellerId', earned: { $sum: '$price' }, count: { $sum: 1 } } },
+          { $sort: { earned: -1 } }, { $limit: 10 }
+        ]),
+        MarketTx.countDocuments({ guildId: GUILD_ID, timestamp: { $gte: since7d } }),
+      ]);
+      const enrichBuyers  = await Promise.all(topBuyers.map(async (b, i) => { const u = await getUser(b._id); return { rank: i+1, userId: b._id, username: u.username, avatar: u.avatar, spent: b.spent, count: b.count }; }));
+      const enrichSellers = await Promise.all(topSellers.map(async (s, i) => { const u = await getUser(s._id); return { rank: i+1, userId: s._id, username: u.username, avatar: u.avatar, earned: s.earned, count: s.count }; }));
+      return res.json({ topBuyers: enrichBuyers, topSellers: enrichSellers, totalVolume });
+    }
+
+    res.json({ items: [], total: 0, pages: 0 });
+  } catch (e) { console.error('[market]', e); res.status(500).json({ error: 'Error' }); }
 });
 
 // ── Páginas ────────────────────────────────────────────────────────────────

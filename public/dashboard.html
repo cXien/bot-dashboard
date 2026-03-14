@@ -185,6 +185,10 @@ tr:hover td{background:rgba(255,255,255,.015)}
     <div class="sb-sec">Moderación</div>
     <button class="nav-btn" onclick="nav('moderation',this)"><span class="ic">🛡️</span> Moderación</button>
     <button class="nav-btn" onclick="nav('bans',this)"><span class="ic">🔨</span> Bans</button>
+    <div class="sb-sec">Casino & Armas</div>
+    <button class="nav-btn" onclick="nav('casino',this)"><span class="ic">🎰</span> Casino</button>
+    <button class="nav-btn" onclick="nav('arms',this)"><span class="ic">🔫</span> Armas</button>
+    <button class="nav-btn" onclick="nav('market',this)"><span class="ic">📈</span> Mercado</button>
     <div class="sb-sec">Servidor</div>
     <button class="nav-btn" onclick="nav('config',this)"><span class="ic">⚙️</span> Configuración</button>
   </nav>
@@ -705,6 +709,425 @@ async function loadConfig(){
 
   S.loaded.config=true;
 }
+</script>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- CASINO SECTION -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="section" id="s-casino" style="display:none">
+  <div class="ph"><div class="pt">Casino</div><div class="ps">Historial y estadísticas del casino</div></div>
+
+  <div class="sg" style="grid-template-columns:repeat(4,1fr)">
+    <div class="sc" style="--accent-color:var(--blue)"><div class="si">🎲</div><div class="sl">Total apuestas</div><div class="sv" id="cs-bets">—</div></div>
+    <div class="sc" style="--accent-color:var(--yellow)"><div class="si">💰</div><div class="sl">Total apostado</div><div class="sv" id="cs-volume">—</div></div>
+    <div class="sc" style="--accent-color:var(--green)"><div class="si">🏦</div><div class="sl">Ganancia casa</div><div class="sv" id="cs-profit">—</div></div>
+    <div class="sc" style="--accent-color:var(--orange)"><div class="si">📊</div><div class="sl">Win rate jugadores</div><div class="sv" id="cs-winrate">—</div></div>
+  </div>
+
+  <div class="two-col" style="margin-bottom:12px">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">📈 Actividad últimos 7 días</div>
+      <div class="bchart" id="casinoChart" style="height:100px"></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">🏆 Top jugadores</div>
+      <div class="tabs" style="margin-bottom:12px">
+        <button class="tab active" onclick="casinoTraderTab('winners',this)">Ganadores</button>
+        <button class="tab" onclick="casinoTraderTab('losers',this)">Perdedores</button>
+      </div>
+      <div id="casinoTopBox"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Historial de partidas</div>
+    <div class="filters">
+      <button class="fbtn active" onclick="filterCasino('all',this)">Todos</button>
+      <button class="fbtn" onclick="filterCasino('ruleta',this)">Ruleta</button>
+      <button class="fbtn" onclick="filterCasino('slots',this)">Slots</button>
+      <button class="fbtn" onclick="filterCasino('blackjack',this)">Blackjack</button>
+      <button class="fbtn" onclick="filterCasino('crash',this)">Crash</button>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Usuario</th><th>Juego</th><th>Apuesta</th><th>Resultado</th><th>Ganancia</th><th>Fecha</th></tr></thead>
+        <tbody id="casinoTable"></tbody>
+      </table>
+    </div>
+    <div class="pag" id="casinoPag"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- ARMS SECTION -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="section" id="s-arms" style="display:none">
+  <div class="ph"><div class="pt">Armas</div><div class="ps">Inventarios, precios y estadísticas</div></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="armsTab('inventory',this)">Inventario global</button>
+    <button class="tab" onclick="armsTab('prices',this)">Precios</button>
+    <button class="tab" onclick="armsTab('cases',this)">Cajas abiertas</button>
+    <button class="tab" onclick="armsTab('collectors',this)">Top coleccionistas</button>
+  </div>
+
+  <div class="card" id="armsContent">
+    <div class="tw"><table><thead id="armsHead"></thead><tbody id="armsTable"></tbody></table></div>
+    <div class="pag" id="armsPag"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- MARKET SECTION -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="section" id="s-market" style="display:none">
+  <div class="ph"><div class="pt">Mercado</div><div class="ps">Listings, historial y precios en vivo</div></div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="marketTab('listings',this)">En venta</button>
+    <button class="tab" onclick="marketTab('history',this)">Historial</button>
+    <button class="tab" onclick="marketTab('chart',this)">Gráfica precios</button>
+    <button class="tab" onclick="marketTab('traders',this)">Top traders</button>
+  </div>
+
+  <!-- Chart selector (solo visible en tab chart) -->
+  <div id="chartSelector" style="display:none;margin-bottom:12px">
+    <select id="chartItemSelect" onchange="loadChartData()" style="background:var(--s2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;font-size:12px;width:300px"></select>
+  </div>
+
+  <div class="card" id="marketContent">
+    <div class="tw"><table><thead id="marketHead"></thead><tbody id="marketTable"></tbody></table></div>
+    <div id="marketChartArea" style="display:none">
+      <canvas id="priceChart" height="200"></canvas>
+    </div>
+    <div class="pag" id="marketPag"></div>
+  </div>
+</div>
+
+<script>
+// ── CASINO ──────────────────────────────────────────────────────────────────
+const casinoState = { game:'all', page:1, topTab:'winners', data:null };
+
+async function loadCasino(page) {
+  if(page) casinoState.page=page;
+  const d = await api(`/api/casino?page=${casinoState.page}&game=${casinoState.game}`);
+  if(!d) return;
+  casinoState.data = d;
+
+  // Stats
+  document.getElementById('cs-bets').textContent    = (d.stats.totalBets||0).toLocaleString();
+  document.getElementById('cs-volume').textContent  = (d.stats.totalBetAmount||0).toLocaleString();
+  document.getElementById('cs-profit').textContent  = (d.stats.houseProfit||0).toLocaleString();
+  document.getElementById('cs-winrate').textContent = (d.stats.winRate||0)+'%';
+
+  // Gráfica actividad
+  const vals = Object.values(d.activity);
+  const maxV  = Math.max(...vals.map(v=>v.count),1);
+  document.getElementById('casinoChart').innerHTML = Object.entries(d.activity).map(([k,v])=>
+    `<div class="bwrap"><div class="bar" style="height:${Math.max(v.count/maxV*100,3)}%" title="${v.count} partidas"></div><div class="blabel">${k.slice(5)}</div></div>`
+  ).join('');
+
+  renderCasinoTop();
+  renderCasinoTable(d);
+  S.loaded.casino=true;
+}
+
+function renderCasinoTop() {
+  const d   = casinoState.data;
+  const box = document.getElementById('casinoTopBox');
+  if(!d) return;
+  const list = casinoState.topTab === 'winners' ? d.topWinners : d.topLosers;
+  if(!list?.length){ box.innerHTML = empty('Sin datos'); return; }
+  box.innerHTML = list.map((u,i)=>`
+    <div class="ms">
+      <span class="ms-label">${['🥇','🥈','🥉','#4','#5'][i]} ${uc(u.avatar,u.username)}</span>
+      <span class="ms-val" style="color:${casinoState.topTab==='winners'?'var(--green)':'var(--red)'}">
+        ${casinoState.topTab==='winners' ? '+'+u.totalProfit.toLocaleString() : u.netProfit.toLocaleString()}
+      </span>
+    </div>`).join('');
+}
+
+function casinoTraderTab(tab,btn) {
+  document.querySelectorAll('#s-casino .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  casinoState.topTab=tab;
+  renderCasinoTop();
+}
+
+function renderCasinoTable(d) {
+  const tb = document.getElementById('casinoTable');
+  if(!d.logs.length){ tb.innerHTML=`<tr><td colspan="6">${empty('Sin partidas')}</td></tr>`; return; }
+  tb.innerHTML = d.logs.map(l=>{
+    const isWin = l.profit > 0;
+    return `<tr>
+      <td>${uc(l.avatar,l.username)}</td>
+      <td><span class="badge bg-blue">${l.game}</span></td>
+      <td><span class="mono">${l.bet.toLocaleString()}</span></td>
+      <td><span class="badge ${l.result==='win'||isWin?'bg-green':'bg-red'}">${l.result}</span></td>
+      <td style="color:${isWin?'var(--green)':'var(--red)'}"><strong>${isWin?'+':''}${l.profit.toLocaleString()}</strong></td>
+      <td><span class="mono">${new Date(l.timestamp).toLocaleDateString('es-PE')}</span></td>
+    </tr>`;
+  }).join('');
+  pag('casinoPag',casinoState.page,d.pages,loadCasino);
+}
+
+function filterCasino(game,btn) {
+  document.querySelectorAll('#s-casino .fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  casinoState.game=game; casinoState.page=1; loadCasino();
+}
+
+// ── ARMS ────────────────────────────────────────────────────────────────────
+const armsState = { tab:'inventory', page:1, rarity:'all' };
+
+async function loadArms(page) {
+  if(page) armsState.page=page;
+  const d = await api(`/api/arms?tab=${armsState.tab}&page=${armsState.page}&rarity=${armsState.rarity}`);
+  if(!d) return;
+
+  const head = document.getElementById('armsHead');
+  const tb   = document.getElementById('armsTable');
+  document.getElementById('armsPag').innerHTML = '';
+
+  const RARITY_COLORS = {consumer:'#9ea3b0',industrial:'#5e98d9',milspec:'#4b69ff',restricted:'#8847ff',classified:'#d32ce6',covert:'#eb4b4b',special:'#ffd700'};
+
+  if(armsState.tab === 'inventory') {
+    head.innerHTML = '<tr><th>Usuario</th><th>Arma</th><th>Rareza</th><th>Desgaste</th><th>Valor</th><th>Obtenido</th></tr>';
+    tb.innerHTML = d.items.length ? d.items.map(a=>`
+      <tr>
+        <td>${uc(a.avatar,a.username)}</td>
+        <td><strong>${a.name}</strong> | <span style="color:var(--muted2)">${a.skin}</span></td>
+        <td><span style="color:${RARITY_COLORS[a.rarity]||'#aaa'};font-size:11px;font-weight:600">${a.rarityName||a.rarity}</span></td>
+        <td><span class="mono">${a.wearTag}</span></td>
+        <td><span class="mono" style="color:var(--yellow)">${a.sellPrice.toLocaleString()}</span></td>
+        <td><span class="mono">${new Date(a.obtainedAt).toLocaleDateString('es-PE')}</span></td>
+      </tr>`).join('') : `<tr><td colspan="6">${empty('Sin armas')}</td></tr>`;
+    pag('armsPag',armsState.page,d.pages,loadArms);
+  }
+
+  if(armsState.tab === 'prices') {
+    head.innerHTML = '<tr><th>Arma</th><th>Rareza</th><th>Precio actual</th><th>24h %</th><th>Max 24h</th><th>Min 24h</th><th>Vol.</th></tr>';
+    tb.innerHTML = d.items.length ? d.items.map(p=>{
+      const pct = ((p.currentPrice - p.openPrice24h) / (p.openPrice24h||1) * 100);
+      const col = pct >= 0 ? 'var(--green)' : 'var(--red)';
+      return `<tr>
+        <td><strong>${p.name}</strong> | <span style="color:var(--muted2)">${p.skin}</span></td>
+        <td><span style="color:${RARITY_COLORS[p.rarity]||'#aaa'};font-size:11px;font-weight:600">${p.rarity}</span></td>
+        <td><strong>${p.currentPrice.toLocaleString()}</strong></td>
+        <td style="color:${col};font-weight:600">${pct>=0?'+':''}${pct.toFixed(2)}%</td>
+        <td class="mono" style="color:var(--green)">${p.high24h.toLocaleString()}</td>
+        <td class="mono" style="color:var(--red)">${p.low24h.toLocaleString()}</td>
+        <td class="mono">${p.volume24h||0}</td>
+      </tr>`;
+    }).join('') : `<tr><td colspan="7">${empty('Sin precios — usa /mercado setcanal para inicializar')}</td></tr>`;
+  }
+
+  if(armsState.tab === 'cases') {
+    head.innerHTML = '<tr><th>Usuario</th><th>Arma obtenida</th><th>Rareza</th><th>Caja</th><th>Fecha</th></tr>';
+    tb.innerHTML = d.recentOpens?.length ? d.recentOpens.map(a=>`
+      <tr>
+        <td>${uc(a.avatar,a.username)}</td>
+        <td><strong>${a.name}</strong> | <span style="color:var(--muted2)">${a.skin}</span></td>
+        <td><span style="color:${RARITY_COLORS[a.rarity]||'#aaa'};font-size:11px;font-weight:600">${a.rarityName||a.rarity}</span></td>
+        <td><span class="badge bg-blue">${a.caseId}</span></td>
+        <td><span class="mono">${new Date(a.obtainedAt).toLocaleDateString('es-PE')}</span></td>
+      </tr>`).join('') : `<tr><td colspan="5">${empty('Sin aperturas')}</td></tr>`;
+  }
+
+  if(armsState.tab === 'collectors') {
+    head.innerHTML = '<tr><th>#</th><th>Usuario</th><th>Total items</th><th>Valor total</th><th>★ Esp.</th><th>Covert</th><th>Classified</th></tr>';
+    tb.innerHTML = d.items?.length ? d.items.map(c=>`
+      <tr>
+        <td>${rankCell(c.rank)}</td>
+        <td>${uc(c.avatar,c.username)}</td>
+        <td><strong>${c.total}</strong></td>
+        <td><span class="mono" style="color:var(--yellow)">${c.totalValue.toLocaleString()}</span></td>
+        <td style="color:#ffd700;font-weight:600">${c.special}</td>
+        <td style="color:#eb4b4b;font-weight:600">${c.covert}</td>
+        <td style="color:#d32ce6;font-weight:600">${c.classified}</td>
+      </tr>`).join('') : `<tr><td colspan="7">${empty('Sin coleccionistas')}</td></tr>`;
+  }
+
+  S.loaded.arms=true;
+}
+
+function armsTab(tab,btn) {
+  document.querySelectorAll('#s-arms .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  armsState.tab=tab; armsState.page=1; S.loaded.arms=false; loadArms();
+}
+
+// ── MARKET ──────────────────────────────────────────────────────────────────
+const marketState = { tab:'listings', page:1, chartItemId:null };
+
+async function loadMarket(page) {
+  if(page) marketState.page=page;
+
+  document.getElementById('chartSelector').style.display   = marketState.tab==='chart' ? '' : 'none';
+  document.getElementById('marketChartArea').style.display = marketState.tab==='chart' ? '' : 'none';
+  document.querySelector('#marketContent .tw').style.display = marketState.tab==='chart' ? 'none' : '';
+
+  const head = document.getElementById('marketHead');
+  const tb   = document.getElementById('marketTable');
+
+  const RARITY_COLORS = {consumer:'#9ea3b0',industrial:'#5e98d9',milspec:'#4b69ff',restricted:'#8847ff',classified:'#d32ce6',covert:'#eb4b4b',special:'#ffd700'};
+
+  if(marketState.tab === 'listings') {
+    const d = await api(`/api/market?tab=listings&page=${marketState.page}`);
+    if(!d) return;
+    head.innerHTML = '<tr><th>Arma</th><th>Rareza</th><th>Desgaste</th><th>Precio</th><th>Vendedor</th><th>Expira</th></tr>';
+    tb.innerHTML = d.items.length ? d.items.map(l=>{
+      const exp = Math.max(0,Math.floor((new Date(l.expiresAt)-Date.now())/(1000*60*60*24)));
+      return `<tr>
+        <td><strong>${l.name}</strong> | <span style="color:var(--muted2)">${l.skin}</span></td>
+        <td><span style="color:${RARITY_COLORS[l.rarity]||'#aaa'};font-size:11px;font-weight:600">${l.rarityName||l.rarity}</span></td>
+        <td><span class="mono">${l.wearTag}</span></td>
+        <td><strong style="color:var(--yellow)">${l.price.toLocaleString()}</strong></td>
+        <td>${uc(l.sellerAvatar,l.sellerName)}</td>
+        <td><span class="mono">${exp}d</span></td>
+      </tr>`;
+    }).join('') : `<tr><td colspan="6">${empty('Sin listings activos')}</td></tr>`;
+    pag('marketPag',marketState.page,d.pages,loadMarket);
+  }
+
+  if(marketState.tab === 'history') {
+    const d = await api(`/api/market?tab=history&page=${marketState.page}`);
+    if(!d) return;
+    head.innerHTML = '<tr><th>Arma</th><th>Rareza</th><th>Precio</th><th>Comprador</th><th>Vendedor</th><th>Fecha</th></tr>';
+    tb.innerHTML = d.items.length ? d.items.map(t=>`
+      <tr>
+        <td><strong>${t.name}</strong> | <span style="color:var(--muted2)">${t.skin}</span></td>
+        <td><span style="color:${RARITY_COLORS[t.rarity]||'#aaa'};font-size:11px;font-weight:600">${t.rarity}</span></td>
+        <td><strong style="color:var(--yellow)">${t.price.toLocaleString()}</strong></td>
+        <td>${uc(null,t.buyerName)}</td>
+        <td>${uc(null,t.sellerName)}</td>
+        <td><span class="mono">${new Date(t.timestamp).toLocaleDateString('es-PE')}</span></td>
+      </tr>`).join('') : `<tr><td colspan="6">${empty('Sin historial')}</td></tr>`;
+    pag('marketPag',marketState.page,d.pages,loadMarket);
+  }
+
+  if(marketState.tab === 'chart') {
+    const d = await api(`/api/market?tab=chart&itemId=${marketState.chartItemId||''}`);
+    if(!d) return;
+    // Poblar selector
+    const sel = document.getElementById('chartItemSelect');
+    if(d.topItems?.length && sel.options.length===0) {
+      d.topItems.forEach(it=>{
+        const opt = document.createElement('option');
+        opt.value = it.itemId;
+        opt.textContent = `${it.name} | ${it.skin}`;
+        sel.appendChild(opt);
+      });
+      if(!marketState.chartItemId && d.topItems[0]) {
+        marketState.chartItemId = d.topItems[0].itemId;
+        sel.value = marketState.chartItemId;
+      }
+    }
+    drawPriceChart(d.history, d.current);
+  }
+
+  if(marketState.tab === 'traders') {
+    const d = await api('/api/market?tab=traders');
+    if(!d) return;
+    head.innerHTML = '';
+    tb.innerHTML   = '';
+    // Render como dos columnas en el card
+    document.querySelector('#marketContent .tw').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:8px">
+        <div>
+          <div class="card-title" style="margin-bottom:12px">Top Compradores (7d)</div>
+          ${d.topBuyers.map((b,i)=>`
+            <div class="ms">
+              <span class="ms-label">${['🥇','🥈','🥉','#4','#5','#6','#7','#8','#9','#10'][i]||'#'+(i+1)} ${uc(b.avatar,b.username)}</span>
+              <span class="ms-val" style="color:var(--green)">-${b.spent.toLocaleString()}</span>
+            </div>`).join('') || empty('Sin datos')}
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:12px">Top Vendedores (7d)</div>
+          ${d.topSellers.map((s,i)=>`
+            <div class="ms">
+              <span class="ms-label">${['🥇','🥈','🥉','#4','#5','#6','#7','#8','#9','#10'][i]||'#'+(i+1)} ${uc(s.avatar,s.username)}</span>
+              <span class="ms-val" style="color:var(--yellow)">+${s.earned.toLocaleString()}</span>
+            </div>`).join('') || empty('Sin datos')}
+        </div>
+      </div>`;
+  }
+
+  S.loaded.market=true;
+}
+
+async function loadChartData() {
+  const sel = document.getElementById('chartItemSelect');
+  marketState.chartItemId = sel.value;
+  const d = await api(`/api/market?tab=chart&itemId=${marketState.chartItemId}`);
+  if(d) drawPriceChart(d.history, d.current);
+}
+
+function drawPriceChart(history, current) {
+  const canvas = document.getElementById('priceChart');
+  if(!canvas || !history?.length) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.offsetWidth || 800;
+  canvas.width = W; canvas.height = 200;
+  ctx.clearRect(0,0,W,200);
+
+  const prices = history.map(h=>h.close);
+  const min = Math.min(...prices) * 0.98;
+  const max = Math.max(...prices) * 1.02;
+  const range = max - min || 1;
+  const toY = p => 180 - ((p-min)/range)*160;
+  const toX = i => 20 + (i/(prices.length-1||1))*(W-40);
+
+  // Área bajo curva
+  ctx.beginPath();
+  prices.forEach((p,i) => i===0 ? ctx.moveTo(toX(i),toY(p)) : ctx.lineTo(toX(i),toY(p)));
+  ctx.lineTo(toX(prices.length-1),180); ctx.lineTo(toX(0),180); ctx.closePath();
+  const grad = ctx.createLinearGradient(0,0,0,180);
+  const isUp = prices[prices.length-1] >= prices[0];
+  grad.addColorStop(0, isUp?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)');
+  grad.addColorStop(1,'transparent');
+  ctx.fillStyle = grad; ctx.fill();
+
+  // Línea
+  ctx.beginPath();
+  prices.forEach((p,i) => i===0 ? ctx.moveTo(toX(i),toY(p)) : ctx.lineTo(toX(i),toY(p)));
+  ctx.strokeStyle = isUp ? '#22c55e' : '#ef4444';
+  ctx.lineWidth = 2; ctx.stroke();
+
+  // Labels eje Y
+  ctx.font = '10px monospace'; ctx.fillStyle = '#555'; ctx.textAlign = 'right';
+  [min,max,(min+max)/2].forEach(v => ctx.fillText(Math.round(v).toLocaleString(), 16, toY(v)+4));
+}
+
+function marketTab(tab,btn) {
+  document.querySelectorAll('#s-market .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  marketState.tab=tab; marketState.page=1; S.loaded.market=false; loadMarket();
+}
+
+// ── Registrar loaders en el nav ─────────────────────────────────────────────
+const _origNav = nav;
+// Extender nav para nuevas secciones
+window.nav = function(name, btn) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const sec = document.getElementById('s-'+name);
+  if(sec){ sec.classList.add('active'); sec.style.display='block'; }
+  if(btn) btn.classList.add('active');
+  S.currentSection = name;
+  if(name==='casino'    && !S.loaded.casino)    loadCasino();
+  if(name==='arms'      && !S.loaded.arms)      loadArms();
+  if(name==='market'    && !S.loaded.market)    loadMarket();
+  if(name==='overview'  && !S.loaded.overview)  loadOverview();
+  if(name==='invites'   && !S.loaded.invites)   loadInvites();
+  if(name==='giveaways' && !S.loaded.giveaways) loadGiveaways();
+  if(name==='economy'   && !S.loaded.economy)   loadEconomy();
+  if(name==='loans'     && !S.loaded.loans)     loadLoans();
+  if(name==='levels'    && !S.loaded.levels)    loadLevels();
+  if(name==='moderation'&& !S.loaded.moderation)loadModeration();
+  if(name==='bans'      && !S.loaded.bans)      loadBans();
+  if(name==='config'    && !S.loaded.config)    loadConfig();
+};
 </script>
 </body>
 </html>
