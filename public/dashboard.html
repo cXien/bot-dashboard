@@ -393,10 +393,17 @@ async function api(url){
 
 // ── Nav ─────────────────────────────────────────────────────────────────────
 function nav(name, btn){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>{
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('s-'+name).classList.add('active');
-  btn.classList.add('active');
+  const target = document.getElementById('s-'+name);
+  if(target) {
+    target.classList.add('active');
+    target.style.display = 'block';
+  }
+  if(btn) btn.classList.add('active');
   if(!S.loaded[name]){
     const loaders={invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig};
     if(loaders[name]) loaders[name]();
@@ -1109,10 +1116,16 @@ function marketTab(tab,btn) {
 const _origNav = nav;
 // Extender nav para nuevas secciones
 window.nav = function(name, btn) {
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>{
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   const sec = document.getElementById('s-'+name);
-  if(sec){ sec.classList.add('active'); sec.style.display='block'; }
+  if(sec){ 
+    sec.classList.add('active'); 
+    sec.style.display='block'; 
+  }
   if(btn) btn.classList.add('active');
   S.currentSection = name;
   if(name==='casino'    && !S.loaded.casino)    loadCasino();
