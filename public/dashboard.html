@@ -217,6 +217,12 @@ tr:hover td { background: rgba(255,255,255,0.02); }
     <button class="nav-item" onclick="showSection('economy')">
       <span class="icon">🪙</span> Economía
     </button>
+    <button class="nav-item" onclick="showSection('invites')">
+      <span class="icon">📨</span> Invitaciones
+    </button>
+    <button class="nav-item" onclick="showSection('missions')">
+      <span class="icon">🎯</span> Misiones
+    </button>
     <button class="nav-item" onclick="showSection('moderation')">
       <span class="icon">🛡️</span> Moderación
     </button>
@@ -338,6 +344,7 @@ tr:hover td { background: rgba(255,255,255,0.02); }
     <div class="tabs">
       <button class="tab active" onclick="switchModTab('warns', this)">⚠️ Warns</button>
       <button class="tab" onclick="switchModTab('mutes', this)">🔇 Mutes</button>
+      <button class="tab" onclick="switchModTab('loans', this)">💸 Préstamos</button>
       <button class="tab" onclick="switchModTab('logs', this)">🔒 Logs</button>
     </div>
 
@@ -352,6 +359,45 @@ tr:hover td { background: rgba(255,255,255,0.02); }
     </div>
   </div>
 
+
+  <!-- ── INVITES ── -->
+  <div class="section" id="section-invites">
+    <div class="page-header">
+      <div class="page-title">Invitaciones</div>
+      <div class="page-sub">Ranking de invitaciones del servidor</div>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Usuario</th><th>Reales</th><th>Total</th><th>Salidas</th><th>Falsas</th><th>Bonus</th></tr>
+          </thead>
+          <tbody id="invitesTable"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="invitesPagination"></div>
+    </div>
+  </div>
+
+  <!-- ── MISSIONS ── -->
+  <div class="section" id="section-missions">
+    <div class="page-header">
+      <div class="page-title">Misiones</div>
+      <div class="page-sub">Misiones completadas por los usuarios</div>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Usuario</th><th>Misión</th><th>Progreso</th><th>Completada</th></tr>
+          </thead>
+          <tbody id="missionsTable"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="missionsPagination"></div>
+    </div>
+  </div>
+
 </main>
 
 <script>
@@ -361,6 +407,8 @@ const state = {
   giveaways:  { status: 'all', page: 1 },
   economy:    { sort: 'coins', page: 1 },
   moderation: { tab: 'warns', page: 1 },
+  invites:    { page: 1 },
+  missions:   { page: 1 },
 };
 
 // ── Init ───────────────────────────────────────────────────────────────────
@@ -385,6 +433,8 @@ function showSection(name) {
   if (name === 'overview'   && !state.overviewLoaded)   loadOverview();
   if (name === 'giveaways'  && !state.giveawaysLoaded)  loadGiveaways();
   if (name === 'economy'    && !state.economyLoaded)    loadEconomy();
+  if (name === 'invites'    && !state.invitesLoaded)    loadInvites();
+  if (name === 'missions'   && !state.missionsLoaded)   loadMissions();
   if (name === 'moderation' && !state.modLoaded)        loadModeration();
 }
 
@@ -415,7 +465,10 @@ async function loadOverview() {
     <div class="mini-stat"><span class="mini-stat-label">Usuarios registrados</span><span class="mini-stat-val">${data.registeredUsers}</span></div>
     <div class="mini-stat"><span class="mini-stat-label">Con niveles</span><span class="mini-stat-val">${data.levelsTracked}</span></div>
     <div class="mini-stat"><span class="mini-stat-label">Sorteos activos</span><span class="mini-stat-val">${data.activeGiveaways}</span></div>
-    <div class="mini-stat"><span class="mini-stat-label">Joins sospechosos (7d)</span><span class="mini-stat-val" style="color:var(--warning)">${data.flaggedJoins}</span></div>
+    <div class="mini-stat"><span class="mini-stat-label">Warns totales</span><span class="mini-stat-val" style="color:var(--warning)">${data.totalWarns}</span></div>
+    <div class="mini-stat"><span class="mini-stat-label">Mutes activos</span><span class="mini-stat-val" style="color:var(--danger)">${data.totalMutes}</span></div>
+    <div class="mini-stat"><span class="mini-stat-label">Préstamos activos</span><span class="mini-stat-val" style="color:var(--gold)">${data.activeLoans}</span></div>
+    <div class="mini-stat"><span class="mini-stat-label">Joins sospechosos (7d)</span><span class="mini-stat-val" style="color:var(--accent2)">${data.flaggedJoins}</span></div>
   `;
 
   state.overviewLoaded = true;
@@ -558,6 +611,19 @@ async function loadModeration() {
       : `<tr><td colspan="3"><div class="empty"><p>Sin mutes</p></div></td></tr>`;
   }
 
+  if (tab === 'loans') {
+    thead.innerHTML = `<tr><th>Usuario</th><th>Monto</th><th>Estado</th><th>Vence</th><th>Fecha</th></tr>`;
+    tbody.innerHTML = data.items.length ? data.items.map(l => `
+      <tr>
+        <td><div class="user-cell"><div class="fallback-avatar">${l.username[0].toUpperCase()}</div>${l.username}</div></td>
+        <td><strong style="color:var(--gold)">💰 ${(l.amount||0).toLocaleString()}</strong></td>
+        <td><span class="badge ${l.paid ? 'badge-green' : 'badge-yellow'}">${l.paid ? '✅ Pagado' : '⏳ Pendiente'}</span></td>
+        <td style="color:var(--muted)">${l.dueDate ? new Date(l.dueDate).toLocaleDateString('es') : '—'}</td>
+        <td style="color:var(--muted)">${l.createdAt ? new Date(l.createdAt).toLocaleDateString('es') : '—'}</td>
+      </tr>`).join('')
+      : `<tr><td colspan="5"><div class="empty"><p>Sin préstamos</p></div></td></tr>`;
+  }
+
   if (tab === 'logs') {
     thead.innerHTML = `<tr><th>Usuario</th><th>IP</th><th>País</th><th>Estado</th><th>Fecha</th></tr>`;
     tbody.innerHTML = data.items.length ? data.items.map(l => `
@@ -593,6 +659,64 @@ function renderPagination(containerId, current, total, onPage) {
     <span class="pg-info">Página ${current} de ${total}</span>
     <button class="pg-btn" onclick="(${onPage.toString()})(${current + 1})" ${current >= total ? 'disabled' : ''}>Siguiente →</button>
   `;
+}
+
+
+// ── Invites ────────────────────────────────────────────────────────────────
+async function loadInvites() {
+  const { page } = state.invites;
+  const data = await fetch(`/api/invites?page=${page}`).then(r => r.json()).catch(() => null);
+  if (!data) return;
+
+  const tbody = document.getElementById('invitesTable');
+  if (!data.invites.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><p>Sin datos de invitaciones</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.invites.map(u => `
+    <tr>
+      <td><span class="rank ${u.rank<=3?`rank-${u.rank}`:''}">
+        ${u.rank===1?'🥇':u.rank===2?'🥈':u.rank===3?'🥉':'#'+u.rank}
+      </span></td>
+      <td><div class="user-cell">
+        ${u.avatar ? `<img src="${u.avatar}" alt="">` : `<div class="fallback-avatar">${u.username[0].toUpperCase()}</div>`}
+        ${u.username}
+      </div></td>
+      <td><strong style="color:var(--success)">${u.real}</strong></td>
+      <td>${u.invites}</td>
+      <td style="color:var(--danger)">${u.leaves}</td>
+      <td style="color:var(--warning)">${u.fake}</td>
+      <td style="color:var(--accent)">${u.bonus > 0 ? '+'+u.bonus : u.bonus}</td>
+    </tr>
+  `).join('');
+  renderPagination('invitesPagination', page, data.pages, p => { state.invites.page = p; state.invitesLoaded = false; loadInvites(); });
+  state.invitesLoaded = true;
+}
+
+// ── Missions ───────────────────────────────────────────────────────────────
+async function loadMissions() {
+  const { page } = state.missions;
+  const data = await fetch(`/api/missions?page=${page}`).then(r => r.json()).catch(() => null);
+  if (!data) return;
+
+  const tbody = document.getElementById('missionsTable');
+  if (!data.missions.length) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty"><p>Sin misiones completadas</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.missions.map(m => `
+    <tr>
+      <td><div class="user-cell">
+        <div class="fallback-avatar">${m.username[0].toUpperCase()}</div>
+        ${m.username}
+      </div></td>
+      <td><span class="badge badge-blue">${m.missionId}</span></td>
+      <td>${m.progress || 0}</td>
+      <td style="color:var(--muted)">${m.completedAt ? new Date(m.completedAt).toLocaleDateString('es') : '—'}</td>
+    </tr>
+  `).join('');
+  renderPagination('missionsPagination', page, data.pages, p => { state.missions.page = p; state.missionsLoaded = false; loadMissions(); });
+  state.missionsLoaded = true;
 }
 
 init();
