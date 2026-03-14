@@ -2,724 +2,709 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Bee Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-:root {
-  --bg:       #0a0a0f;
-  --surface:  #111118;
-  --surface2: #18181f;
-  --border:   rgba(255,255,255,0.07);
-  --accent:   #5865f2;
-  --accent2:  #eb459e;
-  --success:  #57f287;
-  --warning:  #fee75c;
-  --danger:   #ed4245;
-  --gold:     #faa61a;
-  --text:     #e8e8f0;
-  --muted:    #6b6b80;
-  --sidebar-w: 240px;
+:root{
+  --bg:      #000;
+  --s1:      #0a0a0a;
+  --s2:      #111;
+  --s3:      #1a1a1a;
+  --border:  #222;
+  --border2: #2a2a2a;
+  --text:    #e8e8e8;
+  --muted:   #555;
+  --muted2:  #777;
+  --accent:  #fff;
+  --green:   #22c55e;
+  --red:     #ef4444;
+  --yellow:  #eab308;
+  --blue:    #3b82f6;
+  --orange:  #f97316;
+  --sidebar: 220px;
+  --r:       8px;
 }
 
-body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; }
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;display:flex;min-height:100vh;line-height:1.5}
 
 /* ── Sidebar ── */
-.sidebar {
-  width: var(--sidebar-w); min-height: 100vh; background: var(--surface);
-  border-right: 1px solid var(--border); display: flex; flex-direction: column;
-  position: fixed; left: 0; top: 0; bottom: 0; z-index: 100;
-}
-
-.sidebar-logo {
-  padding: 24px 20px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 12px;
-}
-.logo-icon {
-  width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), var(--accent2));
-  border-radius: 12px; display: flex; align-items: center; justify-content: center;
-  font-size: 20px; flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(88,101,242,0.3);
-}
-.logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; }
-.logo-sub  { font-size: 11px; color: var(--muted); }
-
-.sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
-
-.nav-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; padding: 12px 8px 4px; }
-
-.nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 10px; cursor: pointer;
-  font-size: 14px; font-weight: 500; color: var(--muted);
-  transition: all 0.15s; border: none; background: none; width: 100%; text-align: left;
-}
-.nav-item:hover  { background: rgba(255,255,255,0.05); color: var(--text); }
-.nav-item.active { background: rgba(88,101,242,0.15); color: var(--accent); }
-.nav-item .icon  { font-size: 16px; width: 20px; text-align: center; }
-
-.sidebar-user {
-  padding: 16px; border-top: 1px solid var(--border);
-  display: flex; align-items: center; gap: 10px;
-}
-.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--surface2); }
-.user-name   { font-size: 13px; font-weight: 600; }
-.user-role   { font-size: 11px; color: var(--accent); }
-.logout-btn  {
-  margin-left: auto; background: none; border: none; color: var(--muted);
-  cursor: pointer; font-size: 16px; padding: 4px; border-radius: 6px;
-  transition: color 0.15s;
-}
-.logout-btn:hover { color: var(--danger); }
+.sb{width:var(--sidebar);min-height:100vh;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:50}
+.sb-top{padding:20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-icon{width:32px;height:32px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sb-title{font-size:13px;font-weight:600;color:var(--text)}
+.sb-sub{font-size:11px;color:var(--muted2);margin-top:1px}
+.sb-nav{flex:1;padding:12px 8px;display:flex;flex-direction:column;gap:1px}
+.sb-sec{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:12px 8px 4px}
+.nav-btn{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:400;color:var(--muted2);border:none;background:none;width:100%;text-align:left;transition:all .12s}
+.nav-btn:hover{background:var(--s2);color:var(--text)}
+.nav-btn.active{background:var(--s2);color:var(--text)}
+.nav-btn .ic{width:14px;height:14px;opacity:.6}
+.nav-btn.active .ic{opacity:1}
+.sb-user{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.sb-avatar{width:28px;height:28px;border-radius:50%;background:var(--s3)}
+.sb-name{font-size:12px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-role{font-size:10px;color:var(--muted2)}
+.sb-logout{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 4px;border-radius:4px;transition:color .12s;line-height:1}
+.sb-logout:hover{color:var(--red)}
 
 /* ── Main ── */
-.main { margin-left: var(--sidebar-w); flex: 1; padding: 32px; min-height: 100vh; }
+.main{margin-left:var(--sidebar);flex:1;padding:32px;min-height:100vh}
+.ph{margin-bottom:24px}
+.pt{font-size:20px;font-weight:600;color:var(--text)}
+.ps{font-size:12px;color:var(--muted2);margin-top:3px}
 
-.page-header { margin-bottom: 28px; }
-.page-title  { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; }
-.page-sub    { color: var(--muted); font-size: 14px; margin-top: 4px; }
+/* ── Section ── */
+.section{display:none}
+.section.active{display:block;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── Cards ── */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+/* ── Stats grid ── */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.sc{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative}
+.sl{font-size:11px;color:var(--muted2);margin-bottom:6px;font-weight:500}
+.sv{font-size:22px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.si{position:absolute;top:14px;right:14px;font-size:18px;opacity:.2}
 
-.stat-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-  padding: 20px; position: relative; overflow: hidden;
-}
-.stat-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--accent-color, var(--accent));
-}
-.stat-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
-.stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; }
-.stat-icon  { position: absolute; top: 20px; right: 20px; font-size: 24px; opacity: 0.3; }
+/* ── Card ── */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:12px}
+.card-title{font-size:12px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;display:flex;align-items:center;gap:6px}
 
-/* ── Chart ── */
-.chart-section { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 28px; }
-.card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px;
-}
-.card-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+/* ── Two col ── */
+.two-col{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
 
-/* Bar chart */
-.bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
-.bar-wrap  { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
-.bar       { width: 100%; background: linear-gradient(to top, var(--accent), rgba(88,101,242,0.4)); border-radius: 6px 6px 0 0; min-height: 4px; transition: height 0.8s ease; }
-.bar-label { font-size: 10px; color: var(--muted); white-space: nowrap; }
+/* ── Bar chart ── */
+.bchart{display:flex;align-items:flex-end;gap:6px;height:80px}
+.bwrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.bar{width:100%;background:var(--s3);border-radius:3px 3px 0 0;min-height:3px;transition:background .2s}
+.bar:hover{background:var(--muted)}
+.blabel{font-size:9px;color:var(--muted);white-space:nowrap;font-family:'JetBrains Mono',monospace}
 
-/* Mini stats */
-.mini-stat { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
-.mini-stat:last-child { border-bottom: none; }
-.mini-stat-label { font-size: 13px; color: var(--muted); }
-.mini-stat-val   { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; }
+/* ── Mini stats ── */
+.ms{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.ms:last-child{border-bottom:none}
+.ms-label{font-size:12px;color:var(--muted2)}
+.ms-val{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
 
 /* ── Table ── */
-.table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { text-align: left; padding: 10px 16px; color: var(--muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid var(--border); }
-td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
-tr:hover td { background: rgba(255,255,255,0.02); }
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 12px;color:var(--muted);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
 
-.badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
-}
-.badge-green  { background: rgba(87,242,135,0.1);  color: var(--success); }
-.badge-red    { background: rgba(237,66,69,0.1);   color: var(--danger);  }
-.badge-yellow { background: rgba(254,231,92,0.1);  color: var(--warning); }
-.badge-blue   { background: rgba(88,101,242,0.15); color: var(--accent);  }
-.badge-gray   { background: rgba(255,255,255,0.06); color: var(--muted);  }
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:500;white-space:nowrap}
+.bg-green{background:rgba(34,197,94,.1);color:var(--green)}
+.bg-red{background:rgba(239,68,68,.1);color:var(--red)}
+.bg-yellow{background:rgba(234,179,8,.1);color:var(--yellow)}
+.bg-blue{background:rgba(59,130,246,.1);color:var(--blue)}
+.bg-gray{background:rgba(255,255,255,.06);color:var(--muted2)}
+.bg-orange{background:rgba(249,115,22,.1);color:var(--orange)}
 
-.user-cell { display: flex; align-items: center; gap: 10px; }
-.user-cell img { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); }
-.user-cell .fallback-avatar {
-  width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2));
-  display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff;
-}
+/* ── User cell ── */
+.uc{display:flex;align-items:center;gap:8px}
+.uc img{width:24px;height:24px;border-radius:50%}
+.uc .fa{width:24px;height:24px;border-radius:50%;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--muted2);flex-shrink:0}
+
+/* ── Rank ── */
+.rk{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--muted)}
+.rk1{color:#fbbf24}.rk2{color:#9ca3af}.rk3{color:#b45309}
+
+/* ── Mono ── */
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2)}
 
 /* ── Tabs ── */
-.tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--surface2); padding: 4px; border-radius: 12px; width: fit-content; }
-.tab { padding: 8px 18px; border-radius: 9px; border: none; background: none; color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; }
-.tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+.tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid var(--border)}
+.tab{padding:8px 14px;border:none;background:none;color:var(--muted2);cursor:pointer;font-size:12px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--text);border-bottom-color:var(--text)}
+
+/* ── Filters ── */
+.filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.fbtn{padding:5px 12px;border-radius:4px;border:1px solid var(--border);background:none;color:var(--muted2);cursor:pointer;font-size:11px;transition:all .12s}
+.fbtn:hover{border-color:var(--border2);color:var(--text)}
+.fbtn.active{border-color:var(--muted);color:var(--text);background:var(--s2)}
 
 /* ── Pagination ── */
-.pagination { display: flex; align-items: center; gap: 8px; justify-content: flex-end; margin-top: 16px; }
-.pg-btn { padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); cursor: pointer; font-size: 13px; transition: all 0.15s; }
-.pg-btn:hover:not(:disabled) { background: var(--surface); border-color: var(--accent); }
-.pg-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.pg-info { font-size: 13px; color: var(--muted); }
+.pag{display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.pg{padding:5px 12px;border-radius:4px;border:1px solid var(--border);background:none;color:var(--muted2);cursor:pointer;font-size:11px;transition:all .12s}
+.pg:hover:not(:disabled){border-color:var(--border2);color:var(--text)}
+.pg:disabled{opacity:.3;cursor:not-allowed}
+.pi{font-size:11px;color:var(--muted)}
 
-/* ── Filter row ── */
-.filter-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-.search-input {
-  flex: 1; min-width: 200px; padding: 10px 14px;
-  background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
-  color: var(--text); font-size: 13px; outline: none; font-family: 'DM Sans', sans-serif;
-}
-.search-input:focus { border-color: var(--accent); }
-.filter-btn { padding: 10px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); cursor: pointer; font-size: 13px; transition: all 0.15s; }
-.filter-btn.active, .filter-btn:hover { background: rgba(88,101,242,0.15); border-color: var(--accent); color: var(--accent); }
+/* ── Config grid ── */
+.cfg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.cfg-item{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:12px}
+.cfg-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.cfg-val{font-size:12px;font-weight:500;color:var(--text)}
+.cfg-null{color:var(--muted);font-style:italic}
 
-/* ── Loading ── */
-.skeleton { background: linear-gradient(90deg, var(--surface2) 25%, rgba(255,255,255,0.04) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
-@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+/* ── Giveaway cards ── */
+.gc-list{display:flex;flex-direction:column;gap:8px}
+.gc{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:14px 16px;display:flex;align-items:center;gap:14px}
+.gc-info{flex:1}
+.gc-prize{font-size:13px;font-weight:600;margin-bottom:3px}
+.gc-meta{font-size:11px;color:var(--muted2)}
 
-/* ── Sections hidden by default ── */
-.section { display: none; }
-.section.active { display: block; animation: fadeIn 0.3s ease; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+/* ── Progress bar ── */
+.prog-wrap{background:var(--s3);border-radius:2px;height:4px;margin-top:6px}
+.prog-bar{height:4px;border-radius:2px;background:var(--text);transition:width .6s ease}
 
-/* ── Empty state ── */
-.empty { text-align: center; padding: 48px; color: var(--muted); }
-.empty .icon { font-size: 40px; margin-bottom: 12px; }
-.empty p { font-size: 14px; }
+/* ── Empty ── */
+.empty{text-align:center;padding:40px;color:var(--muted)}
+.empty .ei{font-size:28px;margin-bottom:8px;opacity:.4}
 
-/* ── Rank medal ── */
-.rank { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; }
-.rank-1 { color: #ffd700; }
-.rank-2 { color: #c0c0c0; }
-.rank-3 { color: #cd7f32; }
-
-/* ── Giveaway card list ── */
-.giveaway-list { display: flex; flex-direction: column; gap: 12px; }
-.giveaway-item {
-  background: var(--surface2); border: 1px solid var(--border); border-radius: 14px;
-  padding: 18px 20px; display: flex; align-items: center; gap: 16px;
-}
-.giveaway-prize { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; flex: 1; }
-.giveaway-meta  { font-size: 12px; color: var(--muted); margin-top: 3px; }
+/* ── Note ── */
+.note{background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.15);border-radius:5px;padding:10px 14px;font-size:11px;color:var(--yellow);margin-bottom:14px}
 </style>
 </head>
 <body>
 
 <!-- Sidebar -->
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-icon">🐝</div>
+<aside class="sb">
+  <div class="sb-top">
+    <div class="sb-icon">🐝</div>
     <div>
-      <div class="logo-text">Bee Dashboard</div>
-      <div class="logo-sub">Panel Admin</div>
+      <div class="sb-title">Bee Dashboard</div>
+      <div class="sb-sub">Panel Admin</div>
     </div>
   </div>
-
-  <nav class="sidebar-nav">
-    <div class="nav-label">General</div>
-    <button class="nav-item active" onclick="showSection('overview')">
-      <span class="icon">📊</span> Estadísticas
-    </button>
-
-    <div class="nav-label">Gestión</div>
-    <button class="nav-item" onclick="showSection('giveaways')">
-      <span class="icon">🎉</span> Sorteos
-    </button>
-    <button class="nav-item" onclick="showSection('economy')">
-      <span class="icon">🪙</span> Economía
-    </button>
-    <button class="nav-item" onclick="showSection('invites')">
-      <span class="icon">📨</span> Invitaciones
-    </button>
-    <button class="nav-item" onclick="showSection('missions')">
-      <span class="icon">🎯</span> Misiones
-    </button>
-    <button class="nav-item" onclick="showSection('moderation')">
-      <span class="icon">🛡️</span> Moderación
-    </button>
+  <nav class="sb-nav">
+    <div class="sb-sec">General</div>
+    <button class="nav-btn active" onclick="nav('overview',this)"><span class="ic">📊</span> Estadísticas</button>
+    <div class="sb-sec">Gestión</div>
+    <button class="nav-btn" onclick="nav('invites',this)"><span class="ic">📨</span> Invitaciones</button>
+    <button class="nav-btn" onclick="nav('giveaways',this)"><span class="ic">🎉</span> Sorteos</button>
+    <button class="nav-btn" onclick="nav('economy',this)"><span class="ic">🪙</span> Economía</button>
+    <button class="nav-btn" onclick="nav('loans',this)"><span class="ic">💸</span> Préstamos</button>
+    <button class="nav-btn" onclick="nav('levels',this)"><span class="ic">⭐</span> Niveles</button>
+    <div class="sb-sec">Moderación</div>
+    <button class="nav-btn" onclick="nav('moderation',this)"><span class="ic">🛡️</span> Moderación</button>
+    <button class="nav-btn" onclick="nav('bans',this)"><span class="ic">🔨</span> Bans</button>
+    <div class="sb-sec">Servidor</div>
+    <button class="nav-btn" onclick="nav('config',this)"><span class="ic">⚙️</span> Configuración</button>
   </nav>
-
-  <div class="sidebar-user">
-    <img class="user-avatar" id="userAvatar" src="" alt="">
-    <div>
-      <div class="user-name" id="userName">Cargando...</div>
-      <div class="user-role">Admin</div>
+  <div class="sb-user">
+    <img class="sb-avatar" id="sbAvatar" src="" alt="">
+    <div style="flex:1;min-width:0">
+      <div class="sb-name" id="sbName">—</div>
+      <div class="sb-role">Admin</div>
     </div>
-    <a href="/auth/logout" class="logout-btn" title="Cerrar sesión">↩</a>
+    <a href="/auth/logout" class="sb-logout" title="Salir">↩</a>
   </div>
 </aside>
 
 <!-- Main -->
 <main class="main">
 
-  <!-- ── OVERVIEW ── -->
-  <div class="section active" id="section-overview">
-    <div class="page-header">
-      <div class="page-title">Estadísticas</div>
-      <div class="page-sub" id="lastUpdated">Cargando datos...</div>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card" style="--accent-color: #5865f2">
-        <div class="stat-icon">👥</div>
-        <div class="stat-label">Miembros Totales</div>
-        <div class="stat-value" id="stat-members">—</div>
-      </div>
-      <div class="stat-card" style="--accent-color: #57f287">
-        <div class="stat-icon">🟢</div>
-        <div class="stat-label">En línea ahora</div>
-        <div class="stat-value" id="stat-online">—</div>
-      </div>
-      <div class="stat-card" style="--accent-color: #faa61a">
-        <div class="stat-icon">🎉</div>
-        <div class="stat-label">Sorteos Activos</div>
-        <div class="stat-value" id="stat-giveaways">—</div>
-      </div>
-      <div class="stat-card" style="--accent-color: #eb459e">
-        <div class="stat-icon">⚠️</div>
-        <div class="stat-label">Joins Sospechosos</div>
-        <div class="stat-value" id="stat-flagged">—</div>
-      </div>
-    </div>
-
-    <div class="chart-section">
-      <div class="card">
-        <div class="card-title">📈 Joins últimos 7 días</div>
-        <div class="bar-chart" id="joinsChart"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">📋 Resumen</div>
-        <div id="summaryStats"></div>
-      </div>
-    </div>
+<!-- OVERVIEW -->
+<div class="section active" id="s-overview">
+  <div class="ph"><div class="pt">Estadísticas</div><div class="ps" id="lastUp">—</div></div>
+  <div class="sg">
+    <div class="sc"><div class="si">👥</div><div class="sl">Miembros</div><div class="sv" id="st-members">—</div></div>
+    <div class="sc"><div class="si">🟢</div><div class="sl">En línea</div><div class="sv" id="st-online">—</div></div>
+    <div class="sc"><div class="si">🪙</div><div class="sl">Usuarios registrados</div><div class="sv" id="st-users">—</div></div>
+    <div class="sc"><div class="si">⚠️</div><div class="sl">Joins sospechosos</div><div class="sv" id="st-flagged" style="color:var(--yellow)">—</div></div>
+    <div class="sc"><div class="si">🎉</div><div class="sl">Sorteos activos</div><div class="sv" id="st-giveaways">—</div></div>
+    <div class="sc"><div class="si">💸</div><div class="sl">Préstamos activos</div><div class="sv" id="st-loans">—</div></div>
+    <div class="sc"><div class="si">🎰</div><div class="sl">Total apuestas</div><div class="sv" id="st-bets">—</div></div>
+    <div class="sc"><div class="si">📋</div><div class="sl">Total warns</div><div class="sv" id="st-warns">—</div></div>
   </div>
-
-  <!-- ── GIVEAWAYS ── -->
-  <div class="section" id="section-giveaways">
-    <div class="page-header">
-      <div class="page-title">Sorteos</div>
-      <div class="page-sub">Gestiona todos los sorteos del servidor</div>
-    </div>
-
-    <div class="filter-row">
-      <button class="filter-btn active" onclick="filterGiveaways('all', this)">Todos</button>
-      <button class="filter-btn" onclick="filterGiveaways('active', this)">Activos</button>
-      <button class="filter-btn" onclick="filterGiveaways('ended', this)">Finalizados</button>
-    </div>
-
+  <div class="two-col">
     <div class="card">
-      <div id="giveawayList">
-        <div class="empty"><div class="icon">🎉</div><p>Cargando sorteos...</p></div>
-      </div>
-      <div class="pagination" id="giveawayPagination"></div>
-    </div>
-  </div>
-
-  <!-- ── ECONOMY ── -->
-  <div class="section" id="section-economy">
-    <div class="page-header">
-      <div class="page-title">Economía</div>
-      <div class="page-sub">Rankings de monedas y niveles</div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab active" onclick="switchEconomyTab('coins', this)">🪙 Monedas</button>
-      <button class="tab" onclick="switchEconomyTab('level', this)">⭐ Niveles</button>
-    </div>
-
-    <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Usuario</th>
-              <th id="econ-col-main">Monedas</th>
-              <th id="econ-col-sec">Total ganado</th>
-            </tr>
-          </thead>
-          <tbody id="economyTable"></tbody>
-        </table>
-      </div>
-      <div class="pagination" id="economyPagination"></div>
-    </div>
-  </div>
-
-  <!-- ── MODERATION ── -->
-  <div class="section" id="section-moderation">
-    <div class="page-header">
-      <div class="page-title">Moderación</div>
-      <div class="page-sub">Warns, mutes y logs de seguridad</div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab active" onclick="switchModTab('warns', this)">⚠️ Warns</button>
-      <button class="tab" onclick="switchModTab('mutes', this)">🔇 Mutes</button>
-      <button class="tab" onclick="switchModTab('loans', this)">💸 Préstamos</button>
-      <button class="tab" onclick="switchModTab('logs', this)">🔒 Logs</button>
-    </div>
-
-    <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead id="modTableHead"></thead>
-          <tbody id="modTable"></tbody>
-        </table>
-      </div>
-      <div class="pagination" id="modPagination"></div>
-    </div>
-  </div>
-
-
-  <!-- ── INVITES ── -->
-  <div class="section" id="section-invites">
-    <div class="page-header">
-      <div class="page-title">Invitaciones</div>
-      <div class="page-sub">Ranking de invitaciones del servidor</div>
+      <div class="card-title">📈 Joins últimos 7 días</div>
+      <div class="bchart" id="joinChart"></div>
     </div>
     <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>#</th><th>Usuario</th><th>Reales</th><th>Total</th><th>Salidas</th><th>Falsas</th><th>Bonus</th></tr>
-          </thead>
-          <tbody id="invitesTable"></tbody>
-        </table>
-      </div>
-      <div class="pagination" id="invitesPagination"></div>
+      <div class="card-title">📋 Resumen</div>
+      <div id="summaryBox"></div>
     </div>
   </div>
+</div>
 
-  <!-- ── MISSIONS ── -->
-  <div class="section" id="section-missions">
-    <div class="page-header">
-      <div class="page-title">Misiones</div>
-      <div class="page-sub">Misiones completadas por los usuarios</div>
+<!-- INVITACIONES -->
+<div class="section" id="s-invites">
+  <div class="ph"><div class="pt">Invitaciones</div><div class="ps">Ranking de invitaciones del servidor</div></div>
+  <div class="card">
+    <div class="tw">
+      <table>
+        <thead><tr><th>#</th><th>Usuario</th><th>Reales</th><th>Total</th><th>Salidas</th><th>Falsas</th></tr></thead>
+        <tbody id="inviteTable"></tbody>
+      </table>
     </div>
-    <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Usuario</th><th>Misión</th><th>Progreso</th><th>Completada</th></tr>
-          </thead>
-          <tbody id="missionsTable"></tbody>
-        </table>
-      </div>
-      <div class="pagination" id="missionsPagination"></div>
+    <div class="pag" id="invitePag"></div>
+  </div>
+</div>
+
+<!-- SORTEOS -->
+<div class="section" id="s-giveaways">
+  <div class="ph"><div class="pt">Sorteos</div><div class="ps">Historial de sorteos del servidor</div></div>
+  <div class="filters">
+    <button class="fbtn active" onclick="filterGw('all',this)">Todos</button>
+    <button class="fbtn" onclick="filterGw('active',this)">Activos</button>
+    <button class="fbtn" onclick="filterGw('ended',this)">Finalizados</button>
+  </div>
+  <div id="gwList"></div>
+  <div class="pag" id="gwPag"></div>
+</div>
+
+<!-- ECONOMÍA -->
+<div class="section" id="s-economy">
+  <div class="ph"><div class="pt">Economía</div><div class="ps">Rankings del servidor</div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="econTab('coins',this)">Monedas</button>
+    <button class="tab" onclick="econTab('level',this)">Niveles</button>
+  </div>
+  <div class="card">
+    <div class="tw">
+      <table>
+        <thead><tr><th>#</th><th>Usuario</th><th id="ecol1">Monedas</th><th id="ecol2">Total ganado</th></tr></thead>
+        <tbody id="econTable"></tbody>
+      </table>
+    </div>
+    <div class="pag" id="econPag"></div>
+  </div>
+</div>
+
+<!-- PRÉSTAMOS -->
+<div class="section" id="s-loans">
+  <div class="ph"><div class="pt">Préstamos</div><div class="ps">Estado de todos los préstamos</div></div>
+  <div class="filters">
+    <button class="fbtn active" onclick="filterLoan('all',this)">Todos</button>
+    <button class="fbtn" onclick="filterLoan('active',this)">Activos</button>
+    <button class="fbtn" onclick="filterLoan('paid',this)">Pagados</button>
+    <button class="fbtn" onclick="filterLoan('defaulted',this)">Impagados</button>
+  </div>
+  <div class="card">
+    <div class="tw">
+      <table>
+        <thead><tr><th>Usuario</th><th>Monto</th><th>Deuda</th><th>Interés</th><th>Estado</th><th>Fecha</th></tr></thead>
+        <tbody id="loanTable"></tbody>
+      </table>
+    </div>
+    <div class="pag" id="loanPag"></div>
+  </div>
+</div>
+
+<!-- NIVELES -->
+<div class="section" id="s-levels">
+  <div class="ph"><div class="pt">Niveles</div><div class="ps">Sistema de XP del servidor</div></div>
+  <div class="two-col" style="margin-bottom:12px">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">📊 Distribución de niveles</div>
+      <div id="levelDist"></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">📋 Info</div>
+      <div id="levelInfo"></div>
     </div>
   </div>
+  <div class="card">
+    <div class="tw">
+      <table>
+        <thead><tr><th>#</th><th>Usuario</th><th>Nivel</th><th>XP</th></tr></thead>
+        <tbody id="levelTable"></tbody>
+      </table>
+    </div>
+    <div class="pag" id="levelPag"></div>
+  </div>
+</div>
+
+<!-- MODERACIÓN -->
+<div class="section" id="s-moderation">
+  <div class="ph"><div class="pt">Moderación</div><div class="ps">Warns, mutes y logs de seguridad</div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="modTab('warns',this)">⚠️ Warns</button>
+    <button class="tab" onclick="modTab('mutes',this)">🔇 Mutes</button>
+    <button class="tab" onclick="modTab('logs',this)">🔒 Logs</button>
+  </div>
+  <div class="note" id="logNote" style="display:none">Los logs muestran IPs solo cuando el usuario se verifica a través del sistema web. Si la IP aparece vacía, el usuario entró antes de activar la verificación web.</div>
+  <div class="card">
+    <div class="tw"><table><thead id="modHead"></thead><tbody id="modTable"></tbody></table></div>
+    <div class="pag" id="modPag"></div>
+  </div>
+</div>
+
+<!-- BANS -->
+<div class="section" id="s-bans">
+  <div class="ph"><div class="pt">Bans</div><div class="ps">Usuarios baneados del servidor</div></div>
+  <div class="card">
+    <div class="tw">
+      <table>
+        <thead><tr><th>Usuario</th><th>Razón</th></tr></thead>
+        <tbody id="banTable"></tbody>
+      </table>
+    </div>
+    <div class="pag" id="banPag"></div>
+  </div>
+</div>
+
+<!-- CONFIG -->
+<div class="section" id="s-config">
+  <div class="ph"><div class="pt">Configuración</div><div class="ps">Canales y ajustes del servidor</div></div>
+  <div class="two-col">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">📢 Canales configurados</div>
+      <div id="cfgChannels"></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">🪙 Recompensas</div>
+      <div id="cfgRewards"></div>
+    </div>
+  </div>
+</div>
 
 </main>
 
 <script>
-// ── Estado global ──────────────────────────────────────────────────────────
-const state = {
-  currentSection: 'overview',
-  giveaways:  { status: 'all', page: 1 },
-  economy:    { sort: 'coins', page: 1 },
-  moderation: { tab: 'warns', page: 1 },
-  invites:    { page: 1 },
-  missions:   { page: 1 },
+// ── Estado ──────────────────────────────────────────────────────────────────
+const S = {
+  invites:    { page:1 },
+  giveaways:  { status:'all', page:1 },
+  economy:    { sort:'coins', page:1 },
+  loans:      { status:'all', page:1 },
+  levels:     { page:1 },
+  moderation: { tab:'warns', page:1 },
+  bans:       { page:1 },
+  loaded:     {},
 };
 
-// ── Init ───────────────────────────────────────────────────────────────────
-async function init() {
-  const me = await fetch('/api/me').then(r => r.json()).catch(() => null);
-  if (!me) { window.location.href = '/login'; return; }
-
-  document.getElementById('userName').textContent  = me.username;
-  document.getElementById('userAvatar').src = me.avatar;
-
+// ── Init ────────────────────────────────────────────────────────────────────
+(async()=>{
+  const me = await api('/api/me');
+  if(!me){ location.href='/login'; return; }
+  document.getElementById('sbName').textContent  = me.username;
+  document.getElementById('sbAvatar').src = me.avatar;
   loadOverview();
+})();
+
+async function api(url){
+  try{ const r=await fetch(url); if(r.status===401){location.href='/login';return null;} return r.json(); }
+  catch{ return null; }
 }
 
-// ── Navegación ─────────────────────────────────────────────────────────────
-function showSection(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById(`section-${name}`).classList.add('active');
-  event.currentTarget.classList.add('active');
-  state.currentSection = name;
-
-  if (name === 'overview'   && !state.overviewLoaded)   loadOverview();
-  if (name === 'giveaways'  && !state.giveawaysLoaded)  loadGiveaways();
-  if (name === 'economy'    && !state.economyLoaded)    loadEconomy();
-  if (name === 'invites'    && !state.invitesLoaded)    loadInvites();
-  if (name === 'missions'   && !state.missionsLoaded)   loadMissions();
-  if (name === 'moderation' && !state.modLoaded)        loadModeration();
+// ── Nav ─────────────────────────────────────────────────────────────────────
+function nav(name, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('s-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(!S.loaded[name]){
+    const loaders={invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig};
+    if(loaders[name]) loaders[name]();
+  }
 }
 
-// ── Overview ───────────────────────────────────────────────────────────────
-async function loadOverview() {
-  const data = await fetch('/api/stats').then(r => r.json()).catch(() => null);
-  if (!data) return;
+// ── User cell helper ─────────────────────────────────────────────────────────
+function uc(avatar, username){
+  const img = avatar ? `<img src="${avatar}" onerror="this.style.display='none'">` : `<div class="fa">${(username||'?')[0].toUpperCase()}</div>`;
+  return `<div class="uc">${img}<span>${username||'—'}</span></div>`;
+}
 
-  document.getElementById('stat-members').textContent  = data.members.toLocaleString();
-  document.getElementById('stat-online').textContent   = data.online.toLocaleString();
-  document.getElementById('stat-giveaways').textContent = data.activeGiveaways;
-  document.getElementById('stat-flagged').textContent  = data.flaggedJoins;
-  document.getElementById('lastUpdated').textContent   = `Actualizado: ${new Date().toLocaleTimeString('es')}`;
+function rankCell(n){
+  const map={1:'rk1',2:'rk2',3:'rk3'};
+  const medal={1:'🥇',2:'🥈',3:'🥉'};
+  return `<span class="rk ${map[n]||''}">${medal[n]||'#'+n}</span>`;
+}
+
+function pag(containerId, page, pages, cb){
+  const el = document.getElementById(containerId);
+  if(pages<=1){el.innerHTML='';return;}
+  el.innerHTML=`<button class="pg" onclick="(${cb.toString()})(${page-1})" ${page<=1?'disabled':''}>← Anterior</button><span class="pi">Página ${page} de ${pages}</span><button class="pg" onclick="(${cb.toString()})(${page+1})" ${page>=pages?'disabled':''}>Siguiente →</button>`;
+}
+
+function empty(msg='Sin datos'){return `<div class="empty"><div class="ei">—</div><div>${msg}</div></div>`;}
+
+// ── OVERVIEW ─────────────────────────────────────────────────────────────────
+async function loadOverview(){
+  const d = await api('/api/stats');
+  if(!d) return;
+  document.getElementById('st-members').textContent  = d.members.toLocaleString();
+  document.getElementById('st-online').textContent   = d.online.toLocaleString();
+  document.getElementById('st-users').textContent    = d.registeredUsers.toLocaleString();
+  document.getElementById('st-flagged').textContent  = d.flaggedJoins;
+  document.getElementById('st-giveaways').textContent= d.activeGiveaways;
+  document.getElementById('st-loans').textContent    = d.activeLoans;
+  document.getElementById('st-bets').textContent     = d.casinoBets.toLocaleString();
+  document.getElementById('st-warns').textContent    = d.totalWarns;
+  document.getElementById('lastUp').textContent      = 'Actualizado: '+new Date().toLocaleTimeString('es-PE');
 
   // Bar chart
-  const chart  = document.getElementById('joinsChart');
-  const values = Object.values(data.joinsByDay);
-  const max    = Math.max(...values, 1);
-  chart.innerHTML = Object.entries(data.joinsByDay).map(([label, val]) => `
-    <div class="bar-wrap">
-      <div class="bar" style="height: ${Math.max((val/max)*100, 4)}%;" title="${val} joins"></div>
-      <div class="bar-label">${label}</div>
-    </div>
-  `).join('');
+  const vals = Object.values(d.joinsByDay);
+  const max  = Math.max(...vals,1);
+  document.getElementById('joinChart').innerHTML = Object.entries(d.joinsByDay).map(([k,v])=>
+    `<div class="bwrap"><div class="bar" style="height:${Math.max(v/max*100,3)}%" title="${v}"></div><div class="blabel">${k}</div></div>`
+  ).join('');
 
   // Summary
-  document.getElementById('summaryStats').innerHTML = `
-    <div class="mini-stat"><span class="mini-stat-label">Usuarios registrados</span><span class="mini-stat-val">${data.registeredUsers}</span></div>
-    <div class="mini-stat"><span class="mini-stat-label">Con niveles</span><span class="mini-stat-val">${data.levelsTracked}</span></div>
-    <div class="mini-stat"><span class="mini-stat-label">Sorteos activos</span><span class="mini-stat-val">${data.activeGiveaways}</span></div>
-    <div class="mini-stat"><span class="mini-stat-label">Warns totales</span><span class="mini-stat-val" style="color:var(--warning)">${data.totalWarns}</span></div>
-    <div class="mini-stat"><span class="mini-stat-label">Mutes activos</span><span class="mini-stat-val" style="color:var(--danger)">${data.totalMutes}</span></div>
-    <div class="mini-stat"><span class="mini-stat-label">Préstamos activos</span><span class="mini-stat-val" style="color:var(--gold)">${data.activeLoans}</span></div>
-    <div class="mini-stat"><span class="mini-stat-label">Joins sospechosos (7d)</span><span class="mini-stat-val" style="color:var(--accent2)">${data.flaggedJoins}</span></div>
+  const profit = d.casinoProfit >= 0
+    ? `<span style="color:var(--red)">-${Math.abs(d.casinoProfit).toLocaleString()}</span>`
+    : `<span style="color:var(--green)">+${Math.abs(d.casinoProfit).toLocaleString()}</span>`;
+  document.getElementById('summaryBox').innerHTML = `
+    <div class="ms"><span class="ms-label">Miembros registrados</span><span class="ms-val">${d.registeredUsers}</span></div>
+    <div class="ms"><span class="ms-label">Sorteos activos</span><span class="ms-val">${d.activeGiveaways}</span></div>
+    <div class="ms"><span class="ms-label">Préstamos activos</span><span class="ms-val">${d.activeLoans}</span></div>
+    <div class="ms"><span class="ms-label">Warns totales</span><span class="ms-val">${d.totalWarns}</span></div>
+    <div class="ms"><span class="ms-label">Apuestas de casino</span><span class="ms-val">${d.casinoBets}</span></div>
+    <div class="ms"><span class="ms-label">Balance casino (casa)</span><span class="ms-val">${profit} 🪙</span></div>
   `;
-
-  state.overviewLoaded = true;
+  S.loaded.overview=true;
 }
 
-// ── Giveaways ──────────────────────────────────────────────────────────────
-async function loadGiveaways() {
-  const { status, page } = state.giveaways;
-  const data = await fetch(`/api/giveaways?status=${status}&page=${page}`).then(r => r.json()).catch(() => null);
-  if (!data) return;
+// ── INVITACIONES ──────────────────────────────────────────────────────────────
+async function loadInvites(page){
+  if(page) S.invites.page=page;
+  const d = await api(`/api/invites?page=${S.invites.page}`);
+  if(!d) return;
+  const tb = document.getElementById('inviteTable');
+  if(!d.invites.length){ tb.innerHTML=`<tr><td colspan="6">${empty('Sin datos de invitaciones')}</td></tr>`; }
+  else tb.innerHTML = d.invites.map(u=>`
+    <tr>
+      <td>${rankCell(u.rank)}</td>
+      <td>${uc(u.avatar,u.username)}</td>
+      <td><strong style="color:var(--green)">${u.reales}</strong></td>
+      <td><span class="mono">${u.total}</span></td>
+      <td><span class="mono" style="color:var(--red)">${u.left}</span></td>
+      <td><span class="mono" style="color:var(--yellow)">${u.fake}</span></td>
+    </tr>`).join('');
+  pag('invitePag',S.invites.page,d.pages,loadInvites);
+  S.loaded.invites=true;
+}
 
-  const list = document.getElementById('giveawayList');
-
-  if (!data.giveaways.length) {
-    list.innerHTML = `<div class="empty"><div class="icon">🎉</div><p>No hay sorteos</p></div>`;
-    document.getElementById('giveawayPagination').innerHTML = '';
-    return;
-  }
-
-  list.innerHTML = `<div class="giveaway-list">${data.giveaways.map(g => {
-    const ended = g.ended;
-    const claimed = (g.claimedBy || []).length;
-    const winners = (g.winnerIds || []).length;
-    const endsAt  = new Date(g.endsAt);
-    const now     = new Date();
-    const timeLeft = ended ? 'Finalizado' : endsAt > now
-      ? `Termina ${endsAt.toLocaleDateString('es', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}`
-      : 'Expirado';
-
-    return `
-    <div class="giveaway-item">
-      <div style="font-size:28px">🎉</div>
-      <div style="flex:1">
-        <div class="giveaway-prize">${g.prize}</div>
-        <div class="giveaway-meta">
-          ${g.participants?.length || 0} participantes · ${g.winners} ganador(es) · ${timeLeft}
-          ${ended && winners ? ` · Reclamados: ${claimed}/${winners}` : ''}
-        </div>
-        <div class="giveaway-meta" style="margin-top:4px">
-          Por: <strong>${g.hostedByName}</strong>
-        </div>
+// ── SORTEOS ───────────────────────────────────────────────────────────────────
+async function loadGiveaways(page){
+  if(page) S.giveaways.page=page;
+  const d = await api(`/api/giveaways?status=${S.giveaways.status}&page=${S.giveaways.page}`);
+  if(!d) return;
+  const el = document.getElementById('gwList');
+  if(!d.giveaways.length){ el.innerHTML=empty('Sin sorteos'); }
+  else el.innerHTML=`<div class="gc-list">${d.giveaways.map(g=>{
+    const ended    = g.ended;
+    const parts    = g.participants?.length||0;
+    const claimed  = g.claimedBy?.length||0;
+    const winners  = g.winnerIds?.length||0;
+    const endsAt   = new Date(g.endsAt);
+    const timeStr  = ended ? 'Finalizado' : `Termina ${endsAt.toLocaleDateString('es-PE',{day:'numeric',month:'short'})}`;
+    return `<div class="gc">
+      <div style="font-size:22px;opacity:.5">🎉</div>
+      <div class="gc-info">
+        <div class="gc-prize">${g.prize}</div>
+        <div class="gc-meta">${parts} participantes · ${g.winners} ganador(es) · ${timeStr}${ended&&winners?` · Reclamados: ${claimed}/${winners}`:''}</div>
+        <div class="gc-meta" style="margin-top:2px">Por <strong>${g.hostedByName}</strong></div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-        <span class="badge ${ended ? 'badge-gray' : 'badge-green'}">${ended ? 'Finalizado' : '● Activo'}</span>
-        ${ended && winners ? `<span class="badge badge-blue">👑 ${(g.winnerIds||[]).slice(0,2).map(id=>`<@${id}>`).join(', ')}${winners>2?'...':''}</span>` : ''}
-      </div>
+      <span class="badge ${ended?'bg-gray':'bg-green'}">${ended?'Finalizado':'● Activo'}</span>
     </div>`;
   }).join('')}</div>`;
-
-  renderPagination('giveawayPagination', page, data.pages, p => { state.giveaways.page = p; loadGiveaways(); });
-  state.giveawaysLoaded = true;
+  pag('gwPag',S.giveaways.page,d.pages,loadGiveaways);
+  S.loaded.giveaways=true;
 }
 
-function filterGiveaways(status, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+function filterGw(status,btn){
+  document.querySelectorAll('#s-giveaways .fbtn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  state.giveaways.status = status;
-  state.giveaways.page   = 1;
-  loadGiveaways();
+  S.giveaways.status=status; S.giveaways.page=1; loadGiveaways();
 }
 
-// ── Economy ────────────────────────────────────────────────────────────────
-async function loadEconomy() {
-  const { sort, page } = state.economy;
-  const data = await fetch(`/api/economy?sort=${sort}&page=${page}`).then(r => r.json()).catch(() => null);
-  if (!data) return;
-
-  const isLevel = sort === 'level';
-  document.getElementById('econ-col-main').textContent = isLevel ? 'Nivel' : 'Monedas';
-  document.getElementById('econ-col-sec').textContent  = isLevel ? 'XP' : 'Total ganado';
-
-  const tbody = document.getElementById('economyTable');
-  if (!data.users.length) {
-    tbody.innerHTML = `<tr><td colspan="4"><div class="empty"><p>Sin datos</p></div></td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = data.users.map(u => `
+// ── ECONOMÍA ──────────────────────────────────────────────────────────────────
+async function loadEconomy(page){
+  if(page) S.economy.page=page;
+  const d = await api(`/api/economy?sort=${S.economy.sort}&page=${S.economy.page}`);
+  if(!d) return;
+  const isLvl = S.economy.sort==='level';
+  document.getElementById('ecol1').textContent = isLvl ? 'Nivel' : 'Monedas';
+  document.getElementById('ecol2').textContent = isLvl ? 'XP' : 'Total ganado';
+  const tb = document.getElementById('econTable');
+  if(!d.users.length){ tb.innerHTML=`<tr><td colspan="4">${empty()}</td></tr>`; }
+  else tb.innerHTML = d.users.map(u=>`
     <tr>
-      <td><span class="rank ${u.rank<=3?`rank-${u.rank}`:''}">
-        ${u.rank === 1 ? '🥇' : u.rank === 2 ? '🥈' : u.rank === 3 ? '🥉' : `#${u.rank}`}
-      </span></td>
-      <td>
-        <div class="user-cell">
-          ${u.avatar
-            ? `<img src="${u.avatar}" alt="" onerror="this.style.display='none'">`
-            : `<div class="fallback-avatar">${u.username[0].toUpperCase()}</div>`}
-          <span>${u.username}</span>
-        </div>
-      </td>
-      <td><strong>${isLevel ? `Nv. ${u.level}` : u.coins.toLocaleString()}</strong></td>
-      <td style="color:var(--muted)">${isLevel ? u.xp.toLocaleString()+' XP' : u.totalEarned.toLocaleString()}</td>
-    </tr>
-  `).join('');
-
-  renderPagination('economyPagination', page, data.pages, p => { state.economy.page = p; loadEconomy(); });
-  state.economyLoaded = true;
+      <td>${rankCell(u.rank)}</td>
+      <td>${uc(u.avatar,u.username)}</td>
+      <td><strong>${isLvl?`Nv. ${u.level}`:u.coins.toLocaleString()}</strong></td>
+      <td><span class="mono">${isLvl?u.xp.toLocaleString()+' XP':u.totalEarned.toLocaleString()}</span></td>
+    </tr>`).join('');
+  pag('econPag',S.economy.page,d.pages,loadEconomy);
+  S.loaded.economy=true;
 }
 
-function switchEconomyTab(sort, btn) {
-  document.querySelectorAll('#section-economy .tab').forEach(t => t.classList.remove('active'));
+function econTab(sort,btn){
+  document.querySelectorAll('#s-economy .tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  state.economy.sort = sort;
-  state.economy.page = 1;
-  state.economyLoaded = false;
-  loadEconomy();
+  S.economy.sort=sort; S.economy.page=1; S.loaded.economy=false; loadEconomy();
 }
 
-// ── Moderation ─────────────────────────────────────────────────────────────
-async function loadModeration() {
-  const { tab, page } = state.moderation;
-  const data = await fetch(`/api/moderation?tab=${tab}&page=${page}`).then(r => r.json()).catch(() => null);
-  if (!data) return;
-
-  const thead = document.getElementById('modTableHead');
-  const tbody = document.getElementById('modTable');
-
-  if (tab === 'warns') {
-    thead.innerHTML = `<tr><th>Usuario</th><th>Razón</th><th>Moderador</th><th>Fecha</th></tr>`;
-    tbody.innerHTML = data.items.length ? data.items.map(w => `
-      <tr>
-        <td><div class="user-cell"><div class="fallback-avatar">${w.username[0].toUpperCase()}</div>${w.username}</div></td>
-        <td style="color:var(--muted);max-width:200px">${w.reason}</td>
-        <td><span class="badge badge-blue">${w.modName}</span></td>
-        <td style="color:var(--muted)">${new Date(w.createdAt).toLocaleDateString('es')}</td>
-      </tr>`).join('')
-      : `<tr><td colspan="4"><div class="empty"><p>Sin warns</p></div></td></tr>`;
-  }
-
-  if (tab === 'mutes') {
-    thead.innerHTML = `<tr><th>Usuario</th><th>Razón</th><th>Expira</th></tr>`;
-    tbody.innerHTML = data.items.length ? data.items.map(m => {
-      const expired = m.expiresAt && new Date(m.expiresAt) < new Date();
-      return `
-      <tr>
-        <td><div class="user-cell"><div class="fallback-avatar">${m.username[0].toUpperCase()}</div>${m.username}</div></td>
-        <td style="color:var(--muted)">${m.reason}</td>
-        <td><span class="badge ${expired ? 'badge-gray' : 'badge-red'}">${m.expiresAt ? (expired ? 'Expirado' : new Date(m.expiresAt).toLocaleDateString('es')) : 'Permanente'}</span></td>
-      </tr>`;}).join('')
-      : `<tr><td colspan="3"><div class="empty"><p>Sin mutes</p></div></td></tr>`;
-  }
-
-  if (tab === 'loans') {
-    thead.innerHTML = `<tr><th>Usuario</th><th>Monto</th><th>Estado</th><th>Vence</th><th>Fecha</th></tr>`;
-    tbody.innerHTML = data.items.length ? data.items.map(l => `
-      <tr>
-        <td><div class="user-cell"><div class="fallback-avatar">${l.username[0].toUpperCase()}</div>${l.username}</div></td>
-        <td><strong style="color:var(--gold)">💰 ${(l.amount||0).toLocaleString()}</strong></td>
-        <td><span class="badge ${l.paid ? 'badge-green' : 'badge-yellow'}">${l.paid ? '✅ Pagado' : '⏳ Pendiente'}</span></td>
-        <td style="color:var(--muted)">${l.dueDate ? new Date(l.dueDate).toLocaleDateString('es') : '—'}</td>
-        <td style="color:var(--muted)">${l.createdAt ? new Date(l.createdAt).toLocaleDateString('es') : '—'}</td>
-      </tr>`).join('')
-      : `<tr><td colspan="5"><div class="empty"><p>Sin préstamos</p></div></td></tr>`;
-  }
-
-  if (tab === 'logs') {
-    thead.innerHTML = `<tr><th>Usuario</th><th>IP</th><th>País</th><th>Estado</th><th>Fecha</th></tr>`;
-    tbody.innerHTML = data.items.length ? data.items.map(l => `
-      <tr>
-        <td><div class="user-cell"><div class="fallback-avatar">${l.username[0].toUpperCase()}</div>${l.username}</div></td>
-        <td style="font-family:monospace;font-size:12px;color:var(--muted)">${l.ip}</td>
-        <td>${l.countryCode} ${l.country}</td>
-        <td><span class="badge ${l.flagged ? 'badge-red' : 'badge-green'}">${l.flagged ? '⚠️ Alerta' : '✅ OK'}</span></td>
-        <td style="color:var(--muted)">${new Date(l.joinedAt).toLocaleDateString('es')}</td>
-      </tr>`).join('')
-      : `<tr><td colspan="5"><div class="empty"><p>Sin logs</p></div></td></tr>`;
-  }
-
-  renderPagination('modPagination', page, data.pages, p => { state.moderation.page = p; loadModeration(); });
-  state.modLoaded = true;
+// ── PRÉSTAMOS ─────────────────────────────────────────────────────────────────
+async function loadLoans(page){
+  if(page) S.loans.page=page;
+  const d = await api(`/api/loans?status=${S.loans.status}&page=${S.loans.page}`);
+  if(!d) return;
+  const tb = document.getElementById('loanTable');
+  const statusBadge = s => ({active:`<span class="badge bg-yellow">Activo</span>`,paid:`<span class="badge bg-green">Pagado</span>`,defaulted:`<span class="badge bg-red">Impagado</span>`}[s]||`<span class="badge bg-gray">${s}</span>`);
+  if(!d.loans.length){ tb.innerHTML=`<tr><td colspan="6">${empty('Sin préstamos')}</td></tr>`; }
+  else tb.innerHTML = d.loans.map(l=>`
+    <tr>
+      <td>${uc(l.avatar,l.username)}</td>
+      <td><strong>🪙 ${l.amount.toLocaleString()}</strong></td>
+      <td><span class="mono ${l.debt>0?'':''}">🪙 ${(l.debt||0).toLocaleString()}</span></td>
+      <td><span class="mono">${(l.interestRate*100).toFixed(0)}%</span></td>
+      <td>${statusBadge(l.status)}</td>
+      <td><span class="mono">${new Date(l.createdAt).toLocaleDateString('es-PE')}</span></td>
+    </tr>`).join('');
+  pag('loanPag',S.loans.page,d.pages,loadLoans);
+  S.loaded.loans=true;
 }
 
-function switchModTab(tab, btn) {
-  document.querySelectorAll('#section-moderation .tab').forEach(t => t.classList.remove('active'));
+function filterLoan(status,btn){
+  document.querySelectorAll('#s-loans .fbtn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  state.moderation.tab  = tab;
-  state.moderation.page = 1;
-  state.modLoaded = false;
-  loadModeration();
+  S.loans.status=status; S.loans.page=1; loadLoans();
 }
 
-// ── Pagination helper ──────────────────────────────────────────────────────
-function renderPagination(containerId, current, total, onPage) {
-  const el = document.getElementById(containerId);
-  if (total <= 1) { el.innerHTML = ''; return; }
-  el.innerHTML = `
-    <button class="pg-btn" onclick="(${onPage.toString()})(${current - 1})" ${current <= 1 ? 'disabled' : ''}>← Anterior</button>
-    <span class="pg-info">Página ${current} de ${total}</span>
-    <button class="pg-btn" onclick="(${onPage.toString()})(${current + 1})" ${current >= total ? 'disabled' : ''}>Siguiente →</button>
+// ── NIVELES ───────────────────────────────────────────────────────────────────
+async function loadLevels(page){
+  if(page) S.levels.page=page;
+  const d = await api(`/api/levels?page=${S.levels.page}`);
+  if(!d) return;
+
+  // Distribution
+  const distEl = document.getElementById('levelDist');
+  if(d.distribution?.length){
+    const maxCount = Math.max(...d.distribution.map(b=>b.count),1);
+    distEl.innerHTML = d.distribution.map(b=>{
+      const label = b._id==='50+' ? '50+' : `${b._id}–${({0:0,1:4,5:9,10:19,20:49}[b._id]??'+')}`;
+      const pct = Math.round(b.count/maxCount*100);
+      return `<div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;color:var(--muted2)">Nv. ${label}</span><span class="mono">${b.count}</span></div>
+        <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+  } else distEl.innerHTML = empty('Sin datos');
+
+  document.getElementById('levelInfo').innerHTML = `
+    <div class="ms"><span class="ms-label">Total usuarios</span><span class="ms-val">${d.total}</span></div>
+    <div class="ms"><span class="ms-label">Página actual</span><span class="ms-val">${S.levels.page} / ${d.pages||1}</span></div>
   `;
-}
 
-
-// ── Invites ────────────────────────────────────────────────────────────────
-async function loadInvites() {
-  const { page } = state.invites;
-  const data = await fetch(`/api/invites?page=${page}`).then(r => r.json()).catch(() => null);
-  if (!data) return;
-
-  const tbody = document.getElementById('invitesTable');
-  if (!data.invites.length) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty"><p>Sin datos de invitaciones</p></div></td></tr>`;
-    return;
-  }
-  tbody.innerHTML = data.invites.map(u => `
+  const tb = document.getElementById('levelTable');
+  if(!d.users.length){ tb.innerHTML=`<tr><td colspan="4">${empty()}</td></tr>`; }
+  else tb.innerHTML = d.users.map(u=>`
     <tr>
-      <td><span class="rank ${u.rank<=3?`rank-${u.rank}`:''}">
-        ${u.rank===1?'🥇':u.rank===2?'🥈':u.rank===3?'🥉':'#'+u.rank}
-      </span></td>
-      <td><div class="user-cell">
-        ${u.avatar ? `<img src="${u.avatar}" alt="">` : `<div class="fallback-avatar">${u.username[0].toUpperCase()}</div>`}
-        ${u.username}
-      </div></td>
-      <td><strong style="color:var(--success)">${u.real}</strong></td>
-      <td>${u.invites}</td>
-      <td style="color:var(--danger)">${u.leaves}</td>
-      <td style="color:var(--warning)">${u.fake}</td>
-      <td style="color:var(--accent)">${u.bonus > 0 ? '+'+u.bonus : u.bonus}</td>
-    </tr>
-  `).join('');
-  renderPagination('invitesPagination', page, data.pages, p => { state.invites.page = p; state.invitesLoaded = false; loadInvites(); });
-  state.invitesLoaded = true;
+      <td>${rankCell(u.rank)}</td>
+      <td>${uc(u.avatar,u.username)}</td>
+      <td><strong>Nv. ${u.level}</strong></td>
+      <td><span class="mono">${u.xp.toLocaleString()} XP</span></td>
+    </tr>`).join('');
+  pag('levelPag',S.levels.page,d.pages,loadLevels);
+  S.loaded.levels=true;
 }
 
-// ── Missions ───────────────────────────────────────────────────────────────
-async function loadMissions() {
-  const { page } = state.missions;
-  const data = await fetch(`/api/missions?page=${page}`).then(r => r.json()).catch(() => null);
-  if (!data) return;
+// ── MODERACIÓN ────────────────────────────────────────────────────────────────
+async function loadModeration(page){
+  if(page) S.moderation.page=page;
+  const { tab } = S.moderation;
+  document.getElementById('logNote').style.display = tab==='logs' ? '' : 'none';
+  const d = await api(`/api/moderation?tab=${tab}&page=${S.moderation.page}`);
+  if(!d) return;
 
-  const tbody = document.getElementById('missionsTable');
-  if (!data.missions.length) {
-    tbody.innerHTML = `<tr><td colspan="4"><div class="empty"><p>Sin misiones completadas</p></div></td></tr>`;
-    return;
+  const head = document.getElementById('modHead');
+  const tb   = document.getElementById('modTable');
+
+  if(tab==='warns'){
+    head.innerHTML='<tr><th>Usuario</th><th>Razón</th><th>Moderador</th><th>Fecha</th></tr>';
+    tb.innerHTML = d.items.length ? d.items.map(w=>`
+      <tr>
+        <td>${uc(w.avatar,w.username)}</td>
+        <td style="color:var(--muted2);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.reason}</td>
+        <td><span class="badge bg-blue">${w.modName}</span></td>
+        <td><span class="mono">${new Date(w.createdAt).toLocaleDateString('es-PE')}</span></td>
+      </tr>`).join('') : `<tr><td colspan="4">${empty('Sin warns')}</td></tr>`;
   }
-  tbody.innerHTML = data.missions.map(m => `
-    <tr>
-      <td><div class="user-cell">
-        <div class="fallback-avatar">${m.username[0].toUpperCase()}</div>
-        ${m.username}
-      </div></td>
-      <td><span class="badge badge-blue">${m.missionId}</span></td>
-      <td>${m.progress || 0}</td>
-      <td style="color:var(--muted)">${m.completedAt ? new Date(m.completedAt).toLocaleDateString('es') : '—'}</td>
-    </tr>
-  `).join('');
-  renderPagination('missionsPagination', page, data.pages, p => { state.missions.page = p; state.missionsLoaded = false; loadMissions(); });
-  state.missionsLoaded = true;
+
+  if(tab==='mutes'){
+    head.innerHTML='<tr><th>Usuario</th><th>Razón</th><th>Estado</th></tr>';
+    tb.innerHTML = d.items.length ? d.items.map(m=>{
+      const exp = m.expiresAt && new Date(m.expiresAt)<new Date();
+      return `<tr>
+        <td>${uc(m.avatar,m.username)}</td>
+        <td style="color:var(--muted2)">${m.reason}</td>
+        <td><span class="badge ${exp?'bg-gray':'bg-red'}">${m.expiresAt?(exp?'Expirado':new Date(m.expiresAt).toLocaleDateString('es-PE')):'Permanente'}</span></td>
+      </tr>`;}).join('') : `<tr><td colspan="3">${empty('Sin mutes')}</td></tr>`;
+  }
+
+  if(tab==='logs'){
+    head.innerHTML='<tr><th>Usuario</th><th>IP</th><th>País</th><th>Estado</th><th>Fecha</th></tr>';
+    tb.innerHTML = d.items.length ? d.items.map(l=>`
+      <tr>
+        <td>${uc(l.avatar,l.username)}</td>
+        <td><span class="mono">${l.ip||'—'}</span></td>
+        <td>${l.countryCode&&l.countryCode!=='??'?l.countryCode+' ':''}<span style="color:var(--muted2)">${l.country||'—'}</span></td>
+        <td><span class="badge ${l.flagged?'bg-red':'bg-green'}">${l.flagged?'⚠️ Alerta':'✓ OK'}</span></td>
+        <td><span class="mono">${new Date(l.joinedAt).toLocaleDateString('es-PE')}</span></td>
+      </tr>`).join('') : `<tr><td colspan="5">${empty('Sin logs de verificación')}</td></tr>`;
+  }
+
+  pag('modPag',S.moderation.page,d.pages,loadModeration);
+  S.loaded.moderation=true;
 }
 
-init();
+function modTab(tab,btn){
+  document.querySelectorAll('#s-moderation .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  S.moderation.tab=tab; S.moderation.page=1; S.loaded.moderation=false; loadModeration();
+}
+
+// ── BANS ──────────────────────────────────────────────────────────────────────
+async function loadBans(page){
+  if(page) S.bans.page=page;
+  const d = await api(`/api/bans?page=${S.bans.page}`);
+  if(!d) return;
+  const tb = document.getElementById('banTable');
+  if(!d.bans.length){ tb.innerHTML=`<tr><td colspan="2">${empty('Sin bans')}</td></tr>`; }
+  else tb.innerHTML = d.bans.map(b=>`
+    <tr>
+      <td>${uc(b.avatar,b.username)}</td>
+      <td style="color:var(--muted2)">${b.reason}</td>
+    </tr>`).join('');
+  pag('banPag',S.bans.page,d.pages,loadBans);
+  S.loaded.bans=true;
+}
+
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+async function loadConfig(){
+  const d = await api('/api/config');
+  if(!d) return;
+
+  // Canales
+  const chEl = document.getElementById('cfgChannels');
+  if(d.channels){
+    const labels = {logs:'Logs general',modLogs:'Logs de mod',welcome:'Bienvenida',levels:'Niveles',verification:'Verificación',tiktok:'TikTok',security:'Seguridad',invites:'Invitaciones'};
+    chEl.innerHTML = `<div class="cfg-grid">${Object.entries(d.channels).map(([k,v])=>`
+      <div class="cfg-item">
+        <div class="cfg-label">${labels[k]||k}</div>
+        <div class="cfg-val ${v?'':'cfg-null'}">${v?v.name:'No configurado'}</div>
+      </div>`).join('')}</div>`;
+  } else chEl.innerHTML = empty('Sin configuración de canales');
+
+  // Recompensas
+  const rwEl = document.getElementById('cfgRewards');
+  if(d.rewards){
+    const r = d.rewards;
+    rwEl.innerHTML = `
+      <div class="ms"><span class="ms-label">Monedas iniciales</span><span class="ms-val">🪙 ${r.initialCoins||500}</span></div>
+      <div class="ms"><span class="ms-label">Trivia fácil</span><span class="ms-val">🪙 ${r.trivia_easy||50}</span></div>
+      <div class="ms"><span class="ms-label">Trivia media</span><span class="ms-val">🪙 ${r.trivia_medium||100}</span></div>
+      <div class="ms"><span class="ms-label">Trivia difícil</span><span class="ms-val">🪙 ${r.trivia_hard||250}</span></div>
+      <div class="ms"><span class="ms-label">Recompensa misiones</span><span class="ms-val">🪙 ${r.misiones_reward||300}</span></div>
+      <div class="ms"><span class="ms-label">Pérdida máx/día</span><span class="ms-val">🪙 ${r.max_loss_per_day||5000}</span></div>
+      <div class="ms"><span class="ms-label">Apuestas máx/hora</span><span class="ms-val">${r.max_bets_per_hour||10}</span></div>
+    `;
+  } else rwEl.innerHTML = empty('Sin configuración de recompensas');
+
+  S.loaded.config=true;
+}
 </script>
 </body>
 </html>
