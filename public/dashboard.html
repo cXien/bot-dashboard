@@ -509,16 +509,25 @@ const wsEl=document.getElementById('wsS'),wsDot=document.getElementById('wsd'),w
 function showWS(on,msg){wsDot.className='on'+(on?'':' off').replace('on off','off');if(on)wsDot.className='on';else wsDot.className='off';wsTxt.textContent=msg;wsEl.classList.add('show');clearTimeout(wsTmr);if(on)wsTmr=setTimeout(()=>wsEl.classList.remove('show'),2500);}
 socket.on('connect',()=>showWS(true,'en línea'));
 socket.on('disconnect',()=>showWS(false,'sin conexión'));
-socket.on('stats:update',d=>{if(S.currentSection==='overview')applyStats(d);});
+socket.on('stats:update',d=>{ applyStats(d); });
+
+// Auto-refresh current section every 30 seconds
+setInterval(()=>{
+  const loaders={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket,achievements:loadAchievements,trades:loadTrades,shop:loadShop,games:loadGames,xpboosts:loadXpBoosts,gwblacklist:loadGwBlacklist,autoroles:loadAutoRoles,backgrounds:loadBackgrounds};
+  S.loaded[S.currentSection]=false;
+  if(loaders[S.currentSection]) loaders[S.currentSection]();
+}, 30000);
 function applyStats(d){
-  document.getElementById('st-members').textContent=d.members.toLocaleString();
-  document.getElementById('st-online').textContent=d.online.toLocaleString();
-  document.getElementById('st-users').textContent=d.registeredUsers.toLocaleString();
-  document.getElementById('st-flagged').textContent=d.flaggedJoins;
-  document.getElementById('st-giveaways').textContent=d.activeGiveaways;
-  document.getElementById('st-loans').textContent=d.activeLoans;
-  document.getElementById('st-bets').textContent=d.casinoBets.toLocaleString();
-  document.getElementById('st-warns').textContent=d.totalWarns;
+  if(!d) return;
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  set('st-members',(d.members||0).toLocaleString());
+  set('st-online',(d.online||0).toLocaleString());
+  set('st-users',(d.registeredUsers||0).toLocaleString());
+  set('st-flagged',d.flaggedJoins||0);
+  set('st-giveaways',d.activeGiveaways||0);
+  set('st-loans',d.activeLoans||0);
+  set('st-bets',(d.casinoBets||0).toLocaleString());
+  set('st-warns',d.totalWarns||0);
 }
 (async()=>{const me=await api('/api/me');if(!me){location.href='/login';return;}document.getElementById('sbName').textContent=me.username;document.getElementById('sbAvatar').src=me.avatar;loadOverview();})();
 async function api(url){try{const r=await fetch(url);if(r.status===401){location.href='/login';return null;}return r.json();}catch{return null;}}
@@ -534,7 +543,12 @@ window.nav=function(name,btn){
 };
 const uc=(av,nm)=>{const img=av?`<img src="${av}" onerror="this.style.display='none'">`:`<div class="fa">${(nm||'?')[0].toUpperCase()}</div>`;return`<div class="uc">${img}<span>${nm||'—'}</span></div>`;};
 const rk=n=>{const m={1:'rk1',2:'rk2',3:'rk3'},e={1:'🥇',2:'🥈',3:'🥉'};return`<span class="rk ${m[n]||''}">${e[n]||'#'+n}</span>`;};
-function pag(id,page,pages,cb){const el=document.getElementById(id);if(pages<=1){el.innerHTML='';return;}el.innerHTML=`<button class="pg" onclick="(${cb.toString()})(${page-1})" ${page<=1?'disabled':''}>← anterior</button><span class="pi">${page} / ${pages}</span><button class="pg" onclick="(${cb.toString()})(${page+1})" ${page>=pages?'disabled':''}>siguiente →</button>`;}
+function pag(id,page,pages,fnName){
+  const el=document.getElementById(id);
+  if(!el||pages<=1){if(el)el.innerHTML='';return;}
+  const fn=typeof fnName==='string'?fnName:fnName.name||'';
+  el.innerHTML=`<button class="pg" onclick="${fn}(${page-1})" ${page<=1?'disabled':''}>← anterior</button><span class="pi">${page} / ${pages}</span><button class="pg" onclick="${fn}(${page+1})" ${page>=pages?'disabled':''}>siguiente →</button>`;
+}
 const empty=(msg='Sin datos')=>`<div class="empty"><div class="ei">—</div><div>${msg}</div></div>`;
 const coin=n=>`<span class="mono" style="color:var(--gold)">🪙 ${n.toLocaleString()}</span>`;
 const dt=d=>`<span class="mono">${new Date(d).toLocaleDateString('es-PE')}</span>`;
@@ -544,33 +558,30 @@ async function loadOverview(){
   applyStats(d);
   document.getElementById('lastUp').textContent='actualizado '+new Date().toLocaleTimeString('es-PE');
   const vals=Object.values(d.joinsByDay),max=Math.max(...vals,1);
-  document.getElementById('joinChart').innerHTML=Object.entries(d.joinsByDay).map(([k,v])=>`<div class="bwrap"><div class="bar" style="height:${Math.max(v/max*100,2)}%" title="${v} joins"></div><div class="blabel">${k}</div></div>`).join('');
+  const joinEntries=Object.entries(d.joinsByDay);
+  const hasJoins=vals.some(v=>v>0);
+  document.getElementById('joinChart').innerHTML=joinEntries.map(([k,v])=>`<div class="bwrap"><div class="bar" style="height:${hasJoins?Math.max(v/max*100,2):8}%;${v===0&&hasJoins?'opacity:.3':''}background:${v>0?'rgba(201,168,76,0.25)':'var(--dp2)'}" title="${v} joins"></div><div class="blabel">${k}</div></div>`).join('');
   const ps=d.casinoProfit>=0;
-  document.getElementById('summaryBox').innerHTML=`
-    <div class="ms"><span class="ms-label">Miembros registrados</span><span class="ms-val">${d.registeredUsers}</span></div>
-    <div class="ms"><span class="ms-label">Sorteos activos</span><span class="ms-val">${d.activeGiveaways}</span></div>
-    <div class="ms"><span class="ms-label">Préstamos activos</span><span class="ms-val">${d.activeLoans}</span></div>
-    <div class="ms"><span class="ms-label">Warns totales</span><span class="ms-val">${d.totalWarns}</span></div>
-    <div class="ms"><span class="ms-label">Apuestas casino</span><span class="ms-val">${d.casinoBets.toLocaleString()}</span></div>
-    <div class="ms"><span class="ms-label">Balance casa</span><span class="ms-val" style="color:var(--${ps?'rose':'em'})">${ps?'−':'+'} ${Math.abs(d.casinoProfit).toLocaleString()} 🪙</span></div>`;
+  const sumEl=document.getElementById('summaryBox');
+  if(sumEl) sumEl.innerHTML=`<div class="ms"><span class="ms-label">Miembros registrados</span><span class="ms-val">${(d.registeredUsers||0).toLocaleString()}</span></div><div class="ms"><span class="ms-label">Sorteos activos</span><span class="ms-val">${d.activeGiveaways||0}</span></div><div class="ms"><span class="ms-label">Préstamos activos</span><span class="ms-val">${d.activeLoans||0}</span></div><div class="ms"><span class="ms-label">Warns totales</span><span class="ms-val">${d.totalWarns||0}</span></div><div class="ms"><span class="ms-label">Apuestas casino</span><span class="ms-val">${(d.casinoBets||0).toLocaleString()}</span></div><div class="ms"><span class="ms-label">Balance casa</span><span class="ms-val" style="color:var(--${ps?'rose':'em'})">${ps?'−':'+'} ${Math.abs(d.casinoProfit||0).toLocaleString()} 🪙</span></div>`;
   S.loaded.overview=true;
 }
 
-async function loadInvites(page){if(page)S.invites.page=page;const d=await api(`/api/invites?page=${S.invites.page}`);if(!d)return;document.getElementById('inviteTable').innerHTML=d.invites.length?d.invites.map(u=>`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td><strong style="color:var(--em)">${u.reales}</strong></td><td><span class="mono">${u.total}</span></td><td><span class="mono" style="color:var(--rose)">${u.left}</span></td><td><span class="mono" style="color:var(--amb)">${u.fake}</span></td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('invitePag',S.invites.page,d.pages,loadInvites);S.loaded.invites=true;}
+async function loadInvites(page){if(page)S.invites.page=page;const d=await api(`/api/invites?page=${S.invites.page}`);if(!d)return;document.getElementById('inviteTable').innerHTML=d.invites.length?d.invites.map(u=>`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td><strong style="color:var(--em)">${u.reales}</strong></td><td><span class="mono">${u.total}</span></td><td><span class="mono" style="color:var(--rose)">${u.left}</span></td><td><span class="mono" style="color:var(--amb)">${u.fake}</span></td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('invitePag',S.invites.page,d.pages,'loadInvites');S.loaded.invites=true;}
 
 async function loadGiveaways(page){
   if(page)S.giveaways.page=page;const d=await api(`/api/giveaways?status=${S.giveaways.status}&page=${S.giveaways.page}`);if(!d)return;
   const el=document.getElementById('gwList');
   if(!d.giveaways.length){el.innerHTML=empty('Sin sorteos');}
   else el.innerHTML=`<div class="gc-list">${d.giveaways.map(g=>{const p=g.participants?.length||0,c=g.claimedBy?.length||0,w=g.winnerIds?.length||0,t=g.ended?'Finalizado':`Termina ${new Date(g.endsAt).toLocaleDateString('es-PE',{day:'numeric',month:'short'})}`;return`<div class="gc"><div class="gc-ic">◎</div><div class="gc-info"><div class="gc-prize">${g.prize}</div><div class="gc-meta">${p} participantes · ${g.winners} ganador(es) · ${t}${g.ended&&w?` · ${c}/${w} reclamados`:''}</div><div class="gc-meta" style="margin-top:3px;color:var(--text3)">por ${g.hostedByName}</div></div><span class="badge ${g.ended?'b-m':'b-g'}">${g.ended?'Finalizado':'Activo'}</span></div>`;}).join('')}</div>`;
-  pag('gwPag',S.giveaways.page,d.pages,loadGiveaways);S.loaded.giveaways=true;
+  pag('gwPag',S.giveaways.page,d.pages,'loadGiveaways');S.loaded.giveaways=true;
 }
 function filterGw(s,b){document.querySelectorAll('#s-giveaways .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.giveaways.status=s;S.giveaways.page=1;loadGiveaways();}
 
-async function loadEconomy(page){if(page)S.economy.page=page;const d=await api(`/api/economy?sort=${S.economy.sort}&page=${S.economy.page}`);if(!d)return;const lv=S.economy.sort==='level';document.getElementById('ecol1').textContent=lv?'Nivel':'Monedas';document.getElementById('ecol2').textContent=lv?'XP':'Total ganado';document.getElementById('econTable').innerHTML=d.users.length?d.users.map(u=>`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td>${lv?`<span class="badge b-o">Nv. ${u.level}</span>`:coin(u.coins)}</td><td>${lv?`<span class="mono">${u.xp.toLocaleString()} XP</span>`:coin(u.totalEarned)}</td></tr>`).join(''):`<tr><td colspan="4">${empty()}</td></tr>`;pag('econPag',S.economy.page,d.pages,loadEconomy);S.loaded.economy=true;}
+async function loadEconomy(page){if(page)S.economy.page=page;const d=await api(`/api/economy?sort=${S.economy.sort}&page=${S.economy.page}`);if(!d)return;const lv=S.economy.sort==='level';document.getElementById('ecol1').textContent=lv?'Nivel':'Monedas';document.getElementById('ecol2').textContent=lv?'XP':'Total ganado';document.getElementById('econTable').innerHTML=d.users.length?d.users.map(u=>`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td>${lv?`<span class="badge b-o">Nv. ${u.level}</span>`:coin(u.coins)}</td><td>${lv?`<span class="mono">${u.xp.toLocaleString()} XP</span>`:coin(u.totalEarned)}</td></tr>`).join(''):`<tr><td colspan="4">${empty()}</td></tr>`;pag('econPag',S.economy.page,d.pages,'loadEconomy');S.loaded.economy=true;}
 function econTab(s,b){document.querySelectorAll('#s-economy .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.economy.sort=s;S.economy.page=1;S.loaded.economy=false;loadEconomy();}
 
-async function loadLoans(page){if(page)S.loans.page=page;const d=await api(`/api/loans?status=${S.loans.status}&page=${S.loans.page}`);if(!d)return;const sb=s=>({active:`<span class="badge b-a">Activo</span>`,paid:`<span class="badge b-g">Pagado</span>`,defaulted:`<span class="badge b-r">Impagado</span>`}[s]||`<span class="badge b-m">${s}</span>`);document.getElementById('loanTable').innerHTML=d.loans.length?d.loans.map(l=>`<tr><td>${uc(l.avatar,l.username)}</td><td>${coin(l.amount)}</td><td>${coin(l.debt||0)}</td><td><span class="mono">${(l.interestRate*100).toFixed(0)}%</span></td><td>${sb(l.status)}</td><td>${dt(l.createdAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('loanPag',S.loans.page,d.pages,loadLoans);S.loaded.loans=true;}
+async function loadLoans(page){if(page)S.loans.page=page;const d=await api(`/api/loans?status=${S.loans.status}&page=${S.loans.page}`);if(!d)return;const sb=s=>({active:`<span class="badge b-a">Activo</span>`,paid:`<span class="badge b-g">Pagado</span>`,defaulted:`<span class="badge b-r">Impagado</span>`}[s]||`<span class="badge b-m">${s}</span>`);document.getElementById('loanTable').innerHTML=d.loans.length?d.loans.map(l=>`<tr><td>${uc(l.avatar,l.username)}</td><td>${coin(l.amount)}</td><td>${coin(l.debt||0)}</td><td><span class="mono">${(l.interestRate*100).toFixed(0)}%</span></td><td>${sb(l.status)}</td><td>${dt(l.createdAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('loanPag',S.loans.page,d.pages,'loadLoans');S.loaded.loans=true;}
 function filterLoan(s,b){document.querySelectorAll('#s-loans .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.loans.status=s;S.loans.page=1;loadLoans();}
 
 async function loadLevels(page){
@@ -580,7 +591,7 @@ async function loadLevels(page){
   else de.innerHTML=empty();
   document.getElementById('levelInfo').innerHTML=`<div class="ms"><span class="ms-label">Total usuarios</span><span class="ms-val">${d.total}</span></div><div class="ms"><span class="ms-label">Página</span><span class="ms-val">${S.levels.page} / ${d.pages||1}</span></div>`;
   document.getElementById('levelTable').innerHTML=d.users.length?d.users.map(u=>`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td><span class="badge b-o">Nv. ${u.level}</span></td><td><span class="mono">${u.xp.toLocaleString()} XP</span></td></tr>`).join(''):`<tr><td colspan="4">${empty()}</td></tr>`;
-  pag('levelPag',S.levels.page,d.pages,loadLevels);S.loaded.levels=true;
+  pag('levelPag',S.levels.page,d.pages,'loadLevels');S.loaded.levels=true;
 }
 
 async function loadModeration(page){
@@ -591,11 +602,11 @@ async function loadModeration(page){
   if(tab==='warns'){h.innerHTML='<tr><th>Usuario</th><th>Razón</th><th>Moderador</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(w=>`<tr><td>${uc(w.avatar,w.username)}</td><td style="color:var(--ink);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.reason}</td><td><span class="badge b-s">${w.modName}</span></td><td>${dt(w.createdAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Sin warns')}</td></tr>`;}
   else if(tab==='mutes'){h.innerHTML='<tr><th>Usuario</th><th>Razón</th><th>Estado</th></tr>';tb.innerHTML=d.items.length?d.items.map(m=>{const e=m.expiresAt&&new Date(m.expiresAt)<new Date();return`<tr><td>${uc(m.avatar,m.username)}</td><td style="color:var(--ink)">${m.reason}</td><td><span class="badge ${e?'b-m':'b-r'}">${m.expiresAt?(e?'Expirado':new Date(m.expiresAt).toLocaleDateString('es-PE')):'Permanente'}</span></td></tr>`;}).join(''):`<tr><td colspan="3">${empty('Sin mutes')}</td></tr>`;}
   else if(tab==='logs'){h.innerHTML='<tr><th>Usuario</th><th>IP</th><th>País</th><th>Estado</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(l=>`<tr><td>${uc(l.avatar,l.username)}</td><td><span class="mono">${l.ip||'—'}</span></td><td>${l.countryCode&&l.countryCode!=='??'?l.countryCode+' ':''}<span style="color:var(--text2)">${l.country||'—'}</span></td><td><span class="badge ${l.flagged?'b-r':'b-g'}">${l.flagged?'Alerta':'OK'}</span></td><td>${dt(l.joinedAt)}</td></tr>`).join(''):`<tr><td colspan="5">${empty()}</td></tr>`;}
-  pag('modPag',S.moderation.page,d.pages,loadModeration);S.loaded.moderation=true;
+  pag('modPag',S.moderation.page,d.pages,'loadModeration');S.loaded.moderation=true;
 }
 function modTab(t,b){document.querySelectorAll('#s-moderation .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.moderation.tab=t;S.moderation.page=1;S.loaded.moderation=false;loadModeration();}
 
-async function loadBans(page){if(page)S.bans.page=page;const d=await api(`/api/bans?page=${S.bans.page}`);if(!d)return;document.getElementById('banTable').innerHTML=d.bans.length?d.bans.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink)">${b.reason}</td></tr>`).join(''):`<tr><td colspan="2">${empty()}</td></tr>`;pag('banPag',S.bans.page,d.pages,loadBans);S.loaded.bans=true;}
+async function loadBans(page){if(page)S.bans.page=page;const d=await api(`/api/bans?page=${S.bans.page}`);if(!d)return;document.getElementById('banTable').innerHTML=d.bans.length?d.bans.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink)">${b.reason}</td></tr>`).join(''):`<tr><td colspan="2">${empty()}</td></tr>`;pag('banPag',S.bans.page,d.pages,'loadBans');S.loaded.bans=true;}
 
 async function loadConfig(){
   const d=await api('/api/config');if(!d)return;
@@ -610,7 +621,7 @@ const casinoState={game:'all',page:1,topTab:'winners',data:null};
 async function loadCasino(page){if(page)casinoState.page=page;const d=await api(`/api/casino?page=${casinoState.page}&game=${casinoState.game}`);if(!d)return;casinoState.data=d;document.getElementById('cs-bets').textContent=(d.stats.totalBets||0).toLocaleString();document.getElementById('cs-volume').textContent=(d.stats.totalBetAmount||0).toLocaleString();document.getElementById('cs-profit').textContent=(d.stats.houseProfit||0).toLocaleString();document.getElementById('cs-winrate').textContent=(d.stats.winRate||0)+'%';const vals=Object.values(d.activity),mv=Math.max(...vals.map(v=>v.count),1);document.getElementById('casinoChart').innerHTML=Object.entries(d.activity).map(([k,v])=>`<div class="bwrap"><div class="bar" style="height:${Math.max(v.count/mv*100,2)}%" title="${v.count}"></div><div class="blabel">${k.slice(4)}</div></div>`).join('');renderCasinoTop();renderCasinoTable(d);S.loaded.casino=true;}
 function renderCasinoTop(){const d=casinoState.data,box=document.getElementById('casinoTopBox');if(!d)return;const list=casinoState.topTab==='winners'?d.topWinners:d.topLosers;if(!list?.length){box.innerHTML=empty();return;}box.innerHTML=list.map((u,i)=>`<div class="ms"><span class="ms-label">${['🥇','🥈','🥉','4','5'][i]||''} ${uc(u.avatar,u.username)}</span><span class="ms-val" style="color:var(--${casinoState.topTab==='winners'?'em':'rose'})">${casinoState.topTab==='winners'?'+':''} ${(casinoState.topTab==='winners'?u.totalProfit:u.netProfit).toLocaleString()}</span></div>`).join('');}
 function casinoTT(t,b){document.querySelectorAll('#s-casino .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');casinoState.topTab=t;renderCasinoTop();}
-function renderCasinoTable(d){const tb=document.getElementById('casinoTable');if(!d.logs.length){tb.innerHTML=`<tr><td colspan="6">${empty()}</td></tr>`;return;}tb.innerHTML=d.logs.map(l=>{const w=l.profit>0;return`<tr><td>${uc(l.avatar,l.username)}</td><td><span class="badge b-s">${l.game}</span></td><td><span class="mono">${l.bet.toLocaleString()}</span></td><td><span class="badge ${l.result==='win'||w?'b-g':'b-r'}">${l.result}</span></td><td style="color:var(--${w?'em':'rose'})"><strong>${w?'+':''}${l.profit.toLocaleString()}</strong></td><td>${dt(l.timestamp)}</td></tr>`;}).join('');pag('casinoPag',casinoState.page,d.pages,loadCasino);}
+function renderCasinoTable(d){const tb=document.getElementById('casinoTable');if(!d.logs.length){tb.innerHTML=`<tr><td colspan="6">${empty()}</td></tr>`;return;}tb.innerHTML=d.logs.map(l=>{const w=l.profit>0;return`<tr><td>${uc(l.avatar,l.username)}</td><td><span class="badge b-s">${l.game}</span></td><td><span class="mono">${l.bet.toLocaleString()}</span></td><td><span class="badge ${l.result==='win'||w?'b-g':'b-r'}">${l.result}</span></td><td style="color:var(--${w?'em':'rose'})"><strong>${w?'+':''}${l.profit.toLocaleString()}</strong></td><td>${dt(l.timestamp)}</td></tr>`;}).join('');pag('casinoPag',casinoState.page,d.pages,'loadCasino');}
 function filterCasino(g,b){document.querySelectorAll('#s-casino .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');casinoState.game=g;casinoState.page=1;loadCasino();}
 
 const armsState={tab:'inventory',page:1,rarity:'all'};
@@ -620,8 +631,8 @@ async function loadArms(page){
   const h=document.getElementById('armsHead'),tb=document.getElementById('armsTable');document.getElementById('armsPag').innerHTML='';
   const nm=(a)=>`<strong style="color:var(--text)">${a.name}</strong> <span style="color:var(--text3)">·</span> <span style="color:var(--text2)">${a.skin}</span>`;
   const rar=(a)=>`<span style="color:${RC[a.rarity]||'#aaa'};font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase">${a.rarityName||a.rarity}</span>`;
-  if(armsState.tab==='inventory'){h.innerHTML='<tr><th>Usuario</th><th>Arma</th><th>Rareza</th><th>Desgaste</th><th>Valor</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(a=>`<tr><td>${uc(a.avatar,a.username)}</td><td>${nm(a)}</td><td>${rar(a)}</td><td><span class="mono">${a.wearTag}</span></td><td>${coin(a.sellPrice)}</td><td>${dt(a.obtainedAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('armsPag',armsState.page,d.pages,loadArms);}
-  else if(armsState.tab==='prices'){h.innerHTML='<tr><th>Arma</th><th>Rareza</th><th>Precio</th><th>24h %</th><th>Máx</th><th>Mín</th><th>Vol.</th></tr>';tb.innerHTML=d.items.length?d.items.map(p=>{const pct=((p.currentPrice-p.openPrice24h)/(p.openPrice24h||1)*100);return`<tr><td>${nm(p)}</td><td>${rar(p)}</td><td><strong>${p.currentPrice.toLocaleString()}</strong></td><td style="color:var(--${pct>=0?'em':'rose'});font-weight:600">${pct>=0?'+':''}${pct.toFixed(2)}%</td><td class="mono" style="color:var(--em)">${p.high24h.toLocaleString()}</td><td class="mono" style="color:var(--rose)">${p.low24h.toLocaleString()}</td><td class="mono">${p.volume24h||0}</td></tr>`;}).join(''):`<tr><td colspan="7">${empty()}</td></tr>`;}
+  if(armsState.tab==='inventory'){h.innerHTML='<tr><th>Usuario</th><th>Arma</th><th>Rareza</th><th>Desgaste</th><th>Valor</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(a=>`<tr><td>${uc(a.avatar,a.username)}</td><td>${nm(a)}</td><td>${rar(a)}</td><td><span class="mono">${a.wearTag}</span></td><td>${coin(a.sellPrice)}</td><td>${dt(a.obtainedAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('armsPag',armsState.page,d.pages,'loadArms');}
+  else if(armsState.tab==='prices'){h.innerHTML='<tr><th>Arma</th><th>Rareza</th><th>Precio</th><th>24h %</th><th>Máx</th><th>Mín</th><th>Vol.</th></tr>';tb.innerHTML=d.items.length?d.items.map(p=>{const pct=((p.currentPrice-p.openPrice24h)/(p.openPrice24h||1)*100);return`<tr><td>${nm(p)}</td><td>${rar(p)}</td><td><strong>${p.currentPrice.toLocaleString()}</strong></td><td style="color:var(--${pct>=0?'em':'rose'});font-weight:600">${pct>=0?'+':''}${pct.toFixed(2)}%</td><td class="mono" style="color:var(--em)">${p.high24h.toLocaleString()}</td><td class="mono" style="color:var(--rose)">${p.low24h.toLocaleString()}</td><td class="mono">${p.volume24h||0}</td></tr>`;}).join(''):`<tr><td colspan="7">${empty()}</td></tr>`;pag('armsPag',armsState.page,d.pages,'loadArms');}
   else if(armsState.tab==='cases'){h.innerHTML='<tr><th>Usuario</th><th>Arma</th><th>Rareza</th><th>Caja</th><th>Fecha</th></tr>';tb.innerHTML=d.recentOpens?.length?d.recentOpens.map(a=>`<tr><td>${uc(a.avatar,a.username)}</td><td>${nm(a)}</td><td>${rar(a)}</td><td><span class="badge b-s">${a.caseId}</span></td><td>${dt(a.obtainedAt)}</td></tr>`).join(''):`<tr><td colspan="5">${empty()}</td></tr>`;}
   else if(armsState.tab==='collectors'){h.innerHTML='<tr><th>#</th><th>Usuario</th><th>Items</th><th>Valor</th><th>★</th><th>Covert</th><th>Classified</th></tr>';tb.innerHTML=d.items?.length?d.items.map(c=>`<tr><td>${rk(c.rank)}</td><td>${uc(c.avatar,c.username)}</td><td><strong>${c.total}</strong></td><td>${coin(c.totalValue)}</td><td style="color:#ffd700;font-weight:700">${c.special}</td><td style="color:#eb4b4b;font-weight:700">${c.covert}</td><td style="color:#d32ce6;font-weight:700">${c.classified}</td></tr>`).join(''):`<tr><td colspan="7">${empty()}</td></tr>`;}
   S.loaded.arms=true;
@@ -637,8 +648,8 @@ async function loadMarket(page){
   const h=document.getElementById('marketHead'),tb=document.getElementById('marketTable');
   const nm=(x)=>`<strong style="color:var(--text)">${x.name}</strong> <span style="color:var(--text3)">·</span> <span style="color:var(--text2)">${x.skin}</span>`;
   const rar=(x)=>`<span style="color:${RC[x.rarity]||'#aaa'};font-size:10px;font-weight:600">${x.rarityName||x.rarity}</span>`;
-  if(marketState.tab==='listings'){const d=await api(`/api/market?tab=listings&page=${marketState.page}`);if(!d)return;h.innerHTML='<tr><th>Arma</th><th>Rareza</th><th>Desgaste</th><th>Precio</th><th>Vendedor</th><th>Expira</th></tr>';tb.innerHTML=d.items.length?d.items.map(l=>{const e=Math.max(0,Math.floor((new Date(l.expiresAt)-Date.now())/864e5));return`<tr><td>${nm(l)}</td><td>${rar(l)}</td><td><span class="mono">${l.wearTag}</span></td><td>${coin(l.price)}</td><td>${uc(l.sellerAvatar,l.sellerName)}</td><td><span class="badge b-m">${e}d</span></td></tr>`;}).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('marketPag',marketState.page,d.pages,loadMarket);}
-  else if(marketState.tab==='history'){const d=await api(`/api/market?tab=history&page=${marketState.page}`);if(!d)return;h.innerHTML='<tr><th>Arma</th><th>Rareza</th><th>Precio</th><th>Comprador</th><th>Vendedor</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(t=>`<tr><td>${nm(t)}</td><td>${rar(t)}</td><td>${coin(t.price)}</td><td>${uc(null,t.buyerName)}</td><td>${uc(null,t.sellerName)}</td><td>${dt(t.timestamp)}</td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('marketPag',marketState.page,d.pages,loadMarket);}
+  if(marketState.tab==='listings'){const d=await api(`/api/market?tab=listings&page=${marketState.page}`);if(!d)return;h.innerHTML='<tr><th>Arma</th><th>Rareza</th><th>Desgaste</th><th>Precio</th><th>Vendedor</th><th>Expira</th></tr>';tb.innerHTML=d.items.length?d.items.map(l=>{const e=Math.max(0,Math.floor((new Date(l.expiresAt)-Date.now())/864e5));return`<tr><td>${nm(l)}</td><td>${rar(l)}</td><td><span class="mono">${l.wearTag}</span></td><td>${coin(l.price)}</td><td>${uc(l.sellerAvatar,l.sellerName)}</td><td><span class="badge b-m">${e}d</span></td></tr>`;}).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('marketPag',marketState.page,d.pages,'loadMarket');}
+  else if(marketState.tab==='history'){const d=await api(`/api/market?tab=history&page=${marketState.page}`);if(!d)return;h.innerHTML='<tr><th>Arma</th><th>Rareza</th><th>Precio</th><th>Comprador</th><th>Vendedor</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(t=>`<tr><td>${nm(t)}</td><td>${rar(t)}</td><td>${coin(t.price)}</td><td>${uc(null,t.buyerName)}</td><td>${uc(null,t.sellerName)}</td><td>${dt(t.timestamp)}</td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('marketPag',marketState.page,d.pages,'loadMarket');}
   else if(marketState.tab==='chart'){const d=await api(`/api/market?tab=chart&itemId=${marketState.chartItemId||''}`);if(!d)return;const sel=document.getElementById('chartItemSelect');if(d.topItems?.length&&sel.options.length===0){d.topItems.forEach(it=>{const o=document.createElement('option');o.value=it.itemId;o.textContent=`${it.name} · ${it.skin}`;sel.appendChild(o);});if(!marketState.chartItemId&&d.topItems[0]){marketState.chartItemId=d.topItems[0].itemId;sel.value=marketState.chartItemId;}}drawPriceChart(d.history,d.current);}
   else if(marketState.tab==='traders'){const d=await api('/api/market?tab=traders');if(!d)return;h.innerHTML='';tb.innerHTML='';document.querySelector('#marketContent .tw').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:4px"><div><div class="card-hd" style="margin-bottom:14px">Top Compradores — 7d</div>${d.topBuyers.map((b,i)=>`<div class="ms"><span class="ms-label">${['🥇','🥈','🥉','4','5','6','7','8','9','10'][i]} ${uc(b.avatar,b.username)}</span><span class="ms-val" style="color:var(--rose)">−${b.spent.toLocaleString()}</span></div>`).join('')||empty()}</div><div><div class="card-hd" style="margin-bottom:14px">Top Vendedores — 7d</div>${d.topSellers.map((s,i)=>`<div class="ms"><span class="ms-label">${['🥇','🥈','🥉','4','5','6','7','8','9','10'][i]} ${uc(s.avatar,s.username)}</span><span class="ms-val" style="color:var(--em)">+${s.earned.toLocaleString()}</span></div>`).join('')||empty()}</div></div>`;}
   S.loaded.market=true;
@@ -699,7 +710,7 @@ async function loadAchievements(page) {
     </tr>`).join('') : `<tr><td colspan="6">${empty()}</td></tr>`;
   }
 
-  pag('achPag', achState.page, d.pages, loadAchievements);
+  pag('achPag',achState.page,d.pages,'loadAchievements');
   S.loaded.achievements = true;
 }
 function achTab(t, b) { document.querySelectorAll('#s-achievements .tab').forEach(x => x.classList.remove('active')); b.classList.add('active'); achState.tab = t; achState.page = 1; S.loaded.achievements = false; loadAchievements(); }
@@ -726,7 +737,7 @@ async function loadTrades(page) {
     <td>${statusBadge(t.status)}</td>
     <td>${dt(t.createdAt)}</td>
   </tr>`).join('') : `<tr><td colspan="6">${empty('Sin trades')}</td></tr>`;
-  pag('tradePag', tradeState.page, d.pages, loadTrades);
+  pag('tradePag',tradeState.page,d.pages,'loadTrades');
   S.loaded.trades = true;
 }
 function filterTrade(s, b) { document.querySelectorAll('#s-trades .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); tradeState.status = s; tradeState.page = 1; loadTrades(); }
@@ -751,7 +762,7 @@ async function loadShop(page) {
     <td><span class="mono" style="color:var(--text2)">${item.createdByName || '—'}</span></td>
     <td>${dt(item.createdAt)}</td>
   </tr>`).join('') : `<tr><td colspan="6">${empty('Tienda vacía')}</td></tr>`;
-  pag('shopPag', shopState.page, d.pages, loadShop);
+  pag('shopPag',shopState.page,d.pages,'loadShop');
   S.loaded.shop = true;
 }
 function filterShop(a, b) { document.querySelectorAll('#s-shop .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); shopState.active = a; shopState.page = 1; loadShop(); }
@@ -788,7 +799,7 @@ async function loadGames(page) {
       <td>${dt(g.endedAt)}</td>
     </tr>`;
   }).join('') : `<tr><td colspan="5">${empty('Sin partidas')}</td></tr>`;
-  pag('gamesPag', gamesState.page, d.pages, loadGames);
+  pag('gamesPag',gamesState.page,d.pages,'loadGames');
   S.loaded.games = true;
 }
 function filterGame(g, b) { document.querySelectorAll('#s-games .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); gamesState.game = g; gamesState.page = 1; S.loaded.games = false; loadGames(); }
@@ -810,7 +821,7 @@ async function loadXpBoosts(page) {
     </td>
     <td>${dt(b.expiresAt)}</td>
   </tr>`).join('') : `<tr><td colspan="5">${empty('Sin boosts activos')}</td></tr>`;
-  pag('boostPag', boostState.page, d.pages, loadXpBoosts);
+  pag('boostPag',boostState.page,d.pages,'loadXpBoosts');
   S.loaded.xpboosts = true;
 }
 
@@ -826,7 +837,7 @@ async function loadGwBlacklist(page) {
     <td><span class="mono" style="color:var(--text2)">${b.addedByName || '—'}</span></td>
     <td>${dt(b.addedAt)}</td>
   </tr>`).join('') : `<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;
-  pag('gwblPag', gwblState.page, d.pages, loadGwBlacklist);
+  pag('gwblPag',gwblState.page,d.pages,'loadGwBlacklist');
   S.loaded.gwblacklist = true;
 }
 
@@ -848,7 +859,7 @@ async function loadAutoRoles(page) {
     <td><span class="mono">${ar.maxRoles === 0 ? 'Sin límite' : ar.maxRoles}</span></td>
     <td>${dt(ar.updatedAt)}</td>
   </tr>`).join('') : `<tr><td colspan="6">${empty('Sin paneles de autoroles')}</td></tr>`;
-  pag('autorolesPag', arState.page, d.pages, loadAutoRoles);
+  pag('autorolesPag',arState.page,d.pages,'loadAutoRoles');
   S.loaded.autoroles = true;
 }
 
@@ -867,7 +878,7 @@ async function loadBackgrounds(page) {
     <td><span class="mono" style="color:var(--text2)">${bg.createdByName || '—'}</span></td>
     <td>${dt(bg.createdAt)}</td>
   </tr>`).join('') : `<tr><td colspan="7">${empty('Sin fondos configurados')}</td></tr>`;
-  pag('bgPag', bgState.page, d.pages, loadBackgrounds);
+  pag('bgPag',bgState.page,d.pages,'loadBackgrounds');
   S.loaded.backgrounds = true;
 }
 function filterBg(f, b) { document.querySelectorAll('#s-backgrounds .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); bgState.filter = f; bgState.page = 1; loadBackgrounds(); }
@@ -891,7 +902,7 @@ async function loadGwBLInline(page) {
   document.getElementById('gwBLTable').innerHTML = d.items.length
     ? d.items.map(b => `<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink)">${b.reason||'—'}</td><td><span class="mono" style="color:var(--text2)">${b.addedByName||'—'}</span></td><td>${dt(b.addedAt)}</td></tr>`).join('')
     : `<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;
-  pag('gwBLPag', gwTabState.blPage, d.pages, loadGwBLInline);
+  pag('gwBLPag',gwTabState.blPage,d.pages,'loadGwBLInline');
   gwTabState.blLoaded = true;
 }
 async function loadGwCfgInline() {
@@ -907,7 +918,7 @@ async function loadGwCfgInline() {
 // ── EXPANSIÓN NIVELES: streak + daily challenges ───────────────────────────
 // Patch loadLevels to show streak and daily challenges
 const _origLoadLevels = loadLevels;
-loadLevels = async function(page) {
+window.loadLevels = loadLevels = async function(page) {
   if (page) S.levels.page = page;
   const d = await api(`/api/levels?page=${S.levels.page}`);
   if (!d) return;
@@ -925,7 +936,7 @@ loadLevels = async function(page) {
         return `<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td><span class="badge b-o">Nv. ${u.level}</span></td><td><span class="mono">${u.xp.toLocaleString()} XP</span></td><td>${streakCol}</td><td>${challStr}</td></tr>`;
       }).join('')
     : `<tr><td colspan="6">${empty()}</td></tr>`;
-  pag('levelPag', S.levels.page, d.pages, loadLevels);
+  pag('levelPag',S.levels.page,d.pages,'loadLevels');
   S.loaded.levels = true;
 };
 
@@ -940,7 +951,7 @@ econTab = function(s, b) {
   loadEconomy();
 };
 const _origLoadEconomy = loadEconomy;
-loadEconomy = async function(page) {
+window.loadEconomy = loadEconomy = async function(page) {
   if (page) S.economy.page = page;
   const d = await api(`/api/economy?sort=${S.economy.sort}&page=${S.economy.page}`);
   if (!d) return;
@@ -966,13 +977,13 @@ loadEconomy = async function(page) {
         return `<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td>${col1}</td><td>${col2}</td></tr>`;
       }).join('')
     : `<tr><td colspan="4">${empty()}</td></tr>`;
-  pag('econPag', S.economy.page, d.pages, loadEconomy);
+  pag('econPag',S.economy.page,d.pages,'loadEconomy');
   S.loaded.economy = true;
 };
 
 // ── EXPANSIÓN CONFIG: GuildStyle ──────────────────────────────────────────
 const _origLoadConfig = loadConfig;
-loadConfig = async function() {
+window.loadConfig = loadConfig = async function() {
   const d = await api('/api/config');
   if (!d) return;
   const lb = {logs:'Logs general',modLogs:'Logs mod',welcome:'Bienvenida',levels:'Niveles',verification:'Verificación',tiktok:'TikTok',security:'Seguridad',invites:'Invitaciones'};
@@ -1007,6 +1018,17 @@ loadConfig = async function() {
   }
   S.loaded.config = true;
 };
+
+
+// Expose all loaders globally for pag() onclick handlers
+window.loadOverview=loadOverview;window.loadInvites=loadInvites;window.loadGiveaways=loadGiveaways;
+window.loadEconomy=loadEconomy;window.loadLoans=loadLoans;window.loadLevels=loadLevels;
+window.loadModeration=loadModeration;window.loadBans=loadBans;window.loadConfig=loadConfig;
+window.loadCasino=loadCasino;window.loadArms=loadArms;window.loadMarket=loadMarket;
+window.loadAchievements=loadAchievements;window.loadTrades=loadTrades;window.loadShop=loadShop;
+window.loadGames=loadGames;window.loadXpBoosts=loadXpBoosts;window.loadGwBlacklist=loadGwBlacklist;
+window.loadAutoRoles=loadAutoRoles;window.loadBackgrounds=loadBackgrounds;
+window.loadGwBLInline=loadGwBLInline;window.loadChartData=loadChartData;
 
 </script>
 </body>
