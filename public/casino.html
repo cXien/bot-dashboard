@@ -15,12 +15,12 @@
   --s2:#121018;
   --s3:#181520;
   --s4:#201d2a;
-  --rim:rgba(255,255,255,0.055);
-  --rim2:rgba(255,255,255,0.10);
-  --rim3:rgba(255,255,255,0.16);
-  --text:#f0eef8;
-  --text2:rgba(240,238,248,0.50);
-  --text3:rgba(240,238,248,0.22);
+  --rim:rgba(255,255,255,0.08);
+  --rim2:rgba(255,255,255,0.14);
+  --rim3:rgba(255,255,255,0.22);
+  --text:#f5f3ff;
+  --text2:rgba(245,243,255,0.70);
+  --text3:rgba(245,243,255,0.38);
   --gold:#c9a84c;
   --gold2:#e8c96a;
   --gold3:#f5dfa0;
@@ -300,9 +300,9 @@ nav::before{
   font-family:'Barlow Condensed',sans-serif;
   font-size:16px;font-weight:700;
   text-transform:uppercase;letter-spacing:0.5px;
-  margin-bottom:3px;
+  margin-bottom:3px;color:var(--text);
 }
-.gc-desc{font-size:11.5px;color:var(--text2);margin-bottom:10px;line-height:1.4;font-weight:400}
+.gc-desc{font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.4;font-weight:400}
 .gc-footer{display:flex;align-items:center;justify-content:space-between}
 .gc-min{font-size:11px;color:var(--text3);font-family:'Share Tech Mono',monospace}
 .gc-min b{color:var(--gold)}
@@ -1312,10 +1312,106 @@ async function loadShop(){
 async function buyItem(itemId,price){if(!rAuth())return;if(!rCoins(price))return;try{const d=await xfetch('/api/casino/buy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({itemId})});CS.coins=d.newBalance;updCoins();toast('Compra realizada','win');}catch(e){toast(e.message||'Error','lose');}}
 
 async function loadProfile(){
-  const el=document.getElementById('profContent');if(!el||!CS.user){if(el)el.innerHTML='<div style="color:var(--text3)">Inicia sesión</div>';return;}
-  try{const d=await xfetch('/api/casino/me/full');
-  el.innerHTML=`<div class="panel" style="max-width:500px;margin:0 auto"><div style="display:flex;align-items:center;gap:14px;margin-bottom:20px"><img src="${CS.user.avatar||''}" style="width:50px;height:50px;border-radius:4px;border:1px solid rgba(201,168,76,.3)" onerror="this.style.display='none'"><div><div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;letter-spacing:1px;text-transform:uppercase">${CS.user.username}</div><div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase">Nivel ${d.level||0} · ${d.xp||0} XP</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px"><div style="background:var(--s2);border:1px solid var(--rim);border-radius:7px;padding:12px;text-align:center"><div style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--gold)">${(d.coins||0).toLocaleString()}</div><div style="font-size:9px;color:var(--text3);margin-top:3px;letter-spacing:2px;text-transform:uppercase">Saldo</div></div><div style="background:var(--s2);border:1px solid var(--rim);border-radius:7px;padding:12px;text-align:center"><div style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--em)">${d.casinoWins||0}</div><div style="font-size:9px;color:var(--text3);margin-top:3px;letter-spacing:2px;text-transform:uppercase">Victorias</div></div><div style="background:var(--s2);border:1px solid var(--rim);border-radius:7px;padding:12px;text-align:center"><div style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--purple)">${d.streak||0}</div><div style="font-size:9px;color:var(--text3);margin-top:3px;letter-spacing:2px;text-transform:uppercase">Racha</div></div></div></div>`;}
-  catch{el.innerHTML='<div style="color:var(--rose);font-size:12px;padding:20px">Error al cargar</div>';}
+  const el=document.getElementById('profContent');
+  if(!el||!CS.user){if(el)el.innerHTML='<div style="color:var(--text3);padding:40px;text-align:center;letter-spacing:2px;text-transform:uppercase">Inicia sesión</div>';return;}
+  try{
+    const d=await xfetch('/api/casino/me/full');
+    // Background: use user's activeBgId served by the bot at /backgrounds/{bgId}.png
+    // or fallback to a gradient matching the casino theme
+    const bgUrl = d.activeBgId ? `/backgrounds/${d.activeBgId}.png` : null;
+    const xpNeeded = 5*(d.level||0)*100+500;
+    const xpPct = xpNeeded>0 ? Math.min(100,Math.round((d.xp||0)/xpNeeded*100)) : 0;
+    const totalArmsVal = (d.arms||[]).reduce((s,a)=>s+(a.sellPrice||0),0);
+
+    el.innerHTML=`
+    <div style="max-width:540px;margin:0 auto">
+
+      <!-- Profile hero card with background -->
+      <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(201,168,76,0.25);position:relative;margin-bottom:12px;min-height:200px">
+        <!-- BG layer -->
+        ${bgUrl
+          ? `<img src="${bgUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.5" onerror="this.style.display='none'">`
+          : `<div style="position:absolute;inset:0;background:linear-gradient(135deg,#0d0a14 0%,#1a1030 40%,#0a0d18 100%)"></div>`
+        }
+        <!-- Hex pattern overlay -->
+        <div style="position:absolute;inset:0;background-image:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2256%22 height=%2264%22%3E%3Cpath d=%22M28 0 L56 16 L56 48 L28 64 L0 48 L0 16Z%22 fill=%22none%22 stroke=%22%23c9a84c%22 stroke-width=%220.4%22/%3E%3C/svg%3E');opacity:0.06;pointer-events:none"></div>
+        <!-- Gradient overlay for text readability -->
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.15) 0%,rgba(0,0,0,0.72) 100%)"></div>
+        <!-- Top gold accent -->
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold2),var(--gold),var(--gold2),transparent);opacity:.7"></div>
+
+        <!-- Content -->
+        <div style="position:relative;z-index:2;padding:24px 22px 20px">
+          <!-- Top: coins badge -->
+          <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:7px;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.35);border-radius:20px;padding:4px 13px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--gold)" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
+              <span style="font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--gold2)">${(d.coins||0).toLocaleString()}</span>
+            </div>
+          </div>
+
+          <!-- Avatar + name row -->
+          <div style="display:flex;align-items:flex-end;gap:16px">
+            <div style="position:relative;flex-shrink:0">
+              <img src="${CS.user.avatar||''}" style="width:72px;height:72px;border-radius:8px;border:2px solid rgba(201,168,76,0.5);display:block;box-shadow:0 4px 20px rgba(0,0,0,.6)" onerror="this.style.display='none'">
+              <!-- Level badge over avatar -->
+              <div style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:1px;padding:1px 8px;border-radius:3px;white-space:nowrap">LVL ${d.level||0}</div>
+            </div>
+            <div style="padding-bottom:8px">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;letter-spacing:1px;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.8)">${CS.user.username}</div>
+              <div style="font-size:10px;color:rgba(245,243,255,.6);letter-spacing:2px;text-transform:uppercase;margin-top:2px">#${CS.user.id?.slice(-6)||'——'} · ${(d.totalEarned||0).toLocaleString()} ganadas total</div>
+            </div>
+          </div>
+
+          <!-- XP bar -->
+          <div style="margin-top:18px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span style="font-size:9px;color:rgba(245,243,255,.5);letter-spacing:2px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif">Progreso XP</span>
+              <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(245,243,255,.6)">${(d.xp||0).toLocaleString()} / ${xpNeeded.toLocaleString()}</span>
+            </div>
+            <div style="height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:${xpPct}%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:3px;transition:width .6s ease"></div>
+            </div>
+            <div style="text-align:right;margin-top:3px;font-size:9px;color:rgba(245,243,255,.4);letter-spacing:1.5px;font-family:'Barlow Condensed',sans-serif">→ LVL ${(d.level||0)+1}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats grid -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px">
+        <div style="background:var(--s1);border:1px solid var(--rim);border-radius:8px;padding:14px;text-align:center">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--em)">${d.casinoWins||0}</div>
+          <div style="font-size:9px;color:var(--text3);margin-top:3px;letter-spacing:2px;text-transform:uppercase">Victorias</div>
+        </div>
+        <div style="background:var(--s1);border:1px solid var(--rim);border-radius:8px;padding:14px;text-align:center">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--purple)">${d.streak||0}</div>
+          <div style="font-size:9px;color:var(--text3);margin-top:3px;letter-spacing:2px;text-transform:uppercase">Racha</div>
+        </div>
+        <div style="background:var(--s1);border:1px solid var(--rim);border-radius:8px;padding:14px;text-align:center">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--gold)">${(d.arms||[]).length}</div>
+          <div style="font-size:9px;color:var(--text3);margin-top:3px;letter-spacing:2px;text-transform:uppercase">Armas</div>
+        </div>
+      </div>
+
+      <!-- Recent arms preview -->
+      ${(d.arms||[]).length>0?`
+      <div style="background:var(--s1);border:1px solid var(--rim);border-radius:10px;padding:16px">
+        <div style="font-size:9px;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;margin-bottom:10px">Armas recientes</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${(d.arms||[]).slice(0,6).map(a=>{const color=RC[a.rarity]||'#aaa';return`<div style="background:var(--s2);border:1px solid ${color}30;border-radius:6px;padding:8px;text-align:center;width:74px;border-top:2px solid ${color}60">
+            <img src="/assets/arms/${a.itemId}.png" style="width:52px;height:36px;object-fit:contain;display:block;margin:0 auto 4px" onerror="this.style.display='none'">
+            <div style="font-size:9px;font-weight:700;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)">${a.name}</div>
+            <div style="font-size:8.5px;color:${color};letter-spacing:.5px">${a.wearTag}</div>
+          </div>`;}).join('')}
+        </div>
+        <div style="margin-top:10px;text-align:right;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--gold)">
+          Valor total: ${totalArmsVal.toLocaleString()}
+        </div>
+      </div>`:''}
+
+    </div>`;
+  }
+  catch(e){el.innerHTML='<div style="color:var(--rose);font-size:12px;padding:20px;text-align:center">Error al cargar perfil</div>';}
 }
 
 const RC={consumer:'#9ea3b0',industrial:'#5e98d9',milspec:'#4b69ff',restricted:'#8847ff',classified:'#d32ce6',covert:'#eb4b4b',special:'#ffd700'};
@@ -1533,10 +1629,30 @@ async function openCase(caseId){
 
 // ── INVENTARIO ──
 async function loadInventory(){
-  const el=document.getElementById('inventoryContent');if(!CS.user){el.innerHTML='<div class="empty-inv">Inicia sesión</div>';return;}el.innerHTML='<div class="empty-inv">Cargando...</div>';
-  try{const d=await xfetch('/api/casino/inventory');if(!d.arms?.length){el.innerHTML='<div class="empty-inv">Sin armas — abre cajas para empezar</div>';return;}
-  el.innerHTML=d.arms.map(a=>{const color=RC[a.rarity]||'#aaa';return`<div class="inv-card" style="border-top:2px solid ${color}35"><div class="inv-img-wrap"><img class="inv-img" src="/assets/arms/${a.itemId}.png" onerror="this.style.display='none'"></div><div class="inv-rarity" style="color:${color}">${a.wearTag}</div><div class="inv-name">${a.name}</div><div class="inv-skin">${a.skin}</div><div class="inv-price">${(a.sellPrice||0).toLocaleString()}</div></div>`;}).join('');}
-  catch{el.innerHTML='<div class="empty-inv">Error al cargar</div>';}
+  const el=document.getElementById('inventoryContent');
+  if(!CS.user){el.innerHTML='<div class="empty-inv">Inicia sesión para ver tu inventario</div>';return;}
+  el.innerHTML='<div class="empty-inv" style="opacity:.5">Cargando...</div>';
+  try{
+    const d=await xfetch('/api/casino/inventory');
+    if(!d.arms?.length){
+      el.innerHTML='<div class="empty-inv">Sin armas — abre cajas para empezar<br><span style="font-size:10px;opacity:.5;margin-top:6px;display:block;letter-spacing:.5px">Visita la sección Cajas</span></div>';return;
+    }
+    el.innerHTML=d.arms.map(a=>{
+      const color=RC[a.rarity]||'#aaa';
+      // Image from public/assets/arms/ — needs to be copied from bot's src/assets/arms/
+      return`<div class="inv-card" style="border-top:2px solid ${color}55">
+        <div class="inv-img-wrap" style="background:radial-gradient(ellipse at center,${color}0a,transparent);border-radius:4px">
+          <img class="inv-img" src="/assets/arms/${a.itemId}.png"
+            style="max-width:100%;max-height:64px;object-fit:contain;filter:drop-shadow(0 2px 10px ${color}40)"
+            onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<svg width=40 height=32 viewBox=0 0 24 24 fill=none stroke=${color} stroke-width=1.5 opacity=0.45><path d=M18.5 3L21 5.5 8 18.5 3 19l.5-5L18.5 3z/><line x1=15 y1=6 x2=18 y2=9/></svg>')">
+        </div>
+        <div class="inv-rarity" style="color:${color}">${a.wearTag}</div>
+        <div class="inv-name">${a.name}</div>
+        <div class="inv-skin">${a.skin}</div>
+        <div class="inv-price">${(a.sellPrice||0).toLocaleString()}</div>
+      </div>`;
+    }).join('');
+  }catch{el.innerHTML='<div class="empty-inv">Error al cargar</div>';}
 }
 
 // ── SOCKET ──

@@ -12,11 +12,15 @@ const app    = express();
 const server = http.createServer(app);
 const io     = socketIo(server, { cors: { origin: '*' } });
 
-// Exponer io globalmente para los endpoints del casino
 global.io = io;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// ── Sirve fondos de perfil en /backgrounds/:bgId.png ──────────────────────
+// Copia tus fondos con copy-arms.bat → public/backgrounds/
+app.use('/backgrounds', express.static(path.join(__dirname, 'public', 'backgrounds')));
+
 app.use(session({
   secret: process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex'),
   resave: false, saveUninitialized: false,
@@ -55,6 +59,11 @@ const MarketListing  = model('MarketListing',  new Schema({ guildId: String, sel
 const ArmCurrentPrice= model('ArmCurrentPrice',new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, rarityColor: Number, currentPrice: Number, openPrice24h: Number, high24h: Number, low24h: Number, volume24h: { type: Number, default: 0 }, lastUpdated: Date }));
 const ArmPrice       = model('ArmPrice',       new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, open: Number, high: Number, low: Number, close: Number, volume: Number, timestamp: { type: Date, default: Date.now } }));
 const MarketTx       = model('MarketTx',       new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, price: Number, sellerId: String, buyerId: String, timestamp: { type: Date, default: Date.now } }));
+
+const ShopPurchase = mongoose.models.ShopPurchase || model('ShopPurchase', new Schema({
+  userId: String, guildId: String, itemId: String, itemName: String,
+  price: Number, purchasedAt: { type: Date, default: Date.now }
+}));
 
 // ── Discord helpers ────────────────────────────────────────────────────────
 const GUILD_ID       = process.env.GUILD_ID;
@@ -102,7 +111,6 @@ const requireAuth = (req, res, next) => req.session?.user ? next() : res.status(
 
 // ── Auth ───────────────────────────────────────────────────────────────────
 app.get('/auth/discord', (req, res) => {
-  // Guardar origen para redirigir después del login
   if (req.query.from) req.session.casinoFrom = req.query.from;
   res.redirect(`https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.DISCORD_REDIRECT_URI)}&response_type=code&scope=identify`);
 });
@@ -115,24 +123,17 @@ app.get('/auth/callback', async (req, res) => {
     if (!tokens?.access_token) return res.redirect('/login?error=token_failed');
     const user   = await discordReq('/users/@me', tokens.access_token, false);
     if (!user?.id) return res.redirect('/login?error=user_failed');
-
-    // Check if user is admin (member of guild with admin role)
     const member = await discordReq(`/guilds/${GUILD_ID}/members/${user.id}`, null, true);
     const isAdmin = member?.roles ? member.roles.some(r => ADMIN_ROLE_IDS.includes(r)) : false;
-
     req.session.user = {
       id: user.id,
       username: user.username,
       avatar: user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64` : 'https://cdn.discordapp.com/embed/avatars/0.png',
       isAdmin,
     };
-
-    // Si viene del casino, redirigir ahí (cualquiera puede entrar)
     const from = req.session.casinoFrom;
     req.session.casinoFrom = null;
     if (from === 'casino') return res.redirect('/casino');
-
-    // Para el dashboard sí verificamos rol de admin
     if (!member?.roles) return res.redirect('/login?error=not_in_server');
     if (!isAdmin) return res.redirect('/login?error=no_permission');
     res.redirect('/dashboard');
@@ -469,7 +470,7 @@ app.get('/api/backgrounds', requireAuth, async (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════════════════════
-//  APIs DEL CASINO PÚBLICO (sin requireAuth — cualquiera puede ver)
+//  APIs DEL CASINO PÚBLICO
 // ══════════════════════════════════════════════════════════════════════════
 
 app.get('/api/casino/public/stats', async (req, res) => {
@@ -536,22 +537,35 @@ app.get('/api/casino/me', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
+// ── /api/casino/me/full — incluye activeBgId para el perfil del casino ─────
 app.get('/api/casino/me/full', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id;
-    const [coins, level, ach, arms] = await Promise.all([UserCoins.findOne({ userId, guildId: GUILD_ID }).lean(), Level.findOne({ userId, guildId: GUILD_ID }).lean(), Achievements.findOne({ userId, guildId: GUILD_ID }).lean(), Arm.find({ userId, guildId: GUILD_ID }).sort({ obtainedAt: -1 }).limit(30).lean()]);
-    res.json({ coins: coins?.coins||0, totalEarned: coins?.totalEarned||0, level: level?.level||0, xp: level?.xp||0, streak: level?.streak||0, casinoWins: ach?.casino_wins||0, registered: !!coins, arms: arms||[] });
+    const [coins, level, ach, arms] = await Promise.all([
+      UserCoins.findOne({ userId, guildId: GUILD_ID }).lean(),
+      Level.findOne({ userId, guildId: GUILD_ID }).lean(),
+      Achievements.findOne({ userId, guildId: GUILD_ID }).lean(),
+      Arm.find({ userId, guildId: GUILD_ID }).sort({ obtainedAt: -1 }).limit(30).lean(),
+    ]);
+    res.json({
+      coins:        coins?.coins        || 0,
+      totalEarned:  coins?.totalEarned  || 0,
+      activeBgId:   coins?.activeBgId   || null,   // ← fondo activo del usuario
+      ownedBackgrounds: coins?.ownedBackgrounds || [],
+      level:        level?.level        || 0,
+      xp:           level?.xp           || 0,
+      streak:       level?.streak       || 0,
+      casinoWins:   ach?.casino_wins    || 0,
+      registered:   !!coins,
+      arms:         arms                || [],
+    });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
 app.post('/api/casino/play', async (req, res) => {
-  // Route extended games to separate handler
   const extGames = ['carreras','loteria','minas'];
-  if (extGames.includes(req.body?.game)) {
-    req.url = '/api/casino/play/extended';
-    return handleExtendedPlay(req, res);
-  }
+  if (extGames.includes(req.body?.game)) return handleExtendedPlay(req, res);
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id;
@@ -565,27 +579,13 @@ app.post('/api/casino/play', async (req, res) => {
       number = Math.floor(Math.random() * 37);
       const reds = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
       const blacks = new Set([2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35]);
-      const checks = {
-        rojo:    reds.has(number),
-        negro:   blacks.has(number),
-        par:     number !== 0 && number % 2 === 0,
-        impar:   number !== 0 && number % 2 !== 0,
-        bajo:    number >= 1 && number <= 18,
-        alto:    number >= 19 && number <= 36,
-        docena1: number >= 1 && number <= 12,
-        docena2: number >= 13 && number <= 24,
-        docena3: number >= 25 && number <= 36,
-        verde:   number === 0,
-      };
+      const checks = { rojo: reds.has(number), negro: blacks.has(number), par: number !== 0 && number % 2 === 0, impar: number !== 0 && number % 2 !== 0, bajo: number >= 1 && number <= 18, alto: number >= 19 && number <= 36, docena1: number >= 1 && number <= 12, docena2: number >= 13 && number <= 24, docena3: number >= 25 && number <= 36, verde: number === 0 };
       const mults = { rojo:2, negro:2, par:2, impar:2, bajo:2, alto:2, docena1:3, docena2:3, docena3:3, verde:35 };
       won = checks[type] || false; multiplier = mults[type] || 2;
       winProfit = won ? bet * (multiplier - 1) : 0;
     } else if (game === 'slots') {
-      // Exact same logic as bot casino.js
       const syms = ['🍒','7️⃣','💰','🎰','⭐','🔔'];
-      const s1 = Math.floor(Math.random() * 6);
-      const s2 = Math.floor(Math.random() * 6);
-      const s3 = Math.floor(Math.random() * 6);
+      const s1 = Math.floor(Math.random() * 6), s2 = Math.floor(Math.random() * 6), s3 = Math.floor(Math.random() * 6);
       slotsReels = [syms[s1], syms[s2], syms[s3]];
       if (s1===s2 && s2===s3) { won=true; multiplier=10; }
       else if (s1===s2 || s2===s3 || s1===s3) { won=true; multiplier=2; }
@@ -613,14 +613,13 @@ app.post('/api/casino/crash/start', async (req, res) => {
     const userCoins = await UserCoins.findOne({ userId, guildId: GUILD_ID });
     if (!userCoins) return res.status(403).json({ error: 'Usa /registrarse en Discord primero' });
     if (userCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
-    // Same distribution as bot crash.js
     const r = Math.random();
     let crashAt;
-    if (r < 0.50)      crashAt = 1 + Math.random() * 0.8;        // 1.00× – 1.80×
-    else if (r < 0.75) crashAt = 1.8 + Math.random() * 1.2;      // 1.80× – 3.00×
-    else if (r < 0.90) crashAt = 3 + Math.random() * 4;          // 3.00× – 7.00×
-    else if (r < 0.97) crashAt = 7 + Math.random() * 8;          // 7.00× – 15.00×
-    else               crashAt = 15 + Math.random() * 5;          // 15.00× – 20.00×
+    if (r < 0.50)      crashAt = 1 + Math.random() * 0.8;
+    else if (r < 0.75) crashAt = 1.8 + Math.random() * 1.2;
+    else if (r < 0.90) crashAt = 3 + Math.random() * 4;
+    else if (r < 0.97) crashAt = 7 + Math.random() * 8;
+    else               crashAt = 15 + Math.random() * 5;
     crashAt = Math.round(crashAt * 100) / 100;
     req.session.crashGame = { bet, crashAt, userId, ts: Date.now() };
     res.json({ crashAt });
@@ -659,9 +658,7 @@ app.post('/api/casino/buy', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-
-// ── Casino: Carreras ──────────────────────────────────────────────────────
-// Horse data matches carreras.js
+// ── Carreras ───────────────────────────────────────────────────────────────
 const HORSES_DATA = {
   A: { baseSpeed:0.35, variance:0.40 },
   B: { baseSpeed:0.38, variance:0.30 },
@@ -670,41 +667,33 @@ const HORSES_DATA = {
   E: { baseSpeed:0.30, variance:0.60 },
 };
 
-// ── Casino: Play handler extension (carreras, loteria, minas, batalla) ─────
-// Extend the existing /api/casino/play to handle new games
-// Patch: we add a separate handler that runs first via middleware
 async function handleExtendedPlay(req, res) {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id;
-    const { game, bet, horse, winner, mult, prize, result, profit: clientProfit, gems } = req.body;
+    const { game, bet, horse, winner, result, profit: clientProfit } = req.body;
     if (!bet || bet < 1) return res.status(400).json({ error: 'Apuesta inválida' });
     const userCoins = await UserCoins.findOne({ userId, guildId: GUILD_ID });
     if (!userCoins) return res.status(403).json({ error: 'Usa /registrarse en Discord primero' });
     if (userCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
-
     let won = false, delta = -bet;
-
     if (game === 'carreras') {
-      // Validate winner server-side (simulate own race)
       const pos = Object.fromEntries(Object.keys(HORSES_DATA).map(k => [k, 0]));
       let serverWinner = null;
       for (let t = 0; t < 200 && !serverWinner; t++) {
         for (const [id, h] of Object.entries(HORSES_DATA)) {
-          const roll = Math.random();
           let adv = 0;
-          if (roll < h.baseSpeed + (Math.random()-0.5)*h.variance) adv = 1;
+          if (Math.random() < h.baseSpeed + (Math.random()-0.5)*h.variance) adv = 1;
           if (Math.random() < 0.05) adv++;
           pos[id] = Math.min(20, pos[id] + adv);
         }
         const fin = Object.entries(pos).filter(([,v]) => v >= 20);
         if (fin.length) serverWinner = fin[0][0];
       }
-      if (!serverWinner) serverWinner = winner; // fallback to client
+      if (!serverWinner) serverWinner = winner;
       won = serverWinner === horse;
-      delta = won ? bet : -bet; // simple 1:1 for solo
+      delta = won ? bet : -bet;
     } else if (game === 'loteria') {
-      // Generate server-side grid and compute prize
       const LOT_SYMS = ['🍒','⭐','💎','🍀','🔔','🎯','🎰','💰','🌙'];
       const grid = Array.from({length:9}, () => LOT_SYMS[Math.floor(Math.random()*LOT_SYMS.length)]);
       const counts = {}; for (const s of grid) counts[s] = (counts[s]||0)+1;
@@ -714,21 +703,14 @@ async function handleExtendedPlay(req, res) {
       delta = won ? Math.floor(bet * serverMult) - bet : -bet;
     } else if (game === 'minas') {
       if (result === 'cashout' && clientProfit > 0) {
-        // Validate: mult must be reasonable (max ~20×)
-        const safeProfit = Math.min(clientProfit, bet * 20);
-        won = true; delta = safeProfit;
+        won = true; delta = Math.min(clientProfit, bet * 20);
       } else {
         won = false; delta = -bet;
       }
     } else {
       return res.status(400).json({ error: 'Juego no reconocido' });
     }
-
-    const updated = await UserCoins.findOneAndUpdate(
-      { userId, guildId: GUILD_ID },
-      { $inc: { coins: delta, ...(won&&delta>0?{totalEarned:delta}:{}) } },
-      { new: true }
-    );
+    const updated = await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { coins: delta, ...(won&&delta>0?{totalEarned:delta}:{}) } }, { new: true });
     await CasinoLog.create({ userId, guildId: GUILD_ID, game, bet, result: won?'win':'loss', profit: delta });
     if (won) await Achievements.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc:{casino_wins:1}, $max:{max_bet:bet} }, { upsert:true });
     if (global.io) global.io.emit('coins:update', { userId, coins: updated.coins });
@@ -736,7 +718,7 @@ async function handleExtendedPlay(req, res) {
   } catch (e) { console.error('[casino/extended]', e); res.status(500).json({ error: 'Error' }); }
 }
 
-// ── Casino: Batalla ───────────────────────────────────────────────────────
+// ── Batalla ────────────────────────────────────────────────────────────────
 app.post('/api/casino/battle', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -744,24 +726,14 @@ app.post('/api/casino/battle', async (req, res) => {
     const { bet, opponentId } = req.body;
     if (!bet || bet < 100) return res.status(400).json({ error: 'Mínimo 100' });
     if (!opponentId || opponentId === userId) return res.status(400).json({ error: 'Rival inválido' });
-
-    const [myCoins, opCoins] = await Promise.all([
-      UserCoins.findOne({ userId, guildId: GUILD_ID }),
-      UserCoins.findOne({ userId: opponentId, guildId: GUILD_ID }),
-    ]);
+    const [myCoins, opCoins] = await Promise.all([UserCoins.findOne({ userId, guildId: GUILD_ID }), UserCoins.findOne({ userId: opponentId, guildId: GUILD_ID })]);
     if (!myCoins || myCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
     if (!opCoins || opCoins.coins < bet) return res.status(400).json({ error: 'El rival no tiene suficientes monedas' });
-
-    const myRoll  = Math.floor(Math.random()*6)+1;
-    const opRoll  = Math.floor(Math.random()*6)+1;
-    const tie     = myRoll === opRoll;
-    const iWon    = myRoll > opRoll;
-
+    const myRoll = Math.floor(Math.random()*6)+1, opRoll = Math.floor(Math.random()*6)+1;
+    const tie = myRoll === opRoll, iWon = myRoll > opRoll;
     if (!tie) {
-      const winner = iWon ? myCoins : opCoins;
-      const loser  = iWon ? opCoins : myCoins;
-      winner.coins += bet; winner.totalEarned += bet;
-      loser.coins  -= bet;
+      const winner = iWon ? myCoins : opCoins, loser = iWon ? opCoins : myCoins;
+      winner.coins += bet; winner.totalEarned += bet; loser.coins -= bet;
       await Promise.all([winner.save(), loser.save()]);
       await Promise.all([
         CasinoLog.create({ userId, guildId: GUILD_ID, game:'batalla', bet, result:iWon?'win':'loss', profit:iWon?bet:-bet }),
@@ -769,19 +741,12 @@ app.post('/api/casino/battle', async (req, res) => {
       ]);
       if (iWon) await Achievements.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc:{casino_wins:1}, $max:{max_bet:bet} }, { upsert:true });
     }
-
-    if (global.io) {
-      global.io.emit('coins:update', { userId, coins: myCoins.coins });
-      global.io.emit('coins:update', { userId: opponentId, coins: opCoins.coins });
-    }
-
+    if (global.io) { global.io.emit('coins:update', { userId, coins: myCoins.coins }); global.io.emit('coins:update', { userId: opponentId, coins: opCoins.coins }); }
     res.json({ won: iWon, tie, myRoll, opponentRoll: opRoll, newBalance: myCoins.coins });
   } catch (e) { console.error('[battle]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-
-// ── Casino: Trivia ────────────────────────────────────────────────────────
-// Mini-trivia: 5 questions, earn coins per correct answer (matches bot rewards)
+// ── Trivia ─────────────────────────────────────────────────────────────────
 const TRIVIA_POOL = [
   {q:'¿Cuántos continentes hay?',o:['5','6','7','8'],c:2,d:'easy'},
   {q:'Capital de Francia',o:['Lyon','París','Roma','Berlín'],c:1,d:'easy'},
@@ -810,21 +775,13 @@ app.get('/api/casino/trivia/questions', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id;
-    const coins  = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean();
+    const coins = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean();
     if (!coins) return res.status(403).json({ error: 'Usa /registrarse primero' });
-    // Pick 6 random questions (2 easy, 2 medium, 2 hard)
     const pick = (d, n) => TRIVIA_POOL.filter(q=>q.d===d).sort(()=>Math.random()-.5).slice(0,n);
-    const questions = [...pick('easy',2),...pick('medium',2),...pick('hard',2)]
-      .sort(()=>Math.random()-.5)
-      .map(q => ({ q:q.q, o:q.o, d:q.d })); // don't send correct answer
-    // Store session token with answers
+    const questions = [...pick('easy',2),...pick('medium',2),...pick('hard',2)].sort(()=>Math.random()-.5).map(q => ({ q:q.q, o:q.o, d:q.d }));
     req.session.triviaSession = {
-      questions: questions.map((qq,i) => {
-        const orig = TRIVIA_POOL.find(p=>p.q===qq.q);
-        return { ...qq, c: orig?.c ?? 0 };
-      }),
-      answered: [],
-      ts: Date.now(),
+      questions: questions.map(qq => { const orig = TRIVIA_POOL.find(p=>p.q===qq.q); return { ...qq, c: orig?.c ?? 0 }; }),
+      answered: [], ts: Date.now(),
     };
     res.json({ questions });
   } catch(e) { res.status(500).json({ error:'Error' }); }
@@ -833,44 +790,32 @@ app.get('/api/casino/trivia/questions', async (req, res) => {
 app.post('/api/casino/trivia/answer', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
-    const userId  = req.session.user.id;
-    const { idx, answer } = req.body;
-    const ts      = req.session.triviaSession;
+    const userId = req.session.user.id, { idx, answer } = req.body, ts = req.session.triviaSession;
     if (!ts || Date.now()-ts.ts > 600000) return res.status(400).json({ error:'Sesión expirada' });
     if (ts.answered.includes(idx)) return res.status(400).json({ error:'Ya respondida' });
     ts.answered.push(idx);
-    const q       = ts.questions[idx];
-    const correct = answer === q.c;
-    const reward  = correct ? TRIVIA_REWARDS[q.d] || 10 : 0;
+    const q = ts.questions[idx], correct = answer === q.c, reward = correct ? TRIVIA_REWARDS[q.d] || 10 : 0;
     let newBalance = 0;
     if (correct && reward > 0) {
-      const updated = await UserCoins.findOneAndUpdate(
-        { userId, guildId: GUILD_ID },
-        { $inc: { coins: reward, totalEarned: reward } },
-        { new: true }
-      );
+      const updated = await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { coins: reward, totalEarned: reward } }, { new: true });
       newBalance = updated?.coins || 0;
       if (global.io) global.io.emit('coins:update', { userId, coins: newBalance });
     } else {
       const uc = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean();
       newBalance = uc?.coins || 0;
     }
-    await TriviaProgress.findOneAndUpdate(
-      { userId, guildId: GUILD_ID },
-      { $inc: { totalWins: correct?1:0, totalFails: correct?0:1 } },
-      { upsert: true }
-    );
+    await TriviaProgress.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { totalWins: correct?1:0, totalFails: correct?0:1 } }, { upsert: true });
     res.json({ correct, correctAnswer: q.c, reward, newBalance });
   } catch(e) { res.status(500).json({ error:'Error' }); }
 });
 
-// ── Casino: Abrir caja ────────────────────────────────────────────────────
+// ── Cajas ──────────────────────────────────────────────────────────────────
 const CASES_CONFIG = {
-  iniciacion: { price:800,  name:'Iniciación', color:'#4b69ff', rarities:['consumer','industrial','milspec'],       weights:[7992,1598,320], specialChance:0  },
-  clasificada:{ price:2000, name:'Clasificada', color:'#8847ff', rarities:['industrial','milspec','restricted'],     weights:[1598,320,64],   specialChance:0  },
-  elite:      { price:5000, name:'Elite',       color:'#eb4b4b', rarities:['milspec','restricted','classified'],     weights:[320,64,13],     specialChance:1  },
-  dorada:     { price:12000,name:'Dorada',      color:'#ffd700', rarities:['restricted','classified','covert'],     weights:[64,13,3],       specialChance:3  },
-  contrabando:{ price:25000,name:'Contrabando', color:'#ff6b00', rarities:['classified','covert','special'],        weights:[13,3,1],        specialChance:8  },
+  iniciacion: { price:800,   rarities:['consumer','industrial','milspec'],    weights:[7992,1598,320], specialChance:0  },
+  clasificada:{ price:2000,  rarities:['industrial','milspec','restricted'],  weights:[1598,320,64],   specialChance:0  },
+  elite:      { price:5000,  rarities:['milspec','restricted','classified'],  weights:[320,64,13],     specialChance:1  },
+  dorada:     { price:12000, rarities:['restricted','classified','covert'],   weights:[64,13,3],       specialChance:3  },
+  contrabando:{ price:25000, rarities:['classified','covert','special'],      weights:[13,3,1],        specialChance:8  },
 };
 const RARITY_ITEMS = {
   consumer:  [{id:'p250_sand_dune',name:'P250',skin:'Sand Dune',bp:500},{id:'glock_sand_dune',name:'Glock-18',skin:'Sand Dune',bp:450},{id:'famas_doomkitty',name:'FAMAS',skin:'Doomkitty',bp:800},{id:'aug_storm',name:'AUG',skin:'Storm',bp:680},{id:'m249_system_lock',name:'M249',skin:'System Lock',bp:490}],
@@ -881,9 +826,9 @@ const RARITY_ITEMS = {
   covert:    [{id:'ak47_fire_serpent',name:'AK-47',skin:'Fire Serpent',bp:550000},{id:'awp_dragon_lore',name:'AWP',skin:'Dragon Lore',bp:600000},{id:'awp_gungnir',name:'AWP',skin:'Gungnir',bp:520000},{id:'m4a4_poseidon',name:'M4A4',skin:'Poseidon',bp:420000},{id:'ak47_case_hardened',name:'AK-47',skin:'Case Hardened',bp:350000}],
   special:   [{id:'knife_karambit_doppler',name:'Karambit',skin:'Doppler Fase 2',bp:1200000},{id:'knife_butterfly_tiger',name:'Butterfly Knife',skin:'Tiger Tooth',bp:1000000},{id:'knife_m9_fade',name:'M9 Bayoneta',skin:'Fade',bp:950000},{id:'gloves_sport_pandeo',name:'Sport Gloves',skin:'Pandeo',bp:1500000},{id:'knife_bayonet_slaughter',name:'Bayoneta',skin:'Slaughter',bp:800000}],
 };
-const WEARS_DATA = [{name:'Factory New',tag:'FN',mult:1.0},{name:'Minimal Wear',tag:'MW',mult:0.80},{name:'Field-Tested',tag:'FT',mult:0.60},{name:'Well-Worn',tag:'WW',mult:0.40},{name:'Battle-Scarred',tag:'BS',mult:0.20}];
-const WEAR_W     = [10,24,33,24,9];
-const RARITY_META= {consumer:{color:0x9ea3b0,sellMult:0.55},industrial:{color:0x5e98d9,sellMult:0.55},milspec:{color:0x4b69ff,sellMult:0.55},restricted:{color:0x8847ff,sellMult:0.60},classified:{color:0xd32ce6,sellMult:0.60},covert:{color:0xeb4b4b,sellMult:0.65},special:{color:0xffd700,sellMult:0.70}};
+const WEARS_DATA  = [{name:'Factory New',tag:'FN',mult:1.0},{name:'Minimal Wear',tag:'MW',mult:0.80},{name:'Field-Tested',tag:'FT',mult:0.60},{name:'Well-Worn',tag:'WW',mult:0.40},{name:'Battle-Scarred',tag:'BS',mult:0.20}];
+const WEAR_W      = [10,24,33,24,9];
+const RARITY_META = {consumer:{color:0x9ea3b0,sellMult:0.55},industrial:{color:0x5e98d9,sellMult:0.55},milspec:{color:0x4b69ff,sellMult:0.55},restricted:{color:0x8847ff,sellMult:0.60},classified:{color:0xd32ce6,sellMult:0.60},covert:{color:0xeb4b4b,sellMult:0.65},special:{color:0xffd700,sellMult:0.70}};
 
 function rollCase(caseId) {
   const box = CASES_CONFIG[caseId]; if(!box) return null;
@@ -895,20 +840,17 @@ function rollCase(caseId) {
     rarity = box.rarities[box.rarities.length-1];
     for(let i=0;i<box.rarities.length;i++){ r-=box.weights[i]; if(r<=0){rarity=box.rarities[i];break;} }
   }
-  const pool = RARITY_ITEMS[rarity]; const item = pool[Math.floor(Math.random()*pool.length)];
-  const tw2  = WEAR_W.reduce((a,b)=>a+b,0); let wr=Math.random()*tw2; let wi=WEAR_W.length-1;
+  const pool = RARITY_ITEMS[rarity], item = pool[Math.floor(Math.random()*pool.length)];
+  const tw2 = WEAR_W.reduce((a,b)=>a+b,0); let wr=Math.random()*tw2, wi=WEAR_W.length-1;
   for(let i=0;i<WEAR_W.length;i++){wr-=WEAR_W[i];if(wr<=0){wi=i;break;}}
-  const wear = WEARS_DATA[wi]; const rm = RARITY_META[rarity];
-  return { itemId:item.id, name:item.name, skin:item.skin, type:'rifle', emoji:'🔫', rarity,
-    rarityName:rarity, rarityColor:rm.color, wear:wear.name, wearTag:wear.tag,
-    basePrice:item.bp, sellPrice:Math.floor(item.bp*wear.mult*rm.sellMult), caseId };
+  const wear = WEARS_DATA[wi], rm = RARITY_META[rarity];
+  return { itemId:item.id, name:item.name, skin:item.skin, type:'rifle', emoji:'🔫', rarity, rarityName:rarity, rarityColor:rm.color, wear:wear.name, wearTag:wear.tag, basePrice:item.bp, sellPrice:Math.floor(item.bp*wear.mult*rm.sellMult), caseId };
 }
 
 app.post('/api/casino/case/open', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error:'No autenticado' });
   try {
-    const userId = req.session.user.id;
-    const { caseId } = req.body;
+    const userId = req.session.user.id, { caseId } = req.body;
     const box = CASES_CONFIG[caseId];
     if (!box) return res.status(400).json({ error:'Caja inválida' });
     const uc = await UserCoins.findOne({ userId, guildId:GUILD_ID });
@@ -926,49 +868,36 @@ app.post('/api/casino/case/open', async (req, res) => {
   } catch(e){ console.error('[case]',e); res.status(500).json({error:'Error'}); }
 });
 
-// ── Casino: Inventario del usuario ────────────────────────────────────────
 app.get('/api/casino/inventory', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error:'No autenticado' });
   try {
     const userId = req.session.user.id;
-    const arms   = await Arm.find({userId,guildId:GUILD_ID}).sort({obtainedAt:-1}).lean();
+    const arms = await Arm.find({userId,guildId:GUILD_ID}).sort({obtainedAt:-1}).lean();
     res.json({ arms });
   } catch(e){ res.status(500).json({error:'Error'}); }
 });
 
-// ── Casino: Comprar listing del mercado ───────────────────────────────────
 app.post('/api/casino/market/buy', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error:'No autenticado' });
   try {
-    const userId    = req.session.user.id;
-    const { listingId } = req.body;
-    const listing   = await MarketListing.findOne({_id:listingId,guildId:GUILD_ID,status:'active'});
+    const userId = req.session.user.id, { listingId } = req.body;
+    const listing = await MarketListing.findOne({_id:listingId,guildId:GUILD_ID,status:'active'});
     if (!listing) return res.status(404).json({ error:'Listing no encontrado o ya vendido' });
     if (listing.sellerId === userId) return res.status(400).json({ error:'No puedes comprarte a ti mismo' });
     const uc = await UserCoins.findOne({userId,guildId:GUILD_ID});
     if (!uc || uc.coins < listing.price) return res.status(400).json({ error:'Saldo insuficiente' });
-    // Transaction
     await Promise.all([
       UserCoins.findOneAndUpdate({userId,guildId:GUILD_ID},{$inc:{coins:-listing.price}}),
       UserCoins.findOneAndUpdate({userId:listing.sellerId,guildId:GUILD_ID},{$inc:{coins:listing.price,totalEarned:listing.price}}),
       MarketListing.findByIdAndUpdate(listingId,{status:'sold',buyerId:userId,soldAt:new Date()}),
-      Arm.findOneAndUpdate({_id:listing.armId},{userId, tradeId:null}),
+      Arm.findOneAndUpdate({_id:listing.armId},{userId,tradeId:null}),
       MarketTx.create({guildId:GUILD_ID,itemId:listing.itemId,name:listing.name,skin:listing.skin,rarity:listing.rarity,price:listing.price,sellerId:listing.sellerId,buyerId:userId}),
     ]);
     const updated = await UserCoins.findOne({userId,guildId:GUILD_ID}).lean();
-    if (global.io) {
-      global.io.emit('coins:update',{userId,coins:updated.coins});
-      global.io.emit('market:update',{});
-    }
+    if (global.io) { global.io.emit('coins:update',{userId,coins:updated.coins}); global.io.emit('market:update',{}); }
     res.json({ success:true, newBalance:updated.coins });
   } catch(e){ console.error('[market/buy]',e); res.status(500).json({error:'Error'}); }
 });
-
-// ── Dashboard: Compras recientes (admin) ──────────────────────────────────
-const ShopPurchase = mongoose.models.ShopPurchase || mongoose.model('ShopPurchase', new mongoose.Schema({
-  userId:String, guildId:String, itemId:String, itemName:String,
-  price:Number, purchasedAt:{type:Date,default:Date.now}
-}));
 
 app.get('/api/admin/purchases', requireAuth, async (req, res) => {
   try {
@@ -977,10 +906,7 @@ app.get('/api/admin/purchases', requireAuth, async (req, res) => {
       ShopPurchase.find({guildId:GUILD_ID}).sort({purchasedAt:-1}).skip((page-1)*limit).limit(limit).lean(),
       ShopPurchase.countDocuments({guildId:GUILD_ID}),
     ]);
-    const enriched = await Promise.all(agg.map(async p => {
-      const u = await getUser(p.userId);
-      return {...p, username:u.username, avatar:u.avatar};
-    }));
+    const enriched = await Promise.all(agg.map(async p => { const u = await getUser(p.userId); return {...p, username:u.username, avatar:u.avatar}; }));
     res.json({ items:enriched, pages:Math.ceil(count/limit) });
   } catch(e){ res.status(500).json({error:'Error'}); }
 });
@@ -993,7 +919,6 @@ io.on('connection', socket => {
 
 global.emitUpdate = (event, data) => io.emit(event, data);
 
-// Actualizar stats cada 5 segundos (para el dashboard en tiempo real)
 setInterval(async () => {
   const stats = await getStats();
   if (stats) io.emit('stats:update', stats);
