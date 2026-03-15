@@ -204,6 +204,16 @@ tr:hover td{background:rgba(255,255,255,0.018)}
     <button class="nav-btn" onclick="nav('casino',this)"><span class="nav-ic">⬡</span> Casino</button>
     <button class="nav-btn" onclick="nav('arms',this)"><span class="nav-ic">⬢</span> Armas</button>
     <button class="nav-btn" onclick="nav('market',this)"><span class="nav-ic">⟆</span> Mercado</button>
+    <div class="nav-lbl">Jugadores</div>
+    <button class="nav-btn" onclick="nav('achievements',this)"><span class="nav-ic">✦</span> Logros & Misiones</button>
+    <button class="nav-btn" onclick="nav('trades',this)"><span class="nav-ic">⇄</span> Trades</button>
+    <div class="nav-lbl">Servidor</div>
+    <button class="nav-btn" onclick="nav('shop',this)"><span class="nav-ic">◫</span> Tienda</button>
+    <button class="nav-btn" onclick="nav('games',this)"><span class="nav-ic">◬</span> Juegos</button>
+    <button class="nav-btn" onclick="nav('xpboosts',this)"><span class="nav-ic">↑</span> XP Boosts</button>
+    <button class="nav-btn" onclick="nav('gwblacklist',this)"><span class="nav-ic">⊘</span> Blacklist Sorteos</button>
+    <button class="nav-btn" onclick="nav('autoroles',this)"><span class="nav-ic">◉</span> AutoRoles</button>
+    <button class="nav-btn" onclick="nav('backgrounds',this)"><span class="nav-ic">▣</span> Fondos de perfil</button>
     <div class="nav-lbl">Sistema</div>
     <button class="nav-btn" onclick="nav('config',this)"><span class="nav-ic">⊞</span> Configuración</button>
   </nav>
@@ -247,13 +257,29 @@ tr:hover td{background:rgba(255,255,255,0.018)}
 
 <div class="section" id="s-giveaways">
   <div class="ph"><div class="pt">Sorteos</div><div class="ps">Historial del servidor</div></div>
-  <div class="filters">
-    <button class="fbtn active" onclick="filterGw('all',this)">Todos</button>
-    <button class="fbtn" onclick="filterGw('active',this)">Activos</button>
-    <button class="fbtn" onclick="filterGw('ended',this)">Finalizados</button>
+  <div class="tabs">
+    <button class="tab active" onclick="gwMainTab('list',this)">Sorteos</button>
+    <button class="tab" onclick="gwMainTab('blacklist',this)">Blacklist</button>
+    <button class="tab" onclick="gwMainTab('config',this)">Configuración</button>
   </div>
-  <div id="gwList"></div>
-  <div class="pag" id="gwPag"></div>
+  <div id="gwTabList">
+    <div class="filters">
+      <button class="fbtn active" onclick="filterGw('all',this)">Todos</button>
+      <button class="fbtn" onclick="filterGw('active',this)">Activos</button>
+      <button class="fbtn" onclick="filterGw('ended',this)">Finalizados</button>
+    </div>
+    <div id="gwList"></div>
+    <div class="pag" id="gwPag"></div>
+  </div>
+  <div id="gwTabBl" style="display:none">
+    <div class="card"><div class="tw"><table>
+      <thead><tr><th>Usuario</th><th>Razón</th><th>Añadido por</th><th>Fecha</th></tr></thead>
+      <tbody id="gwBLTable"></tbody>
+    </table></div><div class="pag" id="gwBLPag"></div></div>
+  </div>
+  <div id="gwTabCfg" style="display:none">
+    <div class="card"><div id="gwCfgBox"></div></div>
+  </div>
 </div>
 
 <div class="section" id="s-economy">
@@ -261,8 +287,9 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   <div class="tabs">
     <button class="tab active" onclick="econTab('coins',this)">Monedas</button>
     <button class="tab" onclick="econTab('level',this)">Niveles</button>
+    <button class="tab" onclick="econTab('backgrounds',this)">Fondos comprados</button>
   </div>
-  <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Usuario</th><th id="ecol1">Monedas</th><th id="ecol2">Total ganado</th></tr></thead><tbody id="econTable"></tbody></table></div><div class="pag" id="econPag"></div></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Usuario</th><th id="ecol1">Monedas</th><th id="ecol2">Total ganado</th><th id="ecol3" style="display:none">Fondos</th></tr></thead><tbody id="econTable"></tbody></table></div><div class="pag" id="econPag"></div></div>
 </div>
 
 <div class="section" id="s-loans">
@@ -282,7 +309,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
     <div class="card" style="margin-bottom:0"><div class="card-hd">Distribución</div><div id="levelDist"></div></div>
     <div class="card" style="margin-bottom:0"><div class="card-hd">Info</div><div id="levelInfo"></div></div>
   </div>
-  <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Usuario</th><th>Nivel</th><th>XP</th></tr></thead><tbody id="levelTable"></tbody></table></div><div class="pag" id="levelPag"></div></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Usuario</th><th>Nivel</th><th>XP</th><th>Racha</th><th>Desafíos hoy</th></tr></thead><tbody id="levelTable"></tbody></table></div><div class="pag" id="levelPag"></div></div>
 </div>
 
 <div class="section" id="s-moderation">
@@ -302,11 +329,12 @@ tr:hover td{background:rgba(255,255,255,0.018)}
 </div>
 
 <div class="section" id="s-config">
-  <div class="ph"><div class="pt">Configuración</div><div class="ps">Canales y ajustes del servidor</div></div>
+  <div class="ph"><div class="pt">Configuración</div><div class="ps">Canales, recompensas y estilo del servidor</div></div>
   <div class="two-col">
     <div class="card" style="margin-bottom:0"><div class="card-hd">Canales</div><div id="cfgChannels"></div></div>
     <div class="card" style="margin-bottom:0"><div class="card-hd">Recompensas</div><div id="cfgRewards"></div></div>
   </div>
+  <div class="card" style="margin-top:12px"><div class="card-hd">Estilo del servidor (GuildStyle)</div><div id="cfgStyle"></div></div>
 </div>
 
 <div class="section" id="s-casino" style="display:none">
@@ -368,9 +396,113 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </div>
 </div>
 
+
+<!-- ACHIEVEMENTS & MISIONES -->
+<div class="section" id="s-achievements" style="display:none">
+  <div class="ph"><div class="pt">Logros & Misiones</div><div class="ps">Progreso de jugadores del servidor</div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="achTab('achievements',this)">Logros</button>
+    <button class="tab" onclick="achTab('missions',this)">Misiones semana</button>
+    <button class="tab" onclick="achTab('trivia',this)">Trivia</button>
+  </div>
+  <div class="card"><div class="tw"><table><thead id="achHead"></thead><tbody id="achTable"></tbody></table></div><div class="pag" id="achPag"></div></div>
+</div>
+
+<!-- TRADES -->
+<div class="section" id="s-trades" style="display:none">
+  <div class="ph"><div class="pt">Trades</div><div class="ps">Intercambios entre usuarios</div></div>
+  <div class="filters">
+    <button class="fbtn active" onclick="filterTrade('all',this)">Todos</button>
+    <button class="fbtn" onclick="filterTrade('pending',this)">Pendientes</button>
+    <button class="fbtn" onclick="filterTrade('accepted',this)">Aceptados</button>
+    <button class="fbtn" onclick="filterTrade('rejected',this)">Rechazados</button>
+    <button class="fbtn" onclick="filterTrade('expired',this)">Expirados</button>
+  </div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>De</th><th>Para</th><th>Ofrece</th><th>Pide</th><th>Estado</th><th>Fecha</th></tr></thead>
+    <tbody id="tradeTable"></tbody>
+  </table></div><div class="pag" id="tradePag"></div></div>
+</div>
+
+<!-- TIENDA -->
+<div class="section" id="s-shop" style="display:none">
+  <div class="ph"><div class="pt">Tienda</div><div class="ps">Items disponibles en el servidor</div></div>
+  <div class="filters">
+    <button class="fbtn active" onclick="filterShop('all',this)">Todos</button>
+    <button class="fbtn" onclick="filterShop('true',this)">Activos</button>
+    <button class="fbtn" onclick="filterShop('false',this)">Inactivos</button>
+  </div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>Item</th><th>Descripción</th><th>Precio</th><th>Estado</th><th>Creado por</th><th>Fecha</th></tr></thead>
+    <tbody id="shopTable"></tbody>
+  </table></div><div class="pag" id="shopPag"></div></div>
+</div>
+
+<!-- JUEGOS -->
+<div class="section" id="s-games" style="display:none">
+  <div class="ph"><div class="pt">Juegos</div><div class="ps">Historial de partidas grupales</div></div>
+  <div class="two-col" style="margin-bottom:12px">
+    <div class="card" style="margin-bottom:0"><div class="card-hd">Top juegos</div><div id="topGamesBox"></div></div>
+    <div class="card" style="margin-bottom:0"><div class="card-hd">Resumen</div><div id="gamesSummaryBox"></div></div>
+  </div>
+  <div class="filters">
+    <button class="fbtn active" onclick="filterGame('all',this)">Todos</button>
+    <button class="fbtn" onclick="filterGame('loteria',this)">Lotería</button>
+    <button class="fbtn" onclick="filterGame('batalla',this)">Batalla</button>
+    <button class="fbtn" onclick="filterGame('carreras',this)">Carreras</button>
+    <button class="fbtn" onclick="filterGame('ruleta',this)">Ruleta grupal</button>
+  </div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>Juego</th><th>Jugadores</th><th>Pot total</th><th>Ganador(es)</th><th>Fecha</th></tr></thead>
+    <tbody id="gamesTable"></tbody>
+  </table></div><div class="pag" id="gamesPag"></div></div>
+</div>
+
+<!-- XP BOOSTS -->
+<div class="section" id="s-xpboosts" style="display:none">
+  <div class="ph"><div class="pt">XP Boosts</div><div class="ps">Multiplicadores de XP activos</div></div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>Usuario</th><th>Multiplicador</th><th>Otorgado por</th><th>Expira en</th><th>Expira</th></tr></thead>
+    <tbody id="boostTable"></tbody>
+  </table></div><div class="pag" id="boostPag"></div></div>
+</div>
+
+<!-- BLACKLIST SORTEOS -->
+<div class="section" id="s-gwblacklist" style="display:none">
+  <div class="ph"><div class="pt">Blacklist de Sorteos</div><div class="ps">Usuarios bloqueados de participar</div></div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>Usuario</th><th>Razón</th><th>Añadido por</th><th>Fecha</th></tr></thead>
+    <tbody id="gwblTable"></tbody>
+  </table></div><div class="pag" id="gwblPag"></div></div>
+</div>
+
+
+<!-- AUTOROLES -->
+<div class="section" id="s-autoroles" style="display:none">
+  <div class="ph"><div class="pt">AutoRoles</div><div class="ps">Paneles de roles reactivos del servidor</div></div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>Panel</th><th>Canal</th><th>Roles</th><th>Req. confirmar</th><th>Máx roles</th><th>Actualizado</th></tr></thead>
+    <tbody id="autorolesTable"></tbody>
+  </table></div><div class="pag" id="autorolesPag"></div></div>
+</div>
+
+<!-- FONDOS DE PERFIL -->
+<div class="section" id="s-backgrounds" style="display:none">
+  <div class="ph"><div class="pt">Fondos de perfil</div><div class="ps">Backgrounds disponibles en el servidor</div></div>
+  <div class="filters">
+    <button class="fbtn active" onclick="filterBg('all',this)">Todos</button>
+    <button class="fbtn" onclick="filterBg('default',this)">Por defecto</button>
+    <button class="fbtn" onclick="filterBg('custom',this)">Personalizados</button>
+  </div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Precio</th><th>Tipo</th><th>Creado por</th><th>Fecha</th></tr></thead>
+    <tbody id="bgTable"></tbody>
+  </table></div><div class="pag" id="bgPag"></div></div>
+</div>
+
 </main>
 <script>
-const S={currentSection:'overview',invites:{page:1},giveaways:{status:'all',page:1},economy:{sort:'coins',page:1},loans:{status:'all',page:1},levels:{page:1},moderation:{tab:'warns',page:1},bans:{page:1},loaded:{}};
+const S={currentSection:'overview',invites:{page:1},giveaways:{status:'all',page:1},economy:{sort:'coins',page:1},loans:{status:'all',page:1},levels:{page:1},moderation:{tab:'warns',page:1},bans:{page:1},achievements:{tab:'achievements',page:1},loaded:{}};
 const socket=io();
 let wsTmr;
 const wsEl=document.getElementById('wsS'),wsDot=document.getElementById('wsd'),wsTxt=document.getElementById('wst');
@@ -397,7 +529,7 @@ window.nav=function(name,btn){
   if(sec){sec.classList.add('active');sec.style.display='block';}
   if(btn)btn.classList.add('active');
   S.currentSection=name;
-  const map={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket};
+  const map={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket,achievements:loadAchievements,trades:loadTrades,shop:loadShop,games:loadGames,xpboosts:loadXpBoosts,gwblacklist:loadGwBlacklist,autoroles:loadAutoRoles,backgrounds:loadBackgrounds};
   if(!S.loaded[name]&&map[name])map[name]();
 };
 const uc=(av,nm)=>{const img=av?`<img src="${av}" onerror="this.style.display='none'">`:`<div class="fa">${(nm||'?')[0].toUpperCase()}</div>`;return`<div class="uc">${img}<span>${nm||'—'}</span></div>`;};
@@ -514,6 +646,368 @@ async function loadMarket(page){
 async function loadChartData(){const sel=document.getElementById('chartItemSelect');marketState.chartItemId=sel.value;const d=await api(`/api/market?tab=chart&itemId=${marketState.chartItemId}`);if(d)drawPriceChart(d.history,d.current);}
 function drawPriceChart(history,current){const c=document.getElementById('priceChart');if(!c||!history?.length)return;const ctx=c.getContext('2d'),W=c.parentElement.offsetWidth||800;c.width=W;c.height=200;ctx.clearRect(0,0,W,200);const pr=history.map(h=>h.close),mn=Math.min(...pr)*.98,mx=Math.max(...pr)*1.02,rg=mx-mn||1;const ty=p=>180-((p-mn)/rg)*160,tx=i=>20+(i/(pr.length-1||1))*(W-40);ctx.beginPath();pr.forEach((p,i)=>i===0?ctx.moveTo(tx(i),ty(p)):ctx.lineTo(tx(i),ty(p)));ctx.lineTo(tx(pr.length-1),180);ctx.lineTo(tx(0),180);ctx.closePath();const up=pr[pr.length-1]>=pr[0],g=ctx.createLinearGradient(0,0,0,180);g.addColorStop(0,up?'rgba(62,207,142,0.15)':'rgba(240,98,146,0.12)');g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fill();ctx.beginPath();pr.forEach((p,i)=>i===0?ctx.moveTo(tx(i),ty(p)):ctx.lineTo(tx(i),ty(p)));ctx.strokeStyle=up?'#3ecf8e':'#f06292';ctx.lineWidth=1.5;ctx.lineJoin='round';ctx.stroke();ctx.font='9px "DM Mono",monospace';ctx.fillStyle='rgba(255,255,255,0.22)';ctx.textAlign='right';[mn,mx,(mn+mx)/2].forEach(v=>ctx.fillText(Math.round(v).toLocaleString(),16,ty(v)+4));}
 function marketTab(t,b){document.querySelectorAll('#s-market .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');marketState.tab=t;marketState.page=1;S.loaded.market=false;loadMarket();}
+
+// ── ACHIEVEMENTS & MISIONES ────────────────────────────────────────────────
+const achState = { tab: 'achievements', page: 1 };
+async function loadAchievements(page) {
+  if (page) achState.page = page;
+  const d = await api(`/api/achievements?tab=${achState.tab}&page=${achState.page}`);
+  if (!d) return;
+  const h = document.getElementById('achHead'), tb = document.getElementById('achTable');
+
+  if (achState.tab === 'achievements') {
+    h.innerHTML = '<tr><th>#</th><th>Usuario</th><th>Logros</th><th>Wins casino</th><th>Wins trivia</th><th>Racha máx</th><th>Apuesta máx</th></tr>';
+    tb.innerHTML = d.items.length ? d.items.map(a => `<tr>
+      <td>${rk(a.rank)}</td>
+      <td>${uc(a.avatar, a.username)}</td>
+      <td><span class="badge b-o">★ ${a.badges}</span></td>
+      <td><span class="mono" style="color:var(--em)">${a.casino_wins}</span></td>
+      <td><span class="mono" style="color:var(--sky)">${a.trivia_wins}</span></td>
+      <td><span class="mono">${a.win_streak}</span></td>
+      <td>${coin(a.max_bet)}</td>
+    </tr>`).join('') : `<tr><td colspan="7">${empty()}</td></tr>`;
+  } else if (achState.tab === 'missions') {
+    h.innerHTML = '<tr><th>Usuario</th><th>Completadas</th><th>Progreso</th><th>Reclamado</th></tr>';
+    tb.innerHTML = d.items.length ? d.items.map(m => {
+      const pct = m.total > 0 ? Math.round(m.completed / m.total * 100) : 0;
+      return `<tr>
+        <td>${uc(m.avatar, m.username)}</td>
+        <td><strong>${m.completed} / ${m.total}</strong></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;min-width:120px">
+            <div class="prog-wrap" style="flex:1"><div class="prog-bar" style="width:${pct}%"></div></div>
+            <span class="mono">${pct}%</span>
+          </div>
+        </td>
+        <td><span class="badge ${m.claimed ? 'b-g' : 'b-m'}">${m.claimed ? 'Reclamado' : 'Pendiente'}</span></td>
+      </tr>`;
+    }).join('') : `<tr><td colspan="4">${empty('Sin progreso esta semana')}</td></tr>`;
+  } else if (achState.tab === 'trivia') {
+    h.innerHTML = '<tr><th>#</th><th>Usuario</th><th>Victorias</th><th>Derrotas</th><th>Win rate</th><th>Racha</th></tr>';
+    tb.innerHTML = d.items.length ? d.items.map(t => `<tr>
+      <td>${rk(t.rank)}</td>
+      <td>${uc(t.avatar, t.username)}</td>
+      <td><span class="mono" style="color:var(--em)">${t.totalWins}</span></td>
+      <td><span class="mono" style="color:var(--rose)">${t.totalFails}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="prog-wrap" style="width:60px"><div class="prog-bar" style="width:${t.winRate}%"></div></div>
+          <span class="mono">${t.winRate}%</span>
+        </div>
+      </td>
+      <td><span class="mono">${t.streak}🔥</span></td>
+    </tr>`).join('') : `<tr><td colspan="6">${empty()}</td></tr>`;
+  }
+
+  pag('achPag', achState.page, d.pages, loadAchievements);
+  S.loaded.achievements = true;
+}
+function achTab(t, b) { document.querySelectorAll('#s-achievements .tab').forEach(x => x.classList.remove('active')); b.classList.add('active'); achState.tab = t; achState.page = 1; S.loaded.achievements = false; loadAchievements(); }
+
+// ── TRADES ─────────────────────────────────────────────────────────────────
+const tradeState = { status: 'all', page: 1 };
+async function loadTrades(page) {
+  if (page) tradeState.page = page;
+  const d = await api(`/api/trades?status=${tradeState.status}&page=${tradeState.page}`);
+  if (!d) return;
+  const statusBadge = s => ({
+    pending:   '<span class="badge b-a">Pendiente</span>',
+    accepted:  '<span class="badge b-g">Aceptado</span>',
+    rejected:  '<span class="badge b-r">Rechazado</span>',
+    cancelled: '<span class="badge b-m">Cancelado</span>',
+    expired:   '<span class="badge b-m">Expirado</span>',
+  }[s] || `<span class="badge b-m">${s}</span>`);
+
+  document.getElementById('tradeTable').innerHTML = d.trades.length ? d.trades.map(t => `<tr>
+    <td>${uc(t.fromAvatar, t.fromUsername)}</td>
+    <td>${uc(t.toAvatar, t.toUsername)}</td>
+    <td>${t.fromCoins > 0 ? coin(t.fromCoins) : '<span class="mono" style="color:var(--text3)">—</span>'}</td>
+    <td>${t.toCoins > 0 ? coin(t.toCoins) : '<span class="mono" style="color:var(--text3)">—</span>'}</td>
+    <td>${statusBadge(t.status)}</td>
+    <td>${dt(t.createdAt)}</td>
+  </tr>`).join('') : `<tr><td colspan="6">${empty('Sin trades')}</td></tr>`;
+  pag('tradePag', tradeState.page, d.pages, loadTrades);
+  S.loaded.trades = true;
+}
+function filterTrade(s, b) { document.querySelectorAll('#s-trades .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); tradeState.status = s; tradeState.page = 1; loadTrades(); }
+
+// ── TIENDA ─────────────────────────────────────────────────────────────────
+const shopState = { active: 'all', page: 1 };
+async function loadShop(page) {
+  if (page) shopState.page = page;
+  const active = shopState.active === 'all' ? '' : shopState.active;
+  const d = await api(`/api/shop?active=${active}&page=${shopState.page}`);
+  if (!d) return;
+  document.getElementById('shopTable').innerHTML = d.items.length ? d.items.map(item => `<tr>
+    <td>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:18px">${item.emoji || '🛒'}</span>
+        <strong style="color:var(--text)">${item.name}</strong>
+      </div>
+    </td>
+    <td style="color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.description}</td>
+    <td>${coin(item.price)}</td>
+    <td><span class="badge ${item.active ? 'b-g' : 'b-r'}">${item.active ? 'Activo' : 'Inactivo'}</span></td>
+    <td><span class="mono" style="color:var(--text2)">${item.createdByName || '—'}</span></td>
+    <td>${dt(item.createdAt)}</td>
+  </tr>`).join('') : `<tr><td colspan="6">${empty('Tienda vacía')}</td></tr>`;
+  pag('shopPag', shopState.page, d.pages, loadShop);
+  S.loaded.shop = true;
+}
+function filterShop(a, b) { document.querySelectorAll('#s-shop .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); shopState.active = a; shopState.page = 1; loadShop(); }
+
+// ── JUEGOS ─────────────────────────────────────────────────────────────────
+const gamesState = { game: 'all', page: 1 };
+async function loadGames(page) {
+  if (page) gamesState.page = page;
+  const d = await api(`/api/games?game=${gamesState.game}&page=${gamesState.page}`);
+  if (!d) return;
+
+  // Top juegos
+  if (d.topGames?.length) {
+    document.getElementById('topGamesBox').innerHTML = d.topGames.map(g => `
+      <div class="ms">
+        <span class="ms-label">${g._id}</span>
+        <span class="ms-val"><span class="mono">${g.count} partidas</span></span>
+      </div>`).join('');
+  }
+
+  document.getElementById('gamesSummaryBox').innerHTML = `
+    <div class="ms"><span class="ms-label">Total partidas</span><span class="ms-val">${d.games.length > 0 ? (gamesState.page > 1 ? '...' : d.games.length) : 0}</span></div>
+    <div class="ms"><span class="ms-label">Juegos distintos</span><span class="ms-val">${d.topGames?.length || 0}</span></div>`;
+
+  const tb = document.getElementById('gamesTable');
+  tb.innerHTML = d.games.length ? d.games.map(g => {
+    const winners = g.players?.filter(p => p.won).map(p => p.username).join(', ') || '—';
+    const totalPot = g.players?.reduce((acc, p) => acc + (p.amount || 0), 0) || 0;
+    return `<tr>
+      <td><span class="badge b-s">${g.game}</span></td>
+      <td><span class="mono">${g.players?.length || 0}</span></td>
+      <td>${totalPot > 0 ? coin(totalPot) : '<span class="mono" style="color:var(--text3)">—</span>'}</td>
+      <td style="color:var(--em);font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${winners}</td>
+      <td>${dt(g.endedAt)}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="5">${empty('Sin partidas')}</td></tr>`;
+  pag('gamesPag', gamesState.page, d.pages, loadGames);
+  S.loaded.games = true;
+}
+function filterGame(g, b) { document.querySelectorAll('#s-games .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); gamesState.game = g; gamesState.page = 1; S.loaded.games = false; loadGames(); }
+
+// ── XP BOOSTS ──────────────────────────────────────────────────────────────
+const boostState = { page: 1 };
+async function loadXpBoosts(page) {
+  if (page) boostState.page = page;
+  const d = await api(`/api/xpboosts?page=${boostState.page}`);
+  if (!d) return;
+  document.getElementById('boostTable').innerHTML = d.items.length ? d.items.map(b => `<tr>
+    <td>${uc(b.avatar, b.username)}</td>
+    <td><span class="badge b-o">×${b.multiplier} XP</span></td>
+    <td><span class="mono" style="color:var(--text2)">${b.grantedByName || '—'}</span></td>
+    <td>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="mono" style="color:${b.hoursLeft < 2 ? 'var(--rose)' : 'var(--amb)'}">${b.hoursLeft}h</span>
+      </div>
+    </td>
+    <td>${dt(b.expiresAt)}</td>
+  </tr>`).join('') : `<tr><td colspan="5">${empty('Sin boosts activos')}</td></tr>`;
+  pag('boostPag', boostState.page, d.pages, loadXpBoosts);
+  S.loaded.xpboosts = true;
+}
+
+// ── BLACKLIST SORTEOS ──────────────────────────────────────────────────────
+const gwblState = { page: 1 };
+async function loadGwBlacklist(page) {
+  if (page) gwblState.page = page;
+  const d = await api(`/api/giveaway-blacklist?page=${gwblState.page}`);
+  if (!d) return;
+  document.getElementById('gwblTable').innerHTML = d.items.length ? d.items.map(b => `<tr>
+    <td>${uc(b.avatar, b.username)}</td>
+    <td style="color:var(--ink);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.reason || '—'}</td>
+    <td><span class="mono" style="color:var(--text2)">${b.addedByName || '—'}</span></td>
+    <td>${dt(b.addedAt)}</td>
+  </tr>`).join('') : `<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;
+  pag('gwblPag', gwblState.page, d.pages, loadGwBlacklist);
+  S.loaded.gwblacklist = true;
+}
+
+
+// ── AUTOROLES ─────────────────────────────────────────────────────────────
+const arState = { page: 1 };
+async function loadAutoRoles(page) {
+  if (page) arState.page = page;
+  const d = await api(`/api/autoroles?page=${arState.page}`);
+  if (!d) return;
+  document.getElementById('autorolesTable').innerHTML = d.items.length ? d.items.map(ar => `<tr>
+    <td>
+      <div style="font-weight:600;color:var(--text)">${ar.name}</div>
+      <div style="font-size:10px;color:var(--text3)">${ar.title}</div>
+    </td>
+    <td><span class="mono" style="font-size:10px;color:var(--sky)">#${ar.channelId}</span></td>
+    <td><span class="badge b-o">${ar.roles?.length || 0} roles</span></td>
+    <td><span class="badge ${ar.requireConfirm ? 'b-g' : 'b-m'}">${ar.requireConfirm ? 'Sí' : 'No'}</span></td>
+    <td><span class="mono">${ar.maxRoles === 0 ? 'Sin límite' : ar.maxRoles}</span></td>
+    <td>${dt(ar.updatedAt)}</td>
+  </tr>`).join('') : `<tr><td colspan="6">${empty('Sin paneles de autoroles')}</td></tr>`;
+  pag('autorolesPag', arState.page, d.pages, loadAutoRoles);
+  S.loaded.autoroles = true;
+}
+
+// ── FONDOS DE PERFIL ──────────────────────────────────────────────────────
+const bgState = { filter: 'all', page: 1 };
+async function loadBackgrounds(page) {
+  if (page) bgState.page = page;
+  const d = await api(`/api/backgrounds?filter=${bgState.filter}&page=${bgState.page}`);
+  if (!d) return;
+  document.getElementById('bgTable').innerHTML = d.items.length ? d.items.map(bg => `<tr>
+    <td><span class="mono" style="color:var(--gold)">${bg.bgId}</span></td>
+    <td><strong style="color:var(--text)">${bg.name}</strong></td>
+    <td style="color:var(--text2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${bg.description || '—'}</td>
+    <td>${bg.price === 0 ? '<span class="badge b-g">Gratis</span>' : coin(bg.price)}</td>
+    <td><span class="badge ${bg.isDefault ? 'b-s' : 'b-m'}">${bg.isDefault ? 'Por defecto' : 'Personalizado'}</span></td>
+    <td><span class="mono" style="color:var(--text2)">${bg.createdByName || '—'}</span></td>
+    <td>${dt(bg.createdAt)}</td>
+  </tr>`).join('') : `<tr><td colspan="7">${empty('Sin fondos configurados')}</td></tr>`;
+  pag('bgPag', bgState.page, d.pages, loadBackgrounds);
+  S.loaded.backgrounds = true;
+}
+function filterBg(f, b) { document.querySelectorAll('#s-backgrounds .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); bgState.filter = f; bgState.page = 1; loadBackgrounds(); }
+
+// ── EXPANSIÓN SORTEOS: Blacklist + Config inline ───────────────────────────
+const gwTabState = { tab: 'list', blPage: 1 };
+function gwMainTab(tab, btn) {
+  document.querySelectorAll('#s-giveaways .tab').forEach(x => x.classList.remove('active'));
+  btn.classList.add('active');
+  gwTabState.tab = tab;
+  document.getElementById('gwTabList').style.display = tab === 'list' ? '' : 'none';
+  document.getElementById('gwTabBl').style.display   = tab === 'blacklist' ? '' : 'none';
+  document.getElementById('gwTabCfg').style.display  = tab === 'config' ? '' : 'none';
+  if (tab === 'blacklist' && !gwTabState.blLoaded) loadGwBLInline();
+  if (tab === 'config'    && !gwTabState.cfgLoaded) loadGwCfgInline();
+}
+async function loadGwBLInline(page) {
+  if (page) gwTabState.blPage = page;
+  const d = await api(`/api/giveaway-blacklist?page=${gwTabState.blPage}`);
+  if (!d) return;
+  document.getElementById('gwBLTable').innerHTML = d.items.length
+    ? d.items.map(b => `<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink)">${b.reason||'—'}</td><td><span class="mono" style="color:var(--text2)">${b.addedByName||'—'}</span></td><td>${dt(b.addedAt)}</td></tr>`).join('')
+    : `<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;
+  pag('gwBLPag', gwTabState.blPage, d.pages, loadGwBLInline);
+  gwTabState.blLoaded = true;
+}
+async function loadGwCfgInline() {
+  const d = await api('/api/giveaway-config');
+  if (!d) return;
+  const hrs = d.config ? Math.round(d.config.claimTimeout / 3600000) : 24;
+  document.getElementById('gwCfgBox').innerHTML = `
+    <div class="ms"><span class="ms-label">Tiempo para reclamar premio</span><span class="ms-val"><span class="mono">${hrs} horas</span></span></div>
+    <div class="ms"><span class="ms-label">En milisegundos</span><span class="ms-val"><span class="mono">${d.config?.claimTimeout || 86400000}</span></span></div>`;
+  gwTabState.cfgLoaded = true;
+}
+
+// ── EXPANSIÓN NIVELES: streak + daily challenges ───────────────────────────
+// Patch loadLevels to show streak and daily challenges
+const _origLoadLevels = loadLevels;
+loadLevels = async function(page) {
+  if (page) S.levels.page = page;
+  const d = await api(`/api/levels?page=${S.levels.page}`);
+  if (!d) return;
+  const de = document.getElementById('levelDist');
+  if (d.distribution?.length) {
+    const mx = Math.max(...d.distribution.map(b => b.count), 1);
+    de.innerHTML = d.distribution.map(b => `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--text2)">Nv. ${b._id}</span><span class="mono">${b.count}</span></div><div class="prog-wrap"><div class="prog-bar" style="width:${Math.round(b.count/mx*100)}%"></div></div></div>`).join('');
+  } else de.innerHTML = empty();
+  document.getElementById('levelInfo').innerHTML = `<div class="ms"><span class="ms-label">Total usuarios</span><span class="ms-val">${d.total}</span></div><div class="ms"><span class="ms-label">Página</span><span class="ms-val">${S.levels.page} / ${d.pages||1}</span></div>`;
+  document.getElementById('levelTable').innerHTML = d.users.length
+    ? d.users.map(u => {
+        const dc = u.dailyChallenges;
+        const challStr = dc ? `<span class="mono" style="font-size:10px;color:${dc.messagesCompleted&&dc.vcCompleted?'var(--em)':'var(--text3)'}">💬${dc.messagesCompleted?'✓':'✗'} 🎙${dc.vcCompleted?'✓':'✗'}</span>` : '<span class="mono" style="color:var(--text3)">—</span>';
+        const streakCol = u.streak > 0 ? `<span class="mono" style="color:var(--amb)">${u.streak}🔥</span>` : '<span class="mono" style="color:var(--text3)">0</span>';
+        return `<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td><span class="badge b-o">Nv. ${u.level}</span></td><td><span class="mono">${u.xp.toLocaleString()} XP</span></td><td>${streakCol}</td><td>${challStr}</td></tr>`;
+      }).join('')
+    : `<tr><td colspan="6">${empty()}</td></tr>`;
+  pag('levelPag', S.levels.page, d.pages, loadLevels);
+  S.loaded.levels = true;
+};
+
+// ── EXPANSIÓN ECONOMÍA: Backgrounds comprados ─────────────────────────────
+const _origEconTab = econTab;
+econTab = function(s, b) {
+  document.querySelectorAll('#s-economy .tab').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  S.economy.sort = s; S.economy.page = 1; S.loaded.economy = false;
+  const col3 = document.getElementById('ecol3');
+  if (col3) col3.style.display = s === 'backgrounds' ? '' : 'none';
+  loadEconomy();
+};
+const _origLoadEconomy = loadEconomy;
+loadEconomy = async function(page) {
+  if (page) S.economy.page = page;
+  const d = await api(`/api/economy?sort=${S.economy.sort}&page=${S.economy.page}`);
+  if (!d) return;
+  const lv = S.economy.sort === 'level';
+  const bg = S.economy.sort === 'backgrounds';
+  document.getElementById('ecol1').textContent = bg ? 'Fondos comprados' : (lv ? 'Nivel' : 'Monedas');
+  document.getElementById('ecol2').textContent = bg ? 'Fondo activo' : (lv ? 'XP' : 'Total ganado');
+  const col3 = document.getElementById('ecol3');
+  if (col3) col3.style.display = 'none';
+  document.getElementById('econTable').innerHTML = d.users.length
+    ? d.users.map(u => {
+        let col1, col2;
+        if (bg) {
+          col1 = `<span class="mono">${u.ownedBackgrounds?.length || 0} fondos</span>`;
+          col2 = u.activeBgId ? `<span class="badge b-o">${u.activeBgId}</span>` : '<span class="mono" style="color:var(--text3)">—</span>';
+        } else if (lv) {
+          col1 = `<span class="badge b-o">Nv. ${u.level}</span>`;
+          col2 = `<span class="mono">${u.xp.toLocaleString()} XP</span>`;
+        } else {
+          col1 = coin(u.coins);
+          col2 = coin(u.totalEarned);
+        }
+        return `<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td>${col1}</td><td>${col2}</td></tr>`;
+      }).join('')
+    : `<tr><td colspan="4">${empty()}</td></tr>`;
+  pag('econPag', S.economy.page, d.pages, loadEconomy);
+  S.loaded.economy = true;
+};
+
+// ── EXPANSIÓN CONFIG: GuildStyle ──────────────────────────────────────────
+const _origLoadConfig = loadConfig;
+loadConfig = async function() {
+  const d = await api('/api/config');
+  if (!d) return;
+  const lb = {logs:'Logs general',modLogs:'Logs mod',welcome:'Bienvenida',levels:'Niveles',verification:'Verificación',tiktok:'TikTok',security:'Seguridad',invites:'Invitaciones'};
+  document.getElementById('cfgChannels').innerHTML = d.channels
+    ? `<div class="cfg-grid">${Object.entries(d.channels).filter(([k])=>!['_id','__v','guildId'].includes(k)).map(([k,v])=>`<div class="cfg-item"><div class="cfg-lbl">${lb[k]||k}</div><div class="cfg-val ${v?'':'cfg-null'}">${v?v.name||v:'—'}</div></div>`).join('')}</div>`
+    : empty();
+  const r = d.rewards;
+  document.getElementById('cfgRewards').innerHTML = r
+    ? `<div class="ms"><span class="ms-label">Monedas iniciales</span><span class="ms-val">${coin(r.initialCoins||500)}</span></div><div class="ms"><span class="ms-label">Trivia fácil</span><span class="ms-val">${coin(r.trivia_easy||50)}</span></div><div class="ms"><span class="ms-label">Trivia media</span><span class="ms-val">${coin(r.trivia_medium||100)}</span></div><div class="ms"><span class="ms-label">Trivia difícil</span><span class="ms-val">${coin(r.trivia_hard||250)}</span></div><div class="ms"><span class="ms-label">Misiones</span><span class="ms-val">${coin(r.misiones_reward||300)}</span></div><div class="ms"><span class="ms-label">Pérdida máx/día</span><span class="ms-val">${coin(r.max_loss_per_day||5000)}</span></div><div class="ms"><span class="ms-label">Apuestas máx/hora</span><span class="ms-val"><span class="mono">${r.max_bets_per_hour||10}</span></span></div>`
+    : empty();
+  // GuildStyle
+  const st = d.style;
+  const cfgStyle = document.getElementById('cfgStyle');
+  if (cfgStyle) {
+    if (st) {
+      const hexColor = n => n ? `<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#${n.toString(16).padStart(6,'0')};display:inline-block"></span><span class="mono">#${n.toString(16).padStart(6,'0')}</span></span>` : '<span class="mono" style="color:var(--text3)">—</span>';
+      cfgStyle.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div class="cfg-lbl" style="margin-bottom:10px">Colores</div>
+          ${st.colors ? Object.entries(st.colors).filter(([,v])=>v).map(([k,v])=>`<div class="ms"><span class="ms-label">${k}</span><span class="ms-val">${hexColor(v)}</span></div>`).join('') : '<div style="color:var(--text3);font-size:11px">Sin colores configurados</div>'}
+        </div>
+        <div>
+          <div class="cfg-lbl" style="margin-bottom:10px">Estilo general</div>
+          <div class="ms"><span class="ms-label">Footer text</span><span class="ms-val" style="color:var(--ink);font-size:11px">${st.footer?.text||'—'}</span></div>
+          <div class="ms"><span class="ms-label">Mensaje bienvenida</span><span class="ms-val" style="color:var(--ink);font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${st.welcomeMessage||'—'}</span></div>
+          <div class="ms"><span class="ms-label">Timestamp</span><span class="ms-val"><span class="badge ${st.showTimestamp?'b-g':'b-m'}">${st.showTimestamp?'Activo':'Inactivo'}</span></span></div>
+        </div>
+      </div>`;
+    } else {
+      cfgStyle.innerHTML = empty('Sin configuración de estilo');
+    }
+  }
+  S.loaded.config = true;
+};
+
 </script>
 </body>
 </html>
