@@ -64,7 +64,7 @@ const ShopPurchase = mongoose.models.ShopPurchase || model('ShopPurchase', new S
 }));
 
 // ── IDs con acceso a logs de IP ────────────────────────────────────────────
-const IP_LOG_ALLOWED = ['990868869449121852', '751153328326443109'];
+const IP_LOG_ALLOWED = ['990868869449121852', '751153328326443109', '754090767915548672'];
 
 // ── Discord helpers ────────────────────────────────────────────────────────
 const GUILD_ID       = process.env.GUILD_ID;
