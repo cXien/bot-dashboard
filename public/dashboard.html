@@ -178,6 +178,15 @@ tr:hover td{background:rgba(255,255,255,0.018)}
 </head>
 <body>
 
+
+<!-- Admin float: go to casino -->
+<div style="position:fixed;bottom:24px;right:24px;z-index:200">
+  <a href="/casino" style="display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:12px;background:rgba(62,207,142,0.12);border:1px solid rgba(62,207,142,0.3);color:#3ecf8e;font-weight:700;font-size:13px;text-decoration:none;backdrop-filter:blur(12px);transition:all .2s;box-shadow:0 4px 20px rgba(62,207,142,0.1)"
+    onmouseover="this.style.background='rgba(62,207,142,0.22)'" onmouseout="this.style.background='rgba(62,207,142,0.12)'">
+    🎰 Ver Casino
+  </a>
+</div>
+
 <div id="wsS"><div id="wsd"></div><span id="wst">conectando</span></div>
 
 <aside class="sb">
@@ -215,6 +224,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
     <button class="nav-btn" onclick="nav('autoroles',this)"><span class="nav-ic">◉</span> AutoRoles</button>
     <button class="nav-btn" onclick="nav('backgrounds',this)"><span class="nav-ic">▣</span> Fondos de perfil</button>
     <div class="nav-lbl">Sistema</div>
+    <button class="nav-btn" onclick="nav('purchases',this)"><span class="nav-ic">🛒</span> Compras tienda</button>
     <button class="nav-btn" onclick="nav('config',this)"><span class="nav-ic">⊞</span> Configuración</button>
   </nav>
   <div class="sb-foot">
@@ -396,6 +406,8 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </div>
 </div>
 
+
+<!-- ACHIEVEMENTS & MISIONES -->
 <div class="section" id="s-achievements" style="display:none">
   <div class="ph"><div class="pt">Logros & Misiones</div><div class="ps">Progreso de jugadores del servidor</div></div>
   <div class="tabs">
@@ -406,6 +418,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   <div class="card"><div class="tw"><table><thead id="achHead"></thead><tbody id="achTable"></tbody></table></div><div class="pag" id="achPag"></div></div>
 </div>
 
+<!-- TRADES -->
 <div class="section" id="s-trades" style="display:none">
   <div class="ph"><div class="pt">Trades</div><div class="ps">Intercambios entre usuarios</div></div>
   <div class="filters">
@@ -421,6 +434,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="tradePag"></div></div>
 </div>
 
+<!-- TIENDA -->
 <div class="section" id="s-shop" style="display:none">
   <div class="ph"><div class="pt">Tienda</div><div class="ps">Items disponibles en el servidor</div></div>
   <div class="filters">
@@ -434,6 +448,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="shopPag"></div></div>
 </div>
 
+<!-- JUEGOS -->
 <div class="section" id="s-games" style="display:none">
   <div class="ph"><div class="pt">Juegos</div><div class="ps">Historial de partidas grupales</div></div>
   <div class="two-col" style="margin-bottom:12px">
@@ -453,6 +468,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="gamesPag"></div></div>
 </div>
 
+<!-- XP BOOSTS -->
 <div class="section" id="s-xpboosts" style="display:none">
   <div class="ph"><div class="pt">XP Boosts</div><div class="ps">Multiplicadores de XP activos</div></div>
   <div class="card"><div class="tw"><table>
@@ -461,6 +477,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="boostPag"></div></div>
 </div>
 
+<!-- BLACKLIST SORTEOS -->
 <div class="section" id="s-gwblacklist" style="display:none">
   <div class="ph"><div class="pt">Blacklist de Sorteos</div><div class="ps">Usuarios bloqueados de participar</div></div>
   <div class="card"><div class="tw"><table>
@@ -469,6 +486,8 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="gwblPag"></div></div>
 </div>
 
+
+<!-- AUTOROLES -->
 <div class="section" id="s-autoroles" style="display:none">
   <div class="ph"><div class="pt">AutoRoles</div><div class="ps">Paneles de roles reactivos del servidor</div></div>
   <div class="card"><div class="tw"><table>
@@ -477,6 +496,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="autorolesPag"></div></div>
 </div>
 
+<!-- FONDOS DE PERFIL -->
 <div class="section" id="s-backgrounds" style="display:none">
   <div class="ph"><div class="pt">Fondos de perfil</div><div class="ps">Backgrounds disponibles en el servidor</div></div>
   <div class="filters">
@@ -490,6 +510,16 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="bgPag"></div></div>
 </div>
 
+
+<!-- COMPRAS TIENDA -->
+<div class="section" id="s-purchases" style="display:none">
+  <div class="ph"><div class="pt">Compras en tienda</div><div class="ps">Historial de lo que han comprado los usuarios</div></div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>Usuario</th><th>Item</th><th>Precio</th><th>Fecha</th></tr></thead>
+    <tbody id="purchasesTable"></tbody>
+  </table></div><div class="pag" id="purchasesPag"></div></div>
+</div>
+
 </main>
 <script>
 const S={currentSection:'overview',invites:{page:1},giveaways:{status:'all',page:1},economy:{sort:'coins',page:1},loans:{status:'all',page:1},levels:{page:1},moderation:{tab:'warns',page:1},bans:{page:1},achievements:{tab:'achievements',page:1},loaded:{}};
@@ -501,8 +531,9 @@ socket.on('connect',()=>showWS(true,'en línea'));
 socket.on('disconnect',()=>showWS(false,'sin conexión'));
 socket.on('stats:update',d=>{ applyStats(d); });
 
+// Auto-refresh current section every 30 seconds
 setInterval(()=>{
-  const loaders={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket,achievements:loadAchievements,trades:loadTrades,shop:loadShop,games:loadGames,xpboosts:loadXpBoosts,gwblacklist:loadGwBlacklist,autoroles:loadAutoRoles,backgrounds:loadBackgrounds};
+  const loaders={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket,achievements:loadAchievements,trades:loadTrades,shop:loadShop,games:loadGames,xpboosts:loadXpBoosts,gwblacklist:loadGwBlacklist,autoroles:loadAutoRoles,backgrounds:loadBackgrounds,purchases:loadPurchases};
   S.loaded[S.currentSection]=false;
   if(loaders[S.currentSection]) loaders[S.currentSection]();
 }, 30000);
@@ -527,7 +558,7 @@ window.nav=function(name,btn){
   if(sec){sec.classList.add('active');sec.style.display='block';}
   if(btn)btn.classList.add('active');
   S.currentSection=name;
-  const map={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket,achievements:loadAchievements,trades:loadTrades,shop:loadShop,games:loadGames,xpboosts:loadXpBoosts,gwblacklist:loadGwBlacklist,autoroles:loadAutoRoles,backgrounds:loadBackgrounds};
+  const map={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket,achievements:loadAchievements,trades:loadTrades,shop:loadShop,games:loadGames,xpboosts:loadXpBoosts,gwblacklist:loadGwBlacklist,autoroles:loadAutoRoles,backgrounds:loadBackgrounds,purchases:loadPurchases};
   if(!S.loaded[name]&&map[name])map[name]();
 };
 const uc=(av,nm)=>{const img=av?`<img src="${av}" onerror="this.style.display='none'">`:`<div class="fa">${(nm||'?')[0].toUpperCase()}</div>`;return`<div class="uc">${img}<span>${nm||'—'}</span></div>`;};
@@ -647,6 +678,7 @@ async function loadChartData(){const sel=document.getElementById('chartItemSelec
 function drawPriceChart(history,current){const c=document.getElementById('priceChart');if(!c||!history?.length)return;const ctx=c.getContext('2d'),W=c.parentElement.offsetWidth||800;c.width=W;c.height=200;ctx.clearRect(0,0,W,200);const pr=history.map(h=>h.close),mn=Math.min(...pr)*.98,mx=Math.max(...pr)*1.02,rg=mx-mn||1;const ty=p=>180-((p-mn)/rg)*160,tx=i=>20+(i/(pr.length-1||1))*(W-40);ctx.beginPath();pr.forEach((p,i)=>i===0?ctx.moveTo(tx(i),ty(p)):ctx.lineTo(tx(i),ty(p)));ctx.lineTo(tx(pr.length-1),180);ctx.lineTo(tx(0),180);ctx.closePath();const up=pr[pr.length-1]>=pr[0],g=ctx.createLinearGradient(0,0,0,180);g.addColorStop(0,up?'rgba(62,207,142,0.15)':'rgba(240,98,146,0.12)');g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fill();ctx.beginPath();pr.forEach((p,i)=>i===0?ctx.moveTo(tx(i),ty(p)):ctx.lineTo(tx(i),ty(p)));ctx.strokeStyle=up?'#3ecf8e':'#f06292';ctx.lineWidth=1.5;ctx.lineJoin='round';ctx.stroke();ctx.font='9px "DM Mono",monospace';ctx.fillStyle='rgba(255,255,255,0.22)';ctx.textAlign='right';[mn,mx,(mn+mx)/2].forEach(v=>ctx.fillText(Math.round(v).toLocaleString(),16,ty(v)+4));}
 function marketTab(t,b){document.querySelectorAll('#s-market .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');marketState.tab=t;marketState.page=1;S.loaded.market=false;loadMarket();}
 
+// ── ACHIEVEMENTS & MISIONES ────────────────────────────────────────────────
 const achState = { tab: 'achievements', page: 1 };
 async function loadAchievements(page) {
   if (page) achState.page = page;
@@ -703,6 +735,7 @@ async function loadAchievements(page) {
 }
 function achTab(t, b) { document.querySelectorAll('#s-achievements .tab').forEach(x => x.classList.remove('active')); b.classList.add('active'); achState.tab = t; achState.page = 1; S.loaded.achievements = false; loadAchievements(); }
 
+// ── TRADES ─────────────────────────────────────────────────────────────────
 const tradeState = { status: 'all', page: 1 };
 async function loadTrades(page) {
   if (page) tradeState.page = page;
@@ -729,6 +762,7 @@ async function loadTrades(page) {
 }
 function filterTrade(s, b) { document.querySelectorAll('#s-trades .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); tradeState.status = s; tradeState.page = 1; loadTrades(); }
 
+// ── TIENDA ─────────────────────────────────────────────────────────────────
 const shopState = { active: 'all', page: 1 };
 async function loadShop(page) {
   if (page) shopState.page = page;
@@ -753,12 +787,14 @@ async function loadShop(page) {
 }
 function filterShop(a, b) { document.querySelectorAll('#s-shop .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); shopState.active = a; shopState.page = 1; loadShop(); }
 
+// ── JUEGOS ─────────────────────────────────────────────────────────────────
 const gamesState = { game: 'all', page: 1 };
 async function loadGames(page) {
   if (page) gamesState.page = page;
   const d = await api(`/api/games?game=${gamesState.game}&page=${gamesState.page}`);
   if (!d) return;
 
+  // Top juegos
   if (d.topGames?.length) {
     document.getElementById('topGamesBox').innerHTML = d.topGames.map(g => `
       <div class="ms">
@@ -788,6 +824,7 @@ async function loadGames(page) {
 }
 function filterGame(g, b) { document.querySelectorAll('#s-games .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); gamesState.game = g; gamesState.page = 1; S.loaded.games = false; loadGames(); }
 
+// ── XP BOOSTS ──────────────────────────────────────────────────────────────
 const boostState = { page: 1 };
 async function loadXpBoosts(page) {
   if (page) boostState.page = page;
@@ -808,6 +845,7 @@ async function loadXpBoosts(page) {
   S.loaded.xpboosts = true;
 }
 
+// ── BLACKLIST SORTEOS ──────────────────────────────────────────────────────
 const gwblState = { page: 1 };
 async function loadGwBlacklist(page) {
   if (page) gwblState.page = page;
@@ -823,6 +861,8 @@ async function loadGwBlacklist(page) {
   S.loaded.gwblacklist = true;
 }
 
+
+// ── AUTOROLES ─────────────────────────────────────────────────────────────
 const arState = { page: 1 };
 async function loadAutoRoles(page) {
   if (page) arState.page = page;
@@ -843,6 +883,7 @@ async function loadAutoRoles(page) {
   S.loaded.autoroles = true;
 }
 
+// ── FONDOS DE PERFIL ──────────────────────────────────────────────────────
 const bgState = { filter: 'all', page: 1 };
 async function loadBackgrounds(page) {
   if (page) bgState.page = page;
@@ -862,6 +903,7 @@ async function loadBackgrounds(page) {
 }
 function filterBg(f, b) { document.querySelectorAll('#s-backgrounds .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); bgState.filter = f; bgState.page = 1; loadBackgrounds(); }
 
+// ── EXPANSIÓN SORTEOS: Blacklist + Config inline ───────────────────────────
 const gwTabState = { tab: 'list', blPage: 1 };
 function gwMainTab(tab, btn) {
   document.querySelectorAll('#s-giveaways .tab').forEach(x => x.classList.remove('active'));
@@ -893,6 +935,8 @@ async function loadGwCfgInline() {
   gwTabState.cfgLoaded = true;
 }
 
+// ── EXPANSIÓN NIVELES: streak + daily challenges ───────────────────────────
+// Patch loadLevels to show streak and daily challenges
 const _origLoadLevels = loadLevels;
 window.loadLevels = loadLevels = async function(page) {
   if (page) S.levels.page = page;
@@ -916,6 +960,7 @@ window.loadLevels = loadLevels = async function(page) {
   S.loaded.levels = true;
 };
 
+// ── EXPANSIÓN ECONOMÍA: Backgrounds comprados ─────────────────────────────
 const _origEconTab = econTab;
 econTab = function(s, b) {
   document.querySelectorAll('#s-economy .tab').forEach(x => x.classList.remove('active'));
@@ -956,7 +1001,7 @@ window.loadEconomy = loadEconomy = async function(page) {
   S.loaded.economy = true;
 };
 
-
+// ── EXPANSIÓN CONFIG: GuildStyle ──────────────────────────────────────────
 const _origLoadConfig = loadConfig;
 window.loadConfig = loadConfig = async function() {
   const d = await api('/api/config');
@@ -969,7 +1014,7 @@ window.loadConfig = loadConfig = async function() {
   document.getElementById('cfgRewards').innerHTML = r
     ? `<div class="ms"><span class="ms-label">Monedas iniciales</span><span class="ms-val">${coin(r.initialCoins||500)}</span></div><div class="ms"><span class="ms-label">Trivia fácil</span><span class="ms-val">${coin(r.trivia_easy||50)}</span></div><div class="ms"><span class="ms-label">Trivia media</span><span class="ms-val">${coin(r.trivia_medium||100)}</span></div><div class="ms"><span class="ms-label">Trivia difícil</span><span class="ms-val">${coin(r.trivia_hard||250)}</span></div><div class="ms"><span class="ms-label">Misiones</span><span class="ms-val">${coin(r.misiones_reward||300)}</span></div><div class="ms"><span class="ms-label">Pérdida máx/día</span><span class="ms-val">${coin(r.max_loss_per_day||5000)}</span></div><div class="ms"><span class="ms-label">Apuestas máx/hora</span><span class="ms-val"><span class="mono">${r.max_bets_per_hour||10}</span></span></div>`
     : empty();
-
+  // GuildStyle
   const st = d.style;
   const cfgStyle = document.getElementById('cfgStyle');
   if (cfgStyle) {
@@ -1004,6 +1049,26 @@ window.loadAchievements=loadAchievements;window.loadTrades=loadTrades;window.loa
 window.loadGames=loadGames;window.loadXpBoosts=loadXpBoosts;window.loadGwBlacklist=loadGwBlacklist;
 window.loadAutoRoles=loadAutoRoles;window.loadBackgrounds=loadBackgrounds;
 window.loadGwBLInline=loadGwBLInline;window.loadChartData=loadChartData;
+
+
+// ── COMPRAS TIENDA ─────────────────────────────────────────────────────────
+const purchasesState = { page: 1 };
+window.loadPurchases = async function(page) {
+  if (page) purchasesState.page = page;
+  const d = await api('/api/admin/purchases?page='+purchasesState.page);
+  if (!d) return;
+  const coin = n => `<span class="mono" style="color:var(--gold)">🪙 ${(n||0).toLocaleString()}</span>`;
+  document.getElementById('purchasesTable').innerHTML = d.items.length
+    ? d.items.map(p => `<tr>
+        <td>${uc(p.avatar, p.username)}</td>
+        <td><strong style="color:var(--text)">${p.itemName||'—'}</strong></td>
+        <td>${coin(p.price)}</td>
+        <td>${dt(p.purchasedAt)}</td>
+      </tr>`).join('')
+    : `<tr><td colspan="4">${empty('Sin compras registradas')}</td></tr>`;
+  pag('purchasesPag', purchasesState.page, d.pages, 'loadPurchases');
+  S.loaded.purchases = true;
+};
 
 </script>
 </body>

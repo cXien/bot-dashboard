@@ -12,6 +12,7 @@ const app    = express();
 const server = http.createServer(app);
 const io     = socketIo(server, { cors: { origin: '*' } });
 
+// Exponer io globalmente para los endpoints del casino
 global.io = io;
 
 app.use(express.json());
@@ -24,6 +25,7 @@ app.use(session({
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log('[DB] Conectado')).catch(console.error);
 
+// ── Schemas ────────────────────────────────────────────────────────────────
 const { Schema, model } = mongoose;
 const Level          = model('Level',          new Schema({ userId: String, guildId: String, xp: { type: Number, default: 0 }, level: { type: Number, default: 0 }, lastMessage: Date, streak: { type: Number, default: 0 }, lastMessageDate: Date, dailyChallenges: { date: String, messages: Number, messagesCompleted: Boolean, vcMinutes: Number, vcCompleted: Boolean } }));
 const Warn           = model('Warn',           new Schema({ userId: String, guildId: String, moderator: String, reason: String, createdAt: { type: Date, default: Date.now } }));
@@ -54,6 +56,7 @@ const ArmCurrentPrice= model('ArmCurrentPrice',new Schema({ guildId: String, ite
 const ArmPrice       = model('ArmPrice',       new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, open: Number, high: Number, low: Number, close: Number, volume: Number, timestamp: { type: Date, default: Date.now } }));
 const MarketTx       = model('MarketTx',       new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, price: Number, sellerId: String, buyerId: String, timestamp: { type: Date, default: Date.now } }));
 
+// ── Discord helpers ────────────────────────────────────────────────────────
 const GUILD_ID       = process.env.GUILD_ID;
 const ADMIN_ROLE_IDS = (process.env.ADMIN_ROLE_IDS || process.env.ADMIN_ROLE_ID || '').split(',').map(r => r.trim()).filter(Boolean);
 const userCache      = new Map();
@@ -97,8 +100,9 @@ function exchangeCode(code) {
 
 const requireAuth = (req, res, next) => req.session?.user ? next() : res.status(401).json({ error: 'No autenticado' });
 
+// ── Auth ───────────────────────────────────────────────────────────────────
 app.get('/auth/discord', (req, res) => {
-
+  // Guardar origen para redirigir después del login
   if (req.query.from) req.session.casinoFrom = req.query.from;
   res.redirect(`https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.DISCORD_REDIRECT_URI)}&response_type=code&scope=identify`);
 });
@@ -112,19 +116,25 @@ app.get('/auth/callback', async (req, res) => {
     const user   = await discordReq('/users/@me', tokens.access_token, false);
     if (!user?.id) return res.redirect('/login?error=user_failed');
 
+    // Check if user is admin (member of guild with admin role)
+    const member = await discordReq(`/guilds/${GUILD_ID}/members/${user.id}`, null, true);
+    const isAdmin = member?.roles ? member.roles.some(r => ADMIN_ROLE_IDS.includes(r)) : false;
+
     req.session.user = {
       id: user.id,
       username: user.username,
-      avatar: user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64` : 'https://cdn.discordapp.com/embed/avatars/0.png'
+      avatar: user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64` : 'https://cdn.discordapp.com/embed/avatars/0.png',
+      isAdmin,
     };
 
+    // Si viene del casino, redirigir ahí (cualquiera puede entrar)
     const from = req.session.casinoFrom;
     req.session.casinoFrom = null;
     if (from === 'casino') return res.redirect('/casino');
 
-    const member = await discordReq(`/guilds/${GUILD_ID}/members/${user.id}`, null, true);
+    // Para el dashboard sí verificamos rol de admin
     if (!member?.roles) return res.redirect('/login?error=not_in_server');
-    if (!member.roles.some(r => ADMIN_ROLE_IDS.includes(r))) return res.redirect('/login?error=no_permission');
+    if (!isAdmin) return res.redirect('/login?error=no_permission');
     res.redirect('/dashboard');
   } catch (e) { console.error('[AUTH]', e); res.redirect('/login?error=server_error'); }
 });
@@ -132,6 +142,7 @@ app.get('/auth/callback', async (req, res) => {
 app.get('/auth/logout', (req, res) => { req.session.destroy(); res.redirect('/login'); });
 app.get('/api/me', (req, res) => req.session?.user ? res.json(req.session.user) : res.status(401).json({ error: 'No autenticado' }));
 
+// ── Stats helper ───────────────────────────────────────────────────────────
 async function getStats() {
   try {
     const [guild, totalUsers, activeGiveaways, activeLoans, flaggedJoins, recentLogs, casinoAgg, totalWarns] = await Promise.all([
@@ -156,6 +167,10 @@ async function getStats() {
     return { members: guild?.approximate_member_count || 0, online: guild?.approximate_presence_count || 0, registeredUsers: totalUsers, activeGiveaways, activeLoans, flaggedJoins, totalWarns, joinsByDay, casinoBets: casinoAgg[0]?.bets || 0, casinoProfit: casinoAgg[0]?.profit || 0 };
   } catch (e) { console.error('[stats]', e); return null; }
 }
+
+// ══════════════════════════════════════════════════════════════════════════
+//  APIs DEL DASHBOARD (requieren rol de admin)
+// ══════════════════════════════════════════════════════════════════════════
 
 app.get('/api/stats', requireAuth, async (req, res) => {
   const stats = await getStats();
@@ -453,6 +468,9 @@ app.get('/api/backgrounds', requireAuth, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
+// ══════════════════════════════════════════════════════════════════════════
+//  APIs DEL CASINO PÚBLICO (sin requireAuth — cualquiera puede ver)
+// ══════════════════════════════════════════════════════════════════════════
 
 app.get('/api/casino/public/stats', async (req, res) => {
   try {
@@ -528,6 +546,12 @@ app.get('/api/casino/me/full', async (req, res) => {
 });
 
 app.post('/api/casino/play', async (req, res) => {
+  // Route extended games to separate handler
+  const extGames = ['carreras','loteria','minas'];
+  if (extGames.includes(req.body?.game)) {
+    req.url = '/api/casino/play/extended';
+    return handleExtendedPlay(req, res);
+  }
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id;
@@ -539,20 +563,32 @@ app.post('/api/casino/play', async (req, res) => {
     let won = false, winProfit = 0, number = null, slotsReels = null, multiplier = 1;
     if (game === 'ruleta') {
       number = Math.floor(Math.random() * 37);
-      const reds = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
-      const checks = { red: reds.includes(number), black: !reds.includes(number)&&number!==0, green: number===0, even: number>0&&number%2===0, odd: number>0&&number%2!==0, high: number>=19, low: number>=1&&number<=18 };
-      const mults  = { red: 2, black: 2, green: 14, even: 2, odd: 2, high: 2, low: 2 };
+      const reds = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+      const blacks = new Set([2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35]);
+      const checks = {
+        rojo:    reds.has(number),
+        negro:   blacks.has(number),
+        par:     number !== 0 && number % 2 === 0,
+        impar:   number !== 0 && number % 2 !== 0,
+        bajo:    number >= 1 && number <= 18,
+        alto:    number >= 19 && number <= 36,
+        docena1: number >= 1 && number <= 12,
+        docena2: number >= 13 && number <= 24,
+        docena3: number >= 25 && number <= 36,
+        verde:   number === 0,
+      };
+      const mults = { rojo:2, negro:2, par:2, impar:2, bajo:2, alto:2, docena1:3, docena2:3, docena3:3, verde:35 };
       won = checks[type] || false; multiplier = mults[type] || 2;
       winProfit = won ? bet * (multiplier - 1) : 0;
     } else if (game === 'slots') {
-      const syms = ['🍒','🍋','🍊','🍇','💎','🌟','7️⃣','🎰'], wts = [30,25,20,15,4,3,2,1];
-      const pick = () => { let r=Math.random()*100,acc=0; for(let i=0;i<syms.length;i++){acc+=wts[i];if(r<acc)return syms[i];} return syms[0]; };
-      slotsReels = [pick(),pick(),pick()];
-      const [a,b,c] = slotsReels;
-      const mm = {'💎💎💎':50,'🌟🌟🌟':20,'7️⃣7️⃣7️⃣':15,'🎰🎰🎰':10};
-      if (mm[slotsReels.join('')]) { won=true; multiplier=mm[slotsReels.join('')]; }
-      else if (a===b&&b===c) { won=true; multiplier=5; }
-      else if (a===b||b===c||a===c) { won=true; multiplier=1.5; }
+      // Exact same logic as bot casino.js
+      const syms = ['🍒','7️⃣','💰','🎰','⭐','🔔'];
+      const s1 = Math.floor(Math.random() * 6);
+      const s2 = Math.floor(Math.random() * 6);
+      const s3 = Math.floor(Math.random() * 6);
+      slotsReels = [syms[s1], syms[s2], syms[s3]];
+      if (s1===s2 && s2===s3) { won=true; multiplier=10; }
+      else if (s1===s2 || s2===s3 || s1===s3) { won=true; multiplier=2; }
       winProfit = won ? Math.floor(bet*(multiplier-1)) : 0;
     } else if (game === 'blackjack') {
       if (!['win','blackjack','push','lose','bust'].includes(result)) return res.status(400).json({ error: 'Resultado inválido' });
@@ -577,8 +613,15 @@ app.post('/api/casino/crash/start', async (req, res) => {
     const userCoins = await UserCoins.findOne({ userId, guildId: GUILD_ID });
     if (!userCoins) return res.status(403).json({ error: 'Usa /registrarse en Discord primero' });
     if (userCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
+    // Same distribution as bot crash.js
     const r = Math.random();
-    const crashAt = Math.round(Math.max(1.0, r < 0.01 ? 1.0 : 0.99 / r) * 100) / 100;
+    let crashAt;
+    if (r < 0.50)      crashAt = 1 + Math.random() * 0.8;        // 1.00× – 1.80×
+    else if (r < 0.75) crashAt = 1.8 + Math.random() * 1.2;      // 1.80× – 3.00×
+    else if (r < 0.90) crashAt = 3 + Math.random() * 4;          // 3.00× – 7.00×
+    else if (r < 0.97) crashAt = 7 + Math.random() * 8;          // 7.00× – 15.00×
+    else               crashAt = 15 + Math.random() * 5;          // 15.00× – 20.00×
+    crashAt = Math.round(crashAt * 100) / 100;
     req.session.crashGame = { bet, crashAt, userId, ts: Date.now() };
     res.json({ crashAt });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
@@ -611,10 +654,338 @@ app.post('/api/casino/buy', async (req, res) => {
     if (!userCoins || userCoins.coins < item.price) return res.status(400).json({ error: 'Saldo insuficiente' });
     const updated = await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { coins: -item.price } }, { new: true });
     if (global.io) global.io.emit('coins:update', { userId, coins: updated.coins });
+    await ShopPurchase.create({ userId, guildId: GUILD_ID, itemId, itemName: item.name, price: item.price }).catch(()=>{});
     res.json({ success: true, newBalance: updated.coins });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
+
+// ── Casino: Carreras ──────────────────────────────────────────────────────
+// Horse data matches carreras.js
+const HORSES_DATA = {
+  A: { baseSpeed:0.35, variance:0.40 },
+  B: { baseSpeed:0.38, variance:0.30 },
+  C: { baseSpeed:0.32, variance:0.50 },
+  D: { baseSpeed:0.40, variance:0.20 },
+  E: { baseSpeed:0.30, variance:0.60 },
+};
+
+// ── Casino: Play handler extension (carreras, loteria, minas, batalla) ─────
+// Extend the existing /api/casino/play to handle new games
+// Patch: we add a separate handler that runs first via middleware
+async function handleExtendedPlay(req, res) {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const { game, bet, horse, winner, mult, prize, result, profit: clientProfit, gems } = req.body;
+    if (!bet || bet < 1) return res.status(400).json({ error: 'Apuesta inválida' });
+    const userCoins = await UserCoins.findOne({ userId, guildId: GUILD_ID });
+    if (!userCoins) return res.status(403).json({ error: 'Usa /registrarse en Discord primero' });
+    if (userCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
+
+    let won = false, delta = -bet;
+
+    if (game === 'carreras') {
+      // Validate winner server-side (simulate own race)
+      const pos = Object.fromEntries(Object.keys(HORSES_DATA).map(k => [k, 0]));
+      let serverWinner = null;
+      for (let t = 0; t < 200 && !serverWinner; t++) {
+        for (const [id, h] of Object.entries(HORSES_DATA)) {
+          const roll = Math.random();
+          let adv = 0;
+          if (roll < h.baseSpeed + (Math.random()-0.5)*h.variance) adv = 1;
+          if (Math.random() < 0.05) adv++;
+          pos[id] = Math.min(20, pos[id] + adv);
+        }
+        const fin = Object.entries(pos).filter(([,v]) => v >= 20);
+        if (fin.length) serverWinner = fin[0][0];
+      }
+      if (!serverWinner) serverWinner = winner; // fallback to client
+      won = serverWinner === horse;
+      delta = won ? bet : -bet; // simple 1:1 for solo
+    } else if (game === 'loteria') {
+      // Generate server-side grid and compute prize
+      const LOT_SYMS = ['🍒','⭐','💎','🍀','🔔','🎯','🎰','💰','🌙'];
+      const grid = Array.from({length:9}, () => LOT_SYMS[Math.floor(Math.random()*LOT_SYMS.length)]);
+      const counts = {}; for (const s of grid) counts[s] = (counts[s]||0)+1;
+      const max = Math.max(...Object.values(counts));
+      const serverMult = max>=7?3.0 : max>=5?2.0 : max>=4?1.5 : max>=3?1.0 : 0;
+      won = serverMult > 0;
+      delta = won ? Math.floor(bet * serverMult) - bet : -bet;
+    } else if (game === 'minas') {
+      if (result === 'cashout' && clientProfit > 0) {
+        // Validate: mult must be reasonable (max ~20×)
+        const safeProfit = Math.min(clientProfit, bet * 20);
+        won = true; delta = safeProfit;
+      } else {
+        won = false; delta = -bet;
+      }
+    } else {
+      return res.status(400).json({ error: 'Juego no reconocido' });
+    }
+
+    const updated = await UserCoins.findOneAndUpdate(
+      { userId, guildId: GUILD_ID },
+      { $inc: { coins: delta, ...(won&&delta>0?{totalEarned:delta}:{}) } },
+      { new: true }
+    );
+    await CasinoLog.create({ userId, guildId: GUILD_ID, game, bet, result: won?'win':'loss', profit: delta });
+    if (won) await Achievements.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc:{casino_wins:1}, $max:{max_bet:bet} }, { upsert:true });
+    if (global.io) global.io.emit('coins:update', { userId, coins: updated.coins });
+    res.json({ won, profit: delta, newBalance: updated.coins });
+  } catch (e) { console.error('[casino/extended]', e); res.status(500).json({ error: 'Error' }); }
+}
+
+// ── Casino: Batalla ───────────────────────────────────────────────────────
+app.post('/api/casino/battle', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const { bet, opponentId } = req.body;
+    if (!bet || bet < 100) return res.status(400).json({ error: 'Mínimo 100' });
+    if (!opponentId || opponentId === userId) return res.status(400).json({ error: 'Rival inválido' });
+
+    const [myCoins, opCoins] = await Promise.all([
+      UserCoins.findOne({ userId, guildId: GUILD_ID }),
+      UserCoins.findOne({ userId: opponentId, guildId: GUILD_ID }),
+    ]);
+    if (!myCoins || myCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
+    if (!opCoins || opCoins.coins < bet) return res.status(400).json({ error: 'El rival no tiene suficientes monedas' });
+
+    const myRoll  = Math.floor(Math.random()*6)+1;
+    const opRoll  = Math.floor(Math.random()*6)+1;
+    const tie     = myRoll === opRoll;
+    const iWon    = myRoll > opRoll;
+
+    if (!tie) {
+      const winner = iWon ? myCoins : opCoins;
+      const loser  = iWon ? opCoins : myCoins;
+      winner.coins += bet; winner.totalEarned += bet;
+      loser.coins  -= bet;
+      await Promise.all([winner.save(), loser.save()]);
+      await Promise.all([
+        CasinoLog.create({ userId, guildId: GUILD_ID, game:'batalla', bet, result:iWon?'win':'loss', profit:iWon?bet:-bet }),
+        CasinoLog.create({ userId:opponentId, guildId: GUILD_ID, game:'batalla', bet, result:iWon?'loss':'win', profit:iWon?-bet:bet }),
+      ]);
+      if (iWon) await Achievements.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc:{casino_wins:1}, $max:{max_bet:bet} }, { upsert:true });
+    }
+
+    if (global.io) {
+      global.io.emit('coins:update', { userId, coins: myCoins.coins });
+      global.io.emit('coins:update', { userId: opponentId, coins: opCoins.coins });
+    }
+
+    res.json({ won: iWon, tie, myRoll, opponentRoll: opRoll, newBalance: myCoins.coins });
+  } catch (e) { console.error('[battle]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+
+// ── Casino: Trivia ────────────────────────────────────────────────────────
+// Mini-trivia: 5 questions, earn coins per correct answer (matches bot rewards)
+const TRIVIA_POOL = [
+  {q:'¿Cuántos continentes hay?',o:['5','6','7','8'],c:2,d:'easy'},
+  {q:'Capital de Francia',o:['Lyon','París','Roma','Berlín'],c:1,d:'easy'},
+  {q:'Planeta más grande del sistema solar',o:['Saturno','Neptuno','Júpiter','Urano'],c:2,d:'medium'},
+  {q:'¿Cuántos huesos tiene el cuerpo humano adulto?',o:['186','206','226','246'],c:1,d:'medium'},
+  {q:'¿Quién pintó La Mona Lisa?',o:['Van Gogh','Picasso','Da Vinci','Monet'],c:2,d:'hard'},
+  {q:'¿En qué año llegó el hombre a la Luna?',o:['1965','1967','1969','1971'],c:2,d:'medium'},
+  {q:'¿Cuál es el elemento más abundante en el universo?',o:['Oxígeno','Helio','Hidrógeno','Carbono'],c:2,d:'hard'},
+  {q:'¿Cuántos bytes tiene un kilobyte?',o:['100','512','1000','1024'],c:3,d:'medium'},
+  {q:'¿Quién escribió Don Quijote?',o:['Cervantes','Lope de Vega','Quevedo','Góngora'],c:0,d:'hard'},
+  {q:'¿Cuántos colores tiene el arcoíris?',o:['5','6','7','8'],c:2,d:'easy'},
+  {q:'Capital de Japón',o:['Osaka','Kioto','Tokio','Hiroshima'],c:2,d:'easy'},
+  {q:'Fórmula química del agua',o:['H2O','CO2','O2','H2O2'],c:0,d:'medium'},
+  {q:'¿Quién formuló la relatividad?',o:['Newton','Tesla','Einstein','Hawking'],c:2,d:'hard'},
+  {q:'¿Cuántos días tiene febrero en año normal?',o:['28','29','30','31'],c:0,d:'easy'},
+  {q:'Capital de Perú',o:['Cusco','Lima','Arequipa','Trujillo'],c:1,d:'easy'},
+  {q:'¿Cuántos lados tiene un hexágono?',o:['4','5','6','8'],c:2,d:'easy'},
+  {q:'¿En qué año se fundó Google?',o:['1996','1998','2000','2002'],c:1,d:'medium'},
+  {q:'Metal más abundante en la corteza terrestre',o:['Hierro','Aluminio','Cobre','Oro'],c:1,d:'hard'},
+  {q:'¿Quién escribió 1984?',o:['Orwell','Huxley','Bradbury','Wells'],c:0,d:'hard'},
+  {q:'Capital de Argentina',o:['Córdoba','Rosario','Buenos Aires','Mendoza'],c:2,d:'easy'},
+];
+const TRIVIA_REWARDS = { easy:10, medium:20, hard:35 };
+
+app.get('/api/casino/trivia/questions', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const coins  = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean();
+    if (!coins) return res.status(403).json({ error: 'Usa /registrarse primero' });
+    // Pick 6 random questions (2 easy, 2 medium, 2 hard)
+    const pick = (d, n) => TRIVIA_POOL.filter(q=>q.d===d).sort(()=>Math.random()-.5).slice(0,n);
+    const questions = [...pick('easy',2),...pick('medium',2),...pick('hard',2)]
+      .sort(()=>Math.random()-.5)
+      .map(q => ({ q:q.q, o:q.o, d:q.d })); // don't send correct answer
+    // Store session token with answers
+    req.session.triviaSession = {
+      questions: questions.map((qq,i) => {
+        const orig = TRIVIA_POOL.find(p=>p.q===qq.q);
+        return { ...qq, c: orig?.c ?? 0 };
+      }),
+      answered: [],
+      ts: Date.now(),
+    };
+    res.json({ questions });
+  } catch(e) { res.status(500).json({ error:'Error' }); }
+});
+
+app.post('/api/casino/trivia/answer', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId  = req.session.user.id;
+    const { idx, answer } = req.body;
+    const ts      = req.session.triviaSession;
+    if (!ts || Date.now()-ts.ts > 600000) return res.status(400).json({ error:'Sesión expirada' });
+    if (ts.answered.includes(idx)) return res.status(400).json({ error:'Ya respondida' });
+    ts.answered.push(idx);
+    const q       = ts.questions[idx];
+    const correct = answer === q.c;
+    const reward  = correct ? TRIVIA_REWARDS[q.d] || 10 : 0;
+    let newBalance = 0;
+    if (correct && reward > 0) {
+      const updated = await UserCoins.findOneAndUpdate(
+        { userId, guildId: GUILD_ID },
+        { $inc: { coins: reward, totalEarned: reward } },
+        { new: true }
+      );
+      newBalance = updated?.coins || 0;
+      if (global.io) global.io.emit('coins:update', { userId, coins: newBalance });
+    } else {
+      const uc = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean();
+      newBalance = uc?.coins || 0;
+    }
+    await TriviaProgress.findOneAndUpdate(
+      { userId, guildId: GUILD_ID },
+      { $inc: { totalWins: correct?1:0, totalFails: correct?0:1 } },
+      { upsert: true }
+    );
+    res.json({ correct, correctAnswer: q.c, reward, newBalance });
+  } catch(e) { res.status(500).json({ error:'Error' }); }
+});
+
+// ── Casino: Abrir caja ────────────────────────────────────────────────────
+const CASES_CONFIG = {
+  iniciacion: { price:800,  name:'Iniciación', color:'#4b69ff', rarities:['consumer','industrial','milspec'],       weights:[7992,1598,320], specialChance:0  },
+  clasificada:{ price:2000, name:'Clasificada', color:'#8847ff', rarities:['industrial','milspec','restricted'],     weights:[1598,320,64],   specialChance:0  },
+  elite:      { price:5000, name:'Elite',       color:'#eb4b4b', rarities:['milspec','restricted','classified'],     weights:[320,64,13],     specialChance:1  },
+  dorada:     { price:12000,name:'Dorada',      color:'#ffd700', rarities:['restricted','classified','covert'],     weights:[64,13,3],       specialChance:3  },
+  contrabando:{ price:25000,name:'Contrabando', color:'#ff6b00', rarities:['classified','covert','special'],        weights:[13,3,1],        specialChance:8  },
+};
+const RARITY_ITEMS = {
+  consumer:  [{id:'p250_sand_dune',name:'P250',skin:'Sand Dune',bp:500},{id:'glock_sand_dune',name:'Glock-18',skin:'Sand Dune',bp:450},{id:'famas_doomkitty',name:'FAMAS',skin:'Doomkitty',bp:800},{id:'aug_storm',name:'AUG',skin:'Storm',bp:680},{id:'m249_system_lock',name:'M249',skin:'System Lock',bp:490}],
+  industrial:[{id:'ak47_blue_laminate',name:'AK-47',skin:'Blue Laminate',bp:2200},{id:'ak47_jungle_spray',name:'AK-47',skin:'Jungle Spray',bp:2500},{id:'awp_safari_mesh',name:'AWP',skin:'Safari Mesh',bp:3800},{id:'deagle_midnight_storm',name:'Desert Eagle',skin:'Midnight Storm',bp:2400},{id:'bizon_osiris',name:'PP-Bizon',skin:'Osiris',bp:1600}],
+  milspec:   [{id:'ak47_neon_rider',name:'AK-47',skin:'Neon Rider',bp:10000},{id:'deagle_printstream',name:'Desert Eagle',skin:'Printstream',bp:13000},{id:'awp_chromatic',name:'AWP',skin:'Chromatic Aberration',bp:14000},{id:'m4a1_flashback',name:'M4A1-S',skin:'Flashback',bp:12000},{id:'five7_hyper_beast',name:'Five-SeveN',skin:'Hyper Beast',bp:9500}],
+  restricted:[{id:'ak47_wasteland',name:'AK-47',skin:'Wasteland Rebel',bp:35000},{id:'awp_pit_viper',name:'AWP',skin:'Pit Viper',bp:50000},{id:'m4a1_nightmare',name:'M4A1-S',skin:'Nightmare',bp:45000},{id:'deagle_golden_koi',name:'Desert Eagle',skin:'Golden Koi',bp:32000},{id:'usp_neo_noir',name:'USP-S',skin:'Neo-Noir',bp:38000}],
+  classified:[{id:'ak47_wild_lotus',name:'AK-47',skin:'Wild Lotus',bp:150000},{id:'m4a4_howl',name:'M4A4',skin:'Howl',bp:180000},{id:'awp_medusa',name:'AWP',skin:'Medusa',bp:170000},{id:'deagle_blaze',name:'Desert Eagle',skin:'Blaze',bp:130000},{id:'usp_kill_confirmed',name:'USP-S',skin:'Kill Confirmed',bp:140000}],
+  covert:    [{id:'ak47_fire_serpent',name:'AK-47',skin:'Fire Serpent',bp:550000},{id:'awp_dragon_lore',name:'AWP',skin:'Dragon Lore',bp:600000},{id:'awp_gungnir',name:'AWP',skin:'Gungnir',bp:520000},{id:'m4a4_poseidon',name:'M4A4',skin:'Poseidon',bp:420000},{id:'ak47_case_hardened',name:'AK-47',skin:'Case Hardened',bp:350000}],
+  special:   [{id:'knife_karambit_doppler',name:'Karambit',skin:'Doppler Fase 2',bp:1200000},{id:'knife_butterfly_tiger',name:'Butterfly Knife',skin:'Tiger Tooth',bp:1000000},{id:'knife_m9_fade',name:'M9 Bayoneta',skin:'Fade',bp:950000},{id:'gloves_sport_pandeo',name:'Sport Gloves',skin:'Pandeo',bp:1500000},{id:'knife_bayonet_slaughter',name:'Bayoneta',skin:'Slaughter',bp:800000}],
+};
+const WEARS_DATA = [{name:'Factory New',tag:'FN',mult:1.0},{name:'Minimal Wear',tag:'MW',mult:0.80},{name:'Field-Tested',tag:'FT',mult:0.60},{name:'Well-Worn',tag:'WW',mult:0.40},{name:'Battle-Scarred',tag:'BS',mult:0.20}];
+const WEAR_W     = [10,24,33,24,9];
+const RARITY_META= {consumer:{color:0x9ea3b0,sellMult:0.55},industrial:{color:0x5e98d9,sellMult:0.55},milspec:{color:0x4b69ff,sellMult:0.55},restricted:{color:0x8847ff,sellMult:0.60},classified:{color:0xd32ce6,sellMult:0.60},covert:{color:0xeb4b4b,sellMult:0.65},special:{color:0xffd700,sellMult:0.70}};
+
+function rollCase(caseId) {
+  const box = CASES_CONFIG[caseId]; if(!box) return null;
+  let rarity;
+  const sr = Math.random()*100;
+  if (sr < box.specialChance) { rarity='special'; }
+  else {
+    const tw = box.weights.reduce((a,b)=>a+b,0); let r=Math.random()*tw;
+    rarity = box.rarities[box.rarities.length-1];
+    for(let i=0;i<box.rarities.length;i++){ r-=box.weights[i]; if(r<=0){rarity=box.rarities[i];break;} }
+  }
+  const pool = RARITY_ITEMS[rarity]; const item = pool[Math.floor(Math.random()*pool.length)];
+  const tw2  = WEAR_W.reduce((a,b)=>a+b,0); let wr=Math.random()*tw2; let wi=WEAR_W.length-1;
+  for(let i=0;i<WEAR_W.length;i++){wr-=WEAR_W[i];if(wr<=0){wi=i;break;}}
+  const wear = WEARS_DATA[wi]; const rm = RARITY_META[rarity];
+  return { itemId:item.id, name:item.name, skin:item.skin, type:'rifle', emoji:'🔫', rarity,
+    rarityName:rarity, rarityColor:rm.color, wear:wear.name, wearTag:wear.tag,
+    basePrice:item.bp, sellPrice:Math.floor(item.bp*wear.mult*rm.sellMult), caseId };
+}
+
+app.post('/api/casino/case/open', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error:'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const { caseId } = req.body;
+    const box = CASES_CONFIG[caseId];
+    if (!box) return res.status(400).json({ error:'Caja inválida' });
+    const uc = await UserCoins.findOne({ userId, guildId:GUILD_ID });
+    if (!uc) return res.status(403).json({ error:'Usa /registrarse primero' });
+    if (uc.coins < box.price) return res.status(400).json({ error:'Saldo insuficiente' });
+    const drop = rollCase(caseId);
+    if (!drop) return res.status(500).json({ error:'Error generando drop' });
+    await Promise.all([
+      UserCoins.findOneAndUpdate({userId,guildId:GUILD_ID},{$inc:{coins:-box.price}},{new:true}),
+      Arm.create({userId,guildId:GUILD_ID,...drop,obtainedAt:new Date()}),
+    ]);
+    const updated = await UserCoins.findOne({userId,guildId:GUILD_ID}).lean();
+    if (global.io) global.io.emit('coins:update',{userId,coins:updated.coins});
+    res.json({ drop, newBalance:updated.coins });
+  } catch(e){ console.error('[case]',e); res.status(500).json({error:'Error'}); }
+});
+
+// ── Casino: Inventario del usuario ────────────────────────────────────────
+app.get('/api/casino/inventory', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error:'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const arms   = await Arm.find({userId,guildId:GUILD_ID}).sort({obtainedAt:-1}).lean();
+    res.json({ arms });
+  } catch(e){ res.status(500).json({error:'Error'}); }
+});
+
+// ── Casino: Comprar listing del mercado ───────────────────────────────────
+app.post('/api/casino/market/buy', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error:'No autenticado' });
+  try {
+    const userId    = req.session.user.id;
+    const { listingId } = req.body;
+    const listing   = await MarketListing.findOne({_id:listingId,guildId:GUILD_ID,status:'active'});
+    if (!listing) return res.status(404).json({ error:'Listing no encontrado o ya vendido' });
+    if (listing.sellerId === userId) return res.status(400).json({ error:'No puedes comprarte a ti mismo' });
+    const uc = await UserCoins.findOne({userId,guildId:GUILD_ID});
+    if (!uc || uc.coins < listing.price) return res.status(400).json({ error:'Saldo insuficiente' });
+    // Transaction
+    await Promise.all([
+      UserCoins.findOneAndUpdate({userId,guildId:GUILD_ID},{$inc:{coins:-listing.price}}),
+      UserCoins.findOneAndUpdate({userId:listing.sellerId,guildId:GUILD_ID},{$inc:{coins:listing.price,totalEarned:listing.price}}),
+      MarketListing.findByIdAndUpdate(listingId,{status:'sold',buyerId:userId,soldAt:new Date()}),
+      Arm.findOneAndUpdate({_id:listing.armId},{userId, tradeId:null}),
+      MarketTx.create({guildId:GUILD_ID,itemId:listing.itemId,name:listing.name,skin:listing.skin,rarity:listing.rarity,price:listing.price,sellerId:listing.sellerId,buyerId:userId}),
+    ]);
+    const updated = await UserCoins.findOne({userId,guildId:GUILD_ID}).lean();
+    if (global.io) {
+      global.io.emit('coins:update',{userId,coins:updated.coins});
+      global.io.emit('market:update',{});
+    }
+    res.json({ success:true, newBalance:updated.coins });
+  } catch(e){ console.error('[market/buy]',e); res.status(500).json({error:'Error'}); }
+});
+
+// ── Dashboard: Compras recientes (admin) ──────────────────────────────────
+const ShopPurchase = mongoose.models.ShopPurchase || mongoose.model('ShopPurchase', new mongoose.Schema({
+  userId:String, guildId:String, itemId:String, itemName:String,
+  price:Number, purchasedAt:{type:Date,default:Date.now}
+}));
+
+app.get('/api/admin/purchases', requireAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page)||1, limit=15;
+    const [agg, count] = await Promise.all([
+      ShopPurchase.find({guildId:GUILD_ID}).sort({purchasedAt:-1}).skip((page-1)*limit).limit(limit).lean(),
+      ShopPurchase.countDocuments({guildId:GUILD_ID}),
+    ]);
+    const enriched = await Promise.all(agg.map(async p => {
+      const u = await getUser(p.userId);
+      return {...p, username:u.username, avatar:u.avatar};
+    }));
+    res.json({ items:enriched, pages:Math.ceil(count/limit) });
+  } catch(e){ res.status(500).json({error:'Error'}); }
+});
+
+// ── WebSocket ──────────────────────────────────────────────────────────────
 io.on('connection', socket => {
   console.log(`[WS] Conectado: ${socket.id}`);
   socket.on('disconnect', () => console.log(`[WS] Desconectado: ${socket.id}`));
@@ -622,11 +993,13 @@ io.on('connection', socket => {
 
 global.emitUpdate = (event, data) => io.emit(event, data);
 
+// Actualizar stats cada 5 segundos (para el dashboard en tiempo real)
 setInterval(async () => {
   const stats = await getStats();
   if (stats) io.emit('stats:update', stats);
 }, 5000);
 
+// ── Páginas ────────────────────────────────────────────────────────────────
 app.get('/login',     (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 app.get('/dashboard', (req, res) => { if (!req.session?.user) return res.redirect('/login'); res.sendFile(path.join(__dirname, 'public', 'dashboard.html')); });
 app.get('/casino',    (req, res) => res.sendFile(path.join(__dirname, 'public', 'casino.html')));

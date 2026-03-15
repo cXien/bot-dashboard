@@ -200,6 +200,15 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 </style>
 </head>
 <body>
+
+<!-- Admin float button: go to dashboard -->
+<div id="adminFloat" style="display:none;position:fixed;bottom:24px;right:24px;z-index:500">
+  <a href="/dashboard" style="display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:12px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);color:var(--gold);font-weight:700;font-size:13px;text-decoration:none;backdrop-filter:blur(12px);transition:all .2s;box-shadow:0 4px 20px rgba(201,168,76,0.15)"
+    onmouseover="this.style.background='rgba(201,168,76,0.25)'" onmouseout="this.style.background='rgba(201,168,76,0.15)'">
+    ⚡ Dashboard Admin
+  </a>
+</div>
+
 <div id="toast"></div>
 
 <nav>
@@ -210,6 +219,8 @@ tr:hover td{background:rgba(255,255,255,0.02)}
     <button class="nav-link" onclick="showPage('leaderboard',this)">🏆 Ranking</button>
     <button class="nav-link" onclick="showPage('shop',this)">🛒 Tienda</button>
     <button class="nav-link" id="navProfile" style="display:none" onclick="showPage('profile',this)">👤 Mi perfil</button>
+    <button class="nav-link" id="navInventory" style="display:none" onclick="showPage('inventory',this)">🔫 Inventario</button>
+    <button class="nav-link" onclick="showPage('trivia',this)">🧠 Trivia</button>
   </div>
   <div class="nav-right">
     <div class="nav-coins" id="navCoins" style="display:none">🪙 <span id="navCoinAmt">—</span></div>
@@ -269,6 +280,42 @@ tr:hover td{background:rgba(255,255,255,0.02)}
         <div class="gi"><div class="gn">Crash</div><div class="gd">Multiplica tu apuesta. Retira antes de que crashee.</div>
         <div class="gm"><div class="gmin">Min: <span>10 🪙</span></div><button class="btn-play">Jugar</button></div></div>
       </div>
+      <div class="game-card" onclick="openGame('carreras')">
+        <div class="gbadge gbnew">🏇 Multi</div>
+        <div class="gp" style="background:linear-gradient(135deg,#0a1a0a,#1a3d10)">🏇</div>
+        <div class="gi"><div class="gn">Carreras</div><div class="gd">5 caballos, apuesta al tuyo. El pozo se reparte entre los ganadores.</div>
+        <div class="gm"><div class="gmin">Min: <span>50 🪙</span></div><button class="btn-play">Apostar</button></div></div>
+      </div>
+      <div class="game-card" onclick="openGame('loteria')">
+        <div class="gbadge" style="background:rgba(255,215,0,.2);color:#ffd700;border:1px solid rgba(255,215,0,.3)">🎟️ Suerte</div>
+        <div class="gp" style="background:linear-gradient(135deg,#1a1000,#3d2d00)">🎟️</div>
+        <div class="gi"><div class="gn">Lotería Raspadita</div><div class="gd">Compra un ticket y raspa para revelar tu premio. Hasta 3× el pozo.</div>
+        <div class="gm"><div class="gmin">Ticket: <span>100 🪙</span></div><button class="btn-play">Comprar</button></div></div>
+      </div>
+      <div class="game-card" onclick="openGame('minas')">
+        <div class="gbadge" style="background:rgba(255,79,123,.2);color:var(--rose);border:1px solid rgba(255,79,123,.3)">💣 Riesgo</div>
+        <div class="gp" style="background:linear-gradient(135deg,#1a0a0a,#2d1010)">💎</div>
+        <div class="gi"><div class="gn">Minas</div><div class="gd">Destapa gemas en un grid 4×4. Cada gema multiplica tu apuesta. Evita las minas.</div>
+        <div class="gm"><div class="gmin">Min: <span>50 🪙</span></div><button class="btn-play">Jugar</button></div></div>
+      </div>
+      <div class="game-card" onclick="openGame('batalla')">
+        <div class="gbadge" style="background:rgba(64,196,255,.15);color:var(--sky);border:1px solid rgba(64,196,255,.25)">🎲 1v1</div>
+        <div class="gp" style="background:linear-gradient(135deg,#0a1020,#102040)">🎲</div>
+        <div class="gi"><div class="gn">Batalla</div><div class="gd">Reta a un jugador. El dado más alto se lleva todo. Empate = devuelven.</div>
+        <div class="gm"><div class="gmin">Min: <span>100 🪙</span></div><button class="btn-play">Retar</button></div></div>
+      </div>
+      <div class="game-card" onclick="showPage('trivia',document.querySelector('[onclick*=trivia]'))" style="cursor:pointer">
+        <div class="gbadge" style="background:rgba(179,136,255,.15);color:var(--purple);border:1px solid rgba(179,136,255,.25)">🧠 Ganar monedas</div>
+        <div class="gp" style="background:linear-gradient(135deg,#0f0a20,#1f1040)">🧠</div>
+        <div class="gi"><div class="gn">Trivia</div><div class="gd">Responde 6 preguntas y gana monedas. Hasta 35 🪙 por pregunta correcta.</div>
+        <div class="gm"><div class="gmin">Gratis</div><button class="btn-play">Jugar</button></div></div>
+      </div>
+      <div class="game-card" onclick="showPage('cases',null)">
+        <div class="gbadge" style="background:rgba(255,107,0,.15);color:var(--amber);border:1px solid rgba(255,107,0,.25)">📦 CS2 Style</div>
+        <div class="gp" style="background:linear-gradient(135deg,#1a0f00,#3d2000)">📦</div>
+        <div class="gi"><div class="gn">Abrir Cajas</div><div class="gd">5 cajas disponibles. Desde skins comunes hasta cuchillos especiales.</div>
+        <div class="gm"><div class="gmin">Desde: <span>800 🪙</span></div><button class="btn-play">Abrir</button></div></div>
+      </div>
     </div>
     <div class="two-lead">
       <div class="glass-card"><div class="section-title" style="font-size:14px">Top Ganadores</div><div id="topWinners"></div></div>
@@ -327,6 +374,76 @@ tr:hover td{background:rgba(255,255,255,0.02)}
   </div>
 </div>
 
+<!-- TRIVIA PAGE -->
+<div class="page" id="pg-trivia">
+  <div class="container" style="padding-top:22px;max-width:680px">
+    <div class="section-title">🧠 Trivia</div>
+    <div id="triviaContent">
+      <div style="text-align:center;padding:40px 20px">
+        <div style="font-size:48px;margin-bottom:16px">🧠</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:8px">Responde y gana monedas</div>
+        <div style="color:var(--text2);font-size:14px;margin-bottom:24px">6 preguntas · Fácil 10🪙 · Media 20🪙 · Difícil 35🪙</div>
+        <button class="btn-primary" style="max-width:280px;margin:0 auto" onclick="startTrivia()">🧠 Comenzar Trivia</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CASES PAGE -->
+<div class="page" id="pg-cases">
+  <div class="container" style="padding-top:22px">
+    <div class="section-title">📦 Abrir Cajas</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px">
+      <div class="glass-card" style="text-align:center;cursor:pointer;transition:all .2s" onclick="openCase('iniciacion')" onmouseover="this.style.borderColor='#4b69ff'" onmouseout="this.style.borderColor='var(--rim)'">
+        <div style="font-size:40px;margin-bottom:10px">🟦</div>
+        <div style="font-weight:700;margin-bottom:4px">Iniciación</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:12px">Consumer · Industrial · Mil-Spec</div>
+        <div style="color:var(--gold);font-weight:800;font-size:16px">800 🪙</div>
+      </div>
+      <div class="glass-card" style="text-align:center;cursor:pointer;transition:all .2s" onclick="openCase('clasificada')" onmouseover="this.style.borderColor='#8847ff'" onmouseout="this.style.borderColor='var(--rim)'">
+        <div style="font-size:40px;margin-bottom:10px">🟣</div>
+        <div style="font-weight:700;margin-bottom:4px">Clasificada</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:12px">Industrial · Mil-Spec · Restricted</div>
+        <div style="color:var(--gold);font-weight:800;font-size:16px">2,000 🪙</div>
+      </div>
+      <div class="glass-card" style="text-align:center;cursor:pointer;transition:all .2s" onclick="openCase('elite')" onmouseover="this.style.borderColor='#eb4b4b'" onmouseout="this.style.borderColor='var(--rim)'">
+        <div style="font-size:40px;margin-bottom:10px">🔴</div>
+        <div style="font-weight:700;margin-bottom:4px">Elite</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:12px">Mil-Spec · Restricted · Classified</div>
+        <div style="color:var(--gold);font-weight:800;font-size:16px">5,000 🪙</div>
+      </div>
+      <div class="glass-card" style="text-align:center;cursor:pointer;transition:all .2s" onclick="openCase('dorada')" onmouseover="this.style.borderColor='#ffd700'" onmouseout="this.style.borderColor='var(--rim)'">
+        <div style="font-size:40px;margin-bottom:10px">🟡</div>
+        <div style="font-weight:700;margin-bottom:4px">Dorada</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:12px">Restricted · Classified · Covert</div>
+        <div style="color:var(--gold);font-weight:800;font-size:16px">12,000 🪙</div>
+      </div>
+      <div class="glass-card" style="text-align:center;cursor:pointer;transition:all .2s" onclick="openCase('contrabando')" onmouseover="this.style.borderColor='#ff6b00'" onmouseout="this.style.borderColor='var(--rim)'">
+        <div style="font-size:40px;margin-bottom:10px">🔥</div>
+        <div style="font-weight:700;margin-bottom:4px">Contrabando</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:12px">Classified · Covert · Special</div>
+        <div style="color:var(--gold);font-weight:800;font-size:16px">25,000 🪙</div>
+      </div>
+    </div>
+    <!-- Case opening animation -->
+    <div id="caseOpenArea" style="display:none;margin-top:24px">
+      <div class="glass-card" style="text-align:center;padding:32px">
+        <div id="caseSpinner" style="font-size:64px;margin-bottom:16px;animation:caseSpin 0.3s linear infinite">📦</div>
+        <div id="caseStatus" style="font-size:14px;color:var(--text2)">Abriendo caja...</div>
+      </div>
+    </div>
+    <div id="caseResult" style="display:none;margin-top:16px"></div>
+  </div>
+</div>
+
+<!-- INVENTORY PAGE -->
+<div class="page" id="pg-inventory">
+  <div class="container" style="padding-top:22px">
+    <div class="section-title">🔫 Mi Inventario</div>
+    <div id="inventoryContent" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px"></div>
+  </div>
+</div>
+
 </div>
 
 <!-- MODAL RULETA -->
@@ -336,13 +453,17 @@ tr:hover td{background:rgba(255,255,255,0.02)}
     <div class="mbody">
       <div class="rul-wheel" id="rulWheel">🎡</div>
       <div class="game-result" id="rulRes"><div class="ri" id="rulIcon"></div><div class="rt" id="rulTitle"></div><div class="ra" id="rulAmt"></div></div>
-      <div class="rul-types">
-        <button class="rt-btn sel" data-t="red" onclick="selRul('red',this)">🔴 Rojo<br><small>2×</small></button>
-        <button class="rt-btn" data-t="black" onclick="selRul('black',this)">⚫ Negro<br><small>2×</small></button>
-        <button class="rt-btn" data-t="green" onclick="selRul('green',this)">🟢 Verde<br><small>14×</small></button>
-        <button class="rt-btn" data-t="even" onclick="selRul('even',this)">Par<br><small>2×</small></button>
-        <button class="rt-btn" data-t="odd" onclick="selRul('odd',this)">Impar<br><small>2×</small></button>
-        <button class="rt-btn" data-t="high" onclick="selRul('high',this)">19–36<br><small>2×</small></button>
+      <div class="rul-types" style="grid-template-columns:repeat(3,1fr)">
+        <button class="rt-btn sel" data-t="rojo" onclick="selRul('rojo',this)">🔴 Rojo<br><small>2×</small></button>
+        <button class="rt-btn" data-t="negro" onclick="selRul('negro',this)">⚫ Negro<br><small>2×</small></button>
+        <button class="rt-btn" data-t="verde" onclick="selRul('verde',this)">🟢 Verde<br><small>35×</small></button>
+        <button class="rt-btn" data-t="par" onclick="selRul('par',this)">Par<br><small>2×</small></button>
+        <button class="rt-btn" data-t="impar" onclick="selRul('impar',this)">Impar<br><small>2×</small></button>
+        <button class="rt-btn" data-t="bajo" onclick="selRul('bajo',this)">1-18<br><small>2×</small></button>
+        <button class="rt-btn" data-t="alto" onclick="selRul('alto',this)">19-36<br><small>2×</small></button>
+        <button class="rt-btn" data-t="docena1" onclick="selRul('docena1',this)">1-12<br><small>3×</small></button>
+        <button class="rt-btn" data-t="docena2" onclick="selRul('docena2',this)">13-24<br><small>3×</small></button>
+        <button class="rt-btn" data-t="docena3" onclick="selRul('docena3',this)">25-36<br><small>3×</small></button>
       </div>
       <div class="bet-lbl">Apuesta</div>
       <input class="bet-inp" type="number" id="rulBet" placeholder="50" min="50">
@@ -361,10 +482,10 @@ tr:hover td{background:rgba(255,255,255,0.02)}
   <div class="modal">
     <div class="mhd"><div class="mtitle">🎰 Slots</div><button class="mclose" onclick="closeModal('slots')">✕</button></div>
     <div class="mbody">
-      <div class="slots-row"><div class="slot" id="s0">🍒</div><div class="slot" id="s1">🍋</div><div class="slot" id="s2">💎</div></div>
+      <div class="slots-row"><div class="slot" id="s0">🍒</div><div class="slot" id="s1">💰</div><div class="slot" id="s2">🎰</div></div>
       <div class="paylines">
-        <div class="pl"><span>3× 💎</span><span class="plm">50×</span></div><div class="pl"><span>3× 🌟</span><span class="plm">20×</span></div>
-        <div class="pl"><span>3× 7️⃣</span><span class="plm">15×</span></div><div class="pl"><span>3× iguales</span><span class="plm">5×</span></div>
+        <div class="pl"><span>3× 🍒 Jackpot</span><span class="plm">10×</span></div><div class="pl"><span>3× iguales</span><span class="plm">10×</span></div>
+        <div class="pl"><span>2× iguales</span><span class="plm">2×</span></div><div class="pl"><span>Sin combo</span><span class="plm">−</span></div>
       </div>
       <div class="game-result" id="sltRes"><div class="ri" id="sltIcon"></div><div class="rt" id="sltTitle"></div><div class="ra" id="sltAmt"></div></div>
       <div class="bet-lbl">Apuesta</div>
@@ -412,10 +533,12 @@ tr:hover td{background:rgba(255,255,255,0.02)}
   <div class="modal">
     <div class="mhd"><div class="mtitle">🚀 Crash</div><button class="mclose" onclick="closeModal('crash')">✕</button></div>
     <div class="mbody">
-      <div class="crash-disp">
-        <div class="crash-mult cm-safe" id="cMult">1.00×</div>
-        <div class="crash-st" id="cSt">Esperando apuesta</div>
-        <div class="crash-bar-wrap"><div class="crash-bar" id="cBar"></div></div>
+      <div class="crash-disp" id="crashCanvas" style="padding:0;position:relative;min-height:200px;background:var(--s2);border:1px solid var(--rim);border-radius:var(--r);overflow:hidden">
+        <canvas id="crashChart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none">
+          <div class="crash-mult cm-safe" id="cMult">1.00×</div>
+          <div class="crash-st" id="cSt">Esperando apuesta</div>
+        </div>
       </div>
       <button class="cashout-btn" id="cCashout" onclick="cCashout()">💰 Retirar — <span id="cVal">—</span></button>
       <div class="game-result" id="crRes"><div class="ri" id="crIcon"></div><div class="rt" id="crTitle"></div><div class="ra" id="crAmt"></div></div>
@@ -429,6 +552,109 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <button class="btn-primary" id="crBtn" onclick="cStart()">🚀 Apostar</button>
     </div>
   </div>
+<!-- MODAL CARRERAS -->
+<div class="modal-overlay" id="m-carreras">
+  <div class="modal">
+    <div class="mhd"><div class="mtitle">🏇 Carreras</div><button class="mclose" onclick="closeModal('carreras')">✕</button></div>
+    <div class="mbody">
+      <div id="carrerasTrack" style="background:var(--s2);border:1px solid var(--rim);border-radius:var(--r);padding:14px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:12px;min-height:140px"></div>
+      <div class="game-result" id="carRes"><div class="ri" id="carIcon"></div><div class="rt" id="carTitle"></div><div class="ra" id="carAmt"></div></div>
+      <div style="margin-bottom:12px">
+        <div class="bet-lbl">Elige tu caballo</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px">
+          <button class="rt-btn sel" data-h="A" onclick="selHorse('A',this)">🐴 Rayo Veloz</button>
+          <button class="rt-btn" data-h="B" onclick="selHorse('B',this)">🦄 Viento Norte</button>
+          <button class="rt-btn" data-h="C" onclick="selHorse('C',this)">🐎 Tormenta</button>
+          <button class="rt-btn" data-h="D" onclick="selHorse('D',this)">🏇 Sol de Oro</button>
+          <button class="rt-btn" data-h="E" onclick="selHorse('E',this)">🦓 Sombra Negra</button>
+        </div>
+      </div>
+      <div class="bet-lbl">Apuesta</div>
+      <input class="bet-inp" type="number" id="carBet" placeholder="50" min="50">
+      <div class="presets" style="margin-bottom:16px">
+        <button class="preset" onclick="sb('carBet',50)">50</button>
+        <button class="preset" onclick="sb('carBet',200)">200</button>
+        <button class="preset" onclick="sb('carBet',500)">500</button>
+        <button class="preset" onclick="sbMax('carBet')">MAX</button>
+      </div>
+      <button class="btn-primary" id="carBtn" onclick="playCorreras()">🏇 Apostar y correr</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LOTERÍA -->
+<div class="modal-overlay" id="m-loteria">
+  <div class="modal">
+    <div class="mhd"><div class="mtitle">🎟️ Lotería Raspadita</div><button class="mclose" onclick="closeModal('loteria')">✕</button></div>
+    <div class="mbody">
+      <div id="loteriaGrid" style="background:var(--s2);border:1px solid var(--rim);border-radius:var(--r);padding:16px;margin-bottom:14px;text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center">
+        <div style="color:var(--text3);font-size:13px">Compra un ticket para empezar</div>
+      </div>
+      <div class="game-result" id="lotRes"><div class="ri" id="lotIcon"></div><div class="rt" id="lotTitle"></div><div class="ra" id="lotAmt"></div></div>
+      <div style="background:rgba(240,192,64,0.07);border:1px solid rgba(240,192,64,0.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--text2)">
+        <div style="margin-bottom:4px">🎰 <strong style="color:var(--gold)">JACKPOT 3×</strong> — 7+ del mismo símbolo</div>
+        <div style="margin-bottom:4px">🏆 <strong style="color:rgba(255,255,255,.7)">GRANDE 2×</strong> — 5+ del mismo símbolo</div>
+        <div>✅ <strong style="color:rgba(255,255,255,.5)">BASE 1×</strong> — 3-4 del mismo símbolo</div>
+      </div>
+      <button class="btn-primary" id="lotBtn" onclick="playLoteria()">🎟️ Comprar ticket (100 🪙)</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MINAS -->
+<div class="modal-overlay" id="m-minas">
+  <div class="modal">
+    <div class="mhd"><div class="mtitle">💎 Minas</div><button class="mclose" onclick="closeModal('minas')">✕</button></div>
+    <div class="mbody">
+      <div id="minasInfo" style="background:var(--s2);border:1px solid var(--rim);border-radius:10px;padding:12px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Multiplicador</div><div id="minasMult" style="font-size:22px;font-weight:800;color:var(--gold)">1.00×</div></div>
+        <div style="text-align:right"><div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">Retiro</div><div id="minasCashoutAmt" style="font-size:16px;font-weight:700;color:var(--em)">—</div></div>
+      </div>
+      <div id="minasGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px"></div>
+      <div class="game-result" id="minRes"><div class="ri" id="minIcon"></div><div class="rt" id="minTitle"></div><div class="ra" id="minAmt"></div></div>
+      <button class="btn-primary" id="minasCashoutBtn" style="display:none;margin-bottom:10px;background:linear-gradient(135deg,rgba(0,230,118,.2),rgba(0,230,118,.1));border:1px solid rgba(0,230,118,.3);color:var(--em)" onclick="minasCashout()">💰 Retirar ahora</button>
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <button class="rt-btn sel" data-d="facil" onclick="selDiff('facil',this)" style="flex:1">🟢 Fácil<br><small>3 minas</small></button>
+        <button class="rt-btn" data-d="medio" onclick="selDiff('medio',this)" style="flex:1">🟡 Medio<br><small>6 minas</small></button>
+        <button class="rt-btn" data-d="dificil" onclick="selDiff('dificil',this)" style="flex:1">🔴 Difícil<br><small>10 minas</small></button>
+      </div>
+      <div class="bet-lbl">Apuesta</div>
+      <input class="bet-inp" type="number" id="minBet" placeholder="50" min="50">
+      <div class="presets" style="margin-bottom:14px">
+        <button class="preset" onclick="sb('minBet',50)">50</button>
+        <button class="preset" onclick="sb('minBet',200)">200</button>
+        <button class="preset" onclick="sb('minBet',500)">500</button>
+        <button class="preset" onclick="sbMax('minBet')">MAX</button>
+      </div>
+      <button class="btn-primary" id="minBtn" onclick="playMinas()">💎 Comenzar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BATALLA -->
+<div class="modal-overlay" id="m-batalla">
+  <div class="modal">
+    <div class="mhd"><div class="mtitle">🎲 Batalla</div><button class="mclose" onclick="closeModal('batalla')">✕</button></div>
+    <div class="mbody">
+      <div id="batallaDisplay" style="background:var(--s2);border:1px solid var(--rim);border-radius:var(--r);padding:20px;margin-bottom:14px;min-height:100px;display:flex;align-items:center;justify-content:center">
+        <div style="text-align:center;color:var(--text3);font-size:13px">Ingresa el ID del rival y apuesta</div>
+      </div>
+      <div class="game-result" id="batRes"><div class="ri" id="batIcon"></div><div class="rt" id="batTitle"></div><div class="ra" id="batAmt"></div></div>
+      <div class="bet-lbl">ID de Discord del rival</div>
+      <input class="bet-inp" type="text" id="batOpponent" placeholder="123456789012345678" style="margin-bottom:10px;font-size:13px">
+      <div class="bet-lbl">Apuesta</div>
+      <input class="bet-inp" type="number" id="batBet" placeholder="100" min="100">
+      <div class="presets" style="margin-bottom:14px">
+        <button class="preset" onclick="sb('batBet',100)">100</button>
+        <button class="preset" onclick="sb('batBet',500)">500</button>
+        <button class="preset" onclick="sb('batBet',1000)">1K</button>
+        <button class="preset" onclick="sbMax('batBet')">MAX</button>
+      </div>
+      <button class="btn-primary" id="batBtn" onclick="playBatalla()">🎲 Tirar dados</button>
+    </div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -741,6 +967,826 @@ function cCrash(){
   showRes('cr',false,CS.cr.bet,'Crash en '+CS.cr.target.toFixed(2)+'×');
   document.getElementById('crBtn').disabled=false;CS.cr=null;
 }
+
+// ── PATCH: Sync ruleta logic with bot (ruleta.js) ─────────────────────────
+// Bot uses: rojo/negro/par/impar/bajo/alto/docena1/docena2/docena3/verde
+// Payouts:  2× / 2× / 2× / 2× / 2× / 2× / 3× / 3× / 3× / 35×
+const BET_TYPES_WEB = {
+  rojo:    { payout: 2 },  negro:   { payout: 2 },
+  par:     { payout: 2 },  impar:   { payout: 2 },
+  bajo:    { payout: 2 },  alto:    { payout: 2 },
+  docena1: { payout: 3 },  docena2: { payout: 3 },  docena3: { payout: 3 },
+  verde:   { payout: 35 },
+};
+
+// Override selRul to use new type names
+const _origSelRul = selRul;
+selRul = function(t, b) {
+  document.querySelectorAll('.rt-btn').forEach(x => x.classList.remove('sel'));
+  b.classList.add('sel');
+  CS.rType = t;
+};
+
+// Override playRuleta to use correct payouts and type names
+const _origPlayRuleta = playRuleta;
+playRuleta = async function() {
+  if (!rAuth()) return;
+  const bet = parseInt(document.getElementById('rulBet').value) || 0;
+  if (bet < 50) { toast('Mínimo 50 🪙', 'lose'); return; }
+  if (!rCoins(bet)) return;
+  const btn = document.getElementById('rulBtn'); btn.disabled = true;
+  document.getElementById('rulRes').style.display = 'none';
+  // Animate wheel
+  const wheel = document.getElementById('rulWheel');
+  const totalDeg = 1440 + Math.floor(Math.random() * 360);
+  wheel.style.transition = 'transform 3.2s cubic-bezier(.17,.67,.08,1)';
+  wheel.style.transform = `rotate(${totalDeg}deg)`;
+  try {
+    const d = await xfetch('/api/casino/play', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ game: 'ruleta', bet, type: CS.rType }),
+    });
+    await new Promise(r => setTimeout(r, 3300));
+    wheel.style.transition = 'none';
+    // Show result number on wheel
+    wheel.innerHTML = `<span style="font-size:28px;font-weight:900;color:#fff;text-shadow:0 0 12px rgba(0,0,0,.8)">${d.number ?? '?'}</span>`;
+    const won = d.won;
+    const payout = BET_TYPES_WEB[CS.rType]?.payout || 2;
+    const profit = won ? bet * (payout - 1) : bet;
+    showRes('rul', won, profit, `Número ${d.number ?? '?'} · ${CS.rType}`);
+    CS.coins = d.newBalance; updCoins();
+  } catch (e) { toast('Error al jugar', 'lose'); }
+  btn.disabled = false;
+};
+
+// ── PATCH: Crash — real graph + fixed probability (matches bot) ────────────
+// Bot: 50% < 1.8×, 25% 1.8-3×, 15% 3-7×, 7% 7-15×, 3% 15-20×
+// Bar now shows time elapsed, NOT the crash point
+
+// Draw crash graph
+function drawCrashGraph(points, crashed) {
+  const canvas = document.getElementById('crashChart');
+  if (!canvas) return;
+  const W = canvas.offsetWidth || 460, H = canvas.offsetHeight || 200;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+  if (!points || points.length < 2) return;
+  const maxM = Math.max(...points, 1.5);
+  const tx = i => (i / (points.length - 1)) * (W - 20) + 10;
+  const ty = v => H - 10 - ((v - 1) / (maxM - 1)) * (H - 30);
+  // Gradient fill
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, crashed ? 'rgba(255,79,123,0.3)' : 'rgba(0,230,118,0.3)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.beginPath();
+  ctx.moveTo(tx(0), ty(points[0]));
+  for (let i = 1; i < points.length; i++) ctx.lineTo(tx(i), ty(points[i]));
+  ctx.lineTo(tx(points.length - 1), H);
+  ctx.lineTo(tx(0), H);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+  // Line
+  ctx.beginPath();
+  ctx.moveTo(tx(0), ty(points[0]));
+  for (let i = 1; i < points.length; i++) ctx.lineTo(tx(i), ty(points[i]));
+  ctx.strokeStyle = crashed ? '#ff4f7b' : '#00e676';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+  // Dot at end
+  if (points.length > 0) {
+    const lx = tx(points.length - 1), ly = ty(points[points.length - 1]);
+    ctx.beginPath(); ctx.arc(lx, ly, 5, 0, Math.PI * 2);
+    ctx.fillStyle = crashed ? '#ff4f7b' : '#00e676';
+    ctx.fill();
+  }
+}
+
+// Override cStart to use graph + correct crash gen
+const _origCStart = cStart;
+cStart = async function() {
+  if (!rAuth()) return;
+  const bet = parseInt(document.getElementById('crBet').value) || 0;
+  if (bet < 10) { toast('Mínimo 10 🪙', 'lose'); return; }
+  if (!rCoins(bet)) return;
+  document.getElementById('crBtn').disabled = true;
+  document.getElementById('crRes').style.display = 'none';
+  try {
+    const d = await xfetch('/api/casino/crash/start', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bet }),
+    });
+    CS.cr = { bet, target: d.crashAt, mult: 1.0, out: false, points: [1.0], startTime: Date.now() };
+    CS.coins -= bet; updCoins();
+    document.getElementById('cCashout').classList.add('show');
+    document.getElementById('cSt').textContent = '🚀 En vuelo — ¡retira a tiempo!';
+    const mult = document.getElementById('cMult');
+    const val  = document.getElementById('cVal');
+    // Resize canvas
+    const canvas = document.getElementById('crashChart');
+    if (canvas) { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+    let elapsed = 0;
+    crIv = setInterval(() => {
+      elapsed += 100;
+      // Same formula as bot tick: grows gradually
+      CS.cr.mult = +(1 + elapsed / 3000).toFixed(2);
+      CS.cr.points.push(CS.cr.mult);
+      mult.textContent = CS.cr.mult.toFixed(2) + '×';
+      mult.className = 'crash-mult ' + (CS.cr.mult < 2 ? 'cm-safe' : CS.cr.mult < 5 ? 'cm-warn' : 'cm-warn');
+      val.textContent = '🪙 ' + Math.floor(bet * CS.cr.mult).toLocaleString();
+      drawCrashGraph(CS.cr.points, false);
+      if (CS.cr.mult >= CS.cr.target) { clearInterval(crIv); cCrash(); }
+    }, 100);
+  } catch (e) { toast('Error al iniciar', 'lose'); document.getElementById('crBtn').disabled = false; }
+};
+
+// Override cCrash to draw crashed graph
+const _origCCrash = cCrash;
+cCrash = function() {
+  if (!CS.cr || CS.cr.out) return;
+  clearInterval(crIv);
+  document.getElementById('cCashout').classList.remove('show');
+  document.getElementById('cMult').className = 'crash-mult cm-crash';
+  document.getElementById('cSt').textContent = '💥 ¡CRASH!';
+  drawCrashGraph(CS.cr.points, true);
+  showRes('cr', false, CS.cr.bet, `Crash en ${CS.cr.target.toFixed(2)}×`);
+  document.getElementById('crBtn').disabled = false;
+  CS.cr = null;
+};
+
+// Override cCashout to draw after cashout
+const _origCCashout = cCashout;
+cCashout = async function() {
+  if (!CS.cr || CS.cr.out) return;
+  CS.cr.out = true; clearInterval(crIv);
+  const profit = Math.floor(CS.cr.bet * CS.cr.mult) - CS.cr.bet;
+  document.getElementById('cCashout').classList.remove('show');
+  document.getElementById('cMult').className = 'crash-mult cm-safe';
+  document.getElementById('cSt').textContent = '✅ ¡Retirado!';
+  drawCrashGraph(CS.cr.points, false);
+  try {
+    const d = await xfetch('/api/casino/crash/cashout', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bet: CS.cr.bet, mult: CS.cr.mult }),
+    });
+    CS.coins = d.newBalance; updCoins();
+  } catch (e) {}
+  showRes('cr', true, profit, `Retirado en ${CS.cr.mult.toFixed(2)}×`);
+  document.getElementById('crBtn').disabled = false;
+  CS.cr = null;
+};
+
+// Resize crash canvas when modal opens
+const _origOpenGame = openGame;
+openGame = function(n) {
+  if (!rAuth()) return;
+  document.getElementById('m-' + n).classList.add('open');
+  if (n === 'crash') {
+    setTimeout(() => {
+      const canvas = document.getElementById('crashChart');
+      if (canvas) { canvas.width = canvas.offsetWidth || 460; canvas.height = canvas.offsetHeight || 200; }
+    }, 50);
+  }
+};
+
+// ── PATCH: Slots — better spin animation ──────────────────────────────────
+const SLOT_SYMS_BOT = ['🍒', '7️⃣', '💰', '🎰', '⭐', '🔔'];
+
+const _origPlaySlots = playSlots;
+playSlots = async function() {
+  if (!rAuth()) return;
+  const bet = parseInt(document.getElementById('sltBet').value) || 0;
+  if (bet < 20) { toast('Mínimo 20 🪙', 'lose'); return; }
+  if (!rCoins(bet)) return;
+  const btn = document.getElementById('sltBtn'); btn.disabled = true;
+  document.getElementById('sltRes').style.display = 'none';
+  // Animate: rapid random symbols before result
+  const reels = [0, 1, 2].map(i => document.getElementById('s' + i));
+  let frame = 0;
+  const spinAnim = setInterval(() => {
+    reels.forEach(r => { r.textContent = SLOT_SYMS_BOT[Math.floor(Math.random() * SLOT_SYMS_BOT.length)]; });
+    frame++;
+  }, 80);
+  try {
+    const d = await xfetch('/api/casino/play', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ game: 'slots', bet }),
+    });
+    // Let animation run at least 700ms
+    await new Promise(r => setTimeout(r, 700));
+    clearInterval(spinAnim);
+    // Reveal reels one by one with delay
+    for (let i = 0; i < 3; i++) {
+      await new Promise(r => setTimeout(r, 200));
+      reels[i].textContent = d.reels?.[i] || SLOT_SYMS_BOT[0];
+      reels[i].style.transform = 'scale(1.2)';
+      setTimeout(() => { reels[i].style.transform = 'scale(1)'; reels[i].style.transition = 'transform .15s'; }, 100);
+    }
+    await new Promise(r => setTimeout(r, 300));
+    const won = d.won;
+    const profit = won ? Math.floor(bet * (d.multiplier - 1)) : bet;
+    showRes('slt', won, profit, (d.reels || []).join(' ') + ' · ' + d.multiplier + '×');
+    CS.coins = d.newBalance; updCoins();
+  } catch (e) { clearInterval(spinAnim); toast('Error al jugar', 'lose'); }
+  btn.disabled = false;
+};
+
+
+// ══════════════════════════════════════════════════════════════════════════
+//  CARRERAS — lógica idéntica a carreras.js del bot
+// ══════════════════════════════════════════════════════════════════════════
+const HORSES = [
+  { id:'A', emoji:'🐴', name:'Rayo Veloz',   baseSpeed:0.35, variance:0.40 },
+  { id:'B', emoji:'🦄', name:'Viento Norte',  baseSpeed:0.38, variance:0.30 },
+  { id:'C', emoji:'🐎', name:'Tormenta',      baseSpeed:0.32, variance:0.50 },
+  { id:'D', emoji:'🏇', name:'Sol de Oro',    baseSpeed:0.40, variance:0.20 },
+  { id:'E', emoji:'🦓', name:'Sombra Negra',  baseSpeed:0.30, variance:0.60 },
+];
+const TRACK_LEN = 20;
+let carState = { horse:'A', running:false };
+
+function selHorse(h, b) {
+  document.querySelectorAll('#m-carreras .rt-btn').forEach(x => x.classList.remove('sel'));
+  b.classList.add('sel'); carState.horse = h;
+}
+
+function buildTrackLine(pos, horse, isWinner) {
+  const VISIBLE = 16;
+  const viewPos = Math.min(Math.floor((pos / TRACK_LEN) * (VISIBLE - 1)), VISIBLE - 1);
+  const before  = '·'.repeat(viewPos);
+  const after   = '·'.repeat(VISIBLE - viewPos - 1);
+  const crown   = isWinner ? '🏆' : '';
+  return `${crown}${horse.emoji} [${before}${horse.emoji}${after}🏁]`;
+}
+
+async function playCorreras() {
+  if (!rAuth()) return;
+  const bet = parseInt(document.getElementById('carBet').value) || 0;
+  if (bet < 50) { toast('Mínimo 50 🪙', 'lose'); return; }
+  if (!rCoins(bet)) return;
+  if (carState.running) return;
+  carState.running = true;
+  document.getElementById('carBtn').disabled = true;
+  document.getElementById('carRes').style.display = 'none';
+
+  // Init positions
+  const pos = Object.fromEntries(HORSES.map(h => [h.id, 0]));
+  let winner = null, tick = 0;
+
+  function renderTrack(winId) {
+    const lines = HORSES.map(h => buildTrackLine(pos[h.id], h, h.id === winId));
+    document.getElementById('carrerasTrack').innerHTML =
+      `<div style="line-height:2;font-size:11px">${lines.join('<br>')}</div>`;
+  }
+
+  renderTrack(null);
+
+  // Race loop (client-side simulation — result validated server-side)
+  await new Promise(resolve => {
+    const raceInterval = setInterval(() => {
+      tick++;
+      for (const h of HORSES) {
+        const roll = Math.random();
+        let adv = 0;
+        if (roll < h.baseSpeed + (Math.random() - 0.5) * h.variance) adv = 1;
+        if (Math.random() < 0.05) adv += 1;
+        pos[h.id] = Math.min(TRACK_LEN, pos[h.id] + adv);
+      }
+      const finished = HORSES.filter(h => pos[h.id] >= TRACK_LEN);
+      if (finished.length > 0) {
+        winner = finished[0].id;
+        clearInterval(raceInterval);
+        renderTrack(winner);
+        resolve();
+      } else {
+        renderTrack(null);
+      }
+    }, 600);
+  });
+
+  // Send result to server
+  try {
+    const d = await xfetch('/api/casino/play', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ game: 'carreras', bet, horse: carState.horse, winner }),
+    });
+    const won = d.won;
+    showRes('car', won, won ? d.profit : bet, `${HORSES.find(h=>h.id===winner)?.emoji} ${HORSES.find(h=>h.id===winner)?.name} ganó · Tú apostaste a ${HORSES.find(h=>h.id===carState.horse)?.name}`);
+    CS.coins = d.newBalance; updCoins();
+  } catch (e) { toast('Error al registrar', 'lose'); }
+  carState.running = false;
+  document.getElementById('carBtn').disabled = false;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  LOTERÍA RASPADITA — lógica idéntica a loteria.js del bot
+// ══════════════════════════════════════════════════════════════════════════
+const LOT_SYMBOLS = ['🍒','⭐','💎','🍀','🔔','🎯','🎰','💰','🌙'];
+const LOT_ROWS = 3, LOT_COLS = 3, LOT_REVEAL_MS = 400;
+let lotState = { playing: false };
+
+function generateLotGrid() {
+  return Array.from({ length: LOT_ROWS * LOT_COLS }, () =>
+    LOT_SYMBOLS[Math.floor(Math.random() * LOT_SYMBOLS.length)]
+  );
+}
+
+function calcLotPrize(grid, pozo) {
+  const counts = {};
+  for (const s of grid) counts[s] = (counts[s] || 0) + 1;
+  const max = Math.max(...Object.values(counts));
+  if (max >= 7) return { mult: 3.0, label: '🎰 JACKPOT! 3×' };
+  if (max >= 5) return { mult: 2.0, label: '🏆 GRANDE! 2×' };
+  if (max >= 4) return { mult: 1.5, label: '🎉 Bien! 1.5×' };
+  if (max >= 3) return { mult: 1.0, label: '✅ Premio base 1×' };
+  return { mult: 0, label: '😔 Sin suerte' };
+}
+
+function renderLotGrid(grid, revealed) {
+  let html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">';
+  for (let i = 0; i < grid.length; i++) {
+    const rev = revealed.has(i);
+    html += `<div style="height:52px;border-radius:8px;border:1px solid var(--rim);background:${rev?'var(--s3)':'var(--s1)'};display:flex;align-items:center;justify-content:center;font-size:${rev?'28':'20'}px;transition:all .2s">${rev ? grid[i] : '🟫'}</div>`;
+  }
+  html += '</div>';
+  document.getElementById('loteriaGrid').innerHTML = html;
+}
+
+async function playLoteria() {
+  if (!rAuth()) return;
+  if (!rCoins(100)) return;
+  if (lotState.playing) return;
+  lotState.playing = true;
+  document.getElementById('lotBtn').disabled = true;
+  document.getElementById('lotRes').style.display = 'none';
+
+  const grid = generateLotGrid();
+  const revealed = new Set();
+  const total = LOT_ROWS * LOT_COLS;
+  const order = Array.from({ length: total }, (_, i) => i).sort(() => Math.random() - 0.5);
+
+  renderLotGrid(grid, revealed);
+
+  // Reveal one by one
+  for (const idx of order) {
+    revealed.add(idx);
+    renderLotGrid(grid, revealed);
+    await new Promise(r => setTimeout(r, LOT_REVEAL_MS));
+  }
+
+  // Calculate prize
+  const { mult, label } = calcLotPrize(grid, 100);
+  const prize = Math.floor(100 * mult);
+
+  // Send to server
+  try {
+    const d = await xfetch('/api/casino/play', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ game: 'loteria', bet: 100, mult, prize }),
+    });
+    const won = mult > 0;
+    if (won) {
+      showRes('lot', true, prize - 100, `${label}`);
+    } else {
+      showRes('lot', false, 100, label);
+    }
+    CS.coins = d.newBalance; updCoins();
+  } catch (e) { toast('Error', 'lose'); }
+
+  document.getElementById('lotBtn').disabled = false;
+  lotState.playing = false;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  MINAS — lógica idéntica a minas.js del bot
+// ══════════════════════════════════════════════════════════════════════════
+const DIFF_CONFIG = {
+  facil:   { mines: 3,  step: 0.20 },
+  medio:   { mines: 6,  step: 0.40 },
+  dificil: { mines: 10, step: 0.75 },
+};
+let minState = { diff: 'facil', board: null, revealed: null, gemsFound: 0, bet: 0, active: false };
+
+function selDiff(d, b) {
+  if (minState.active) return;
+  document.querySelectorAll('#m-minas .rt-btn').forEach(x => x.classList.remove('sel'));
+  b.classList.add('sel'); minState.diff = d;
+}
+
+function calcMinMult(diff, gems) {
+  return +(1 + gems * DIFF_CONFIG[diff].step).toFixed(2);
+}
+
+function generateMinesBoard(mines) {
+  const board = Array(16).fill('gem');
+  let placed = 0;
+  while (placed < mines) {
+    const idx = Math.floor(Math.random() * 16);
+    if (board[idx] === 'gem') { board[idx] = 'mine'; placed++; }
+  }
+  return board;
+}
+
+function renderMinasGrid() {
+  const grid = document.getElementById('minasGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < 16; i++) {
+    const rev = minState.revealed[i];
+    const cell = minState.board[i];
+    const btn = document.createElement('button');
+    btn.style.cssText = `height:52px;border-radius:8px;border:1px solid var(--rim);background:var(--s2);font-size:22px;cursor:${minState.active&&!rev?'pointer':'not-allowed'};transition:all .15s;display:flex;align-items:center;justify-content:center;width:100%`;
+    if (rev) {
+      btn.textContent = cell === 'gem' ? '💎' : '💥';
+      btn.style.background = cell === 'gem' ? 'rgba(0,230,118,.15)' : 'rgba(255,79,123,.15)';
+      btn.style.borderColor = cell === 'gem' ? 'rgba(0,230,118,.3)' : 'rgba(255,79,123,.3)';
+    } else {
+      btn.textContent = '❓';
+      if (minState.active) {
+        btn.onclick = () => tapMina(i);
+        btn.onmouseover = () => { btn.style.borderColor = 'rgba(240,192,64,.4)'; btn.style.background = 'rgba(240,192,64,.08)'; };
+        btn.onmouseout  = () => { btn.style.borderColor = 'var(--rim)'; btn.style.background = 'var(--s2)'; };
+      }
+    }
+    grid.appendChild(btn);
+  }
+  // Update mult display
+  const mult = calcMinMult(minState.diff, minState.gemsFound);
+  document.getElementById('minasMult').textContent = mult + '×';
+  document.getElementById('minasCashoutAmt').textContent = minState.active && minState.gemsFound > 0
+    ? '🪙 ' + Math.floor(minState.bet * mult).toLocaleString() : '—';
+}
+
+function tapMina(idx) {
+  if (!minState.active || minState.revealed[idx]) return;
+  minState.revealed[idx] = true;
+  const cell = minState.board[idx];
+  if (cell === 'mine') {
+    // Reveal all mines
+    for (let i = 0; i < 16; i++) {
+      if (minState.board[i] === 'mine') minState.revealed[i] = true;
+    }
+    minState.active = false;
+    renderMinasGrid();
+    document.getElementById('minasCashoutBtn').style.display = 'none';
+    document.getElementById('minBtn').style.display = 'block';
+    document.getElementById('minBtn').disabled = false;
+    showRes('min', false, minState.bet, `💥 Pisaste una mina con ${minState.gemsFound} gemas encontradas`);
+    // Register loss on server
+    xfetch('/api/casino/play', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({game:'minas',bet:minState.bet,result:'bust',profit:-minState.bet}) })
+      .then(d => { CS.coins = d.newBalance; updCoins(); }).catch(()=>{});
+  } else {
+    minState.gemsFound++;
+    renderMinasGrid();
+    if (minState.gemsFound > 0) {
+      document.getElementById('minasCashoutBtn').style.display = 'block';
+    }
+  }
+}
+
+async function minasCashout() {
+  if (!minState.active || minState.gemsFound === 0) return;
+  minState.active = false;
+  const mult = calcMinMult(minState.diff, minState.gemsFound);
+  const profit = Math.floor(minState.bet * mult) - minState.bet;
+  document.getElementById('minasCashoutBtn').style.display = 'none';
+  document.getElementById('minBtn').style.display = 'block';
+  document.getElementById('minBtn').disabled = false;
+  renderMinasGrid();
+  try {
+    const d = await xfetch('/api/casino/play', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ game:'minas', bet:minState.bet, result:'cashout', profit, mult, gems:minState.gemsFound }),
+    });
+    CS.coins = d.newBalance; updCoins();
+  } catch (e) {}
+  showRes('min', true, profit, `✅ Retirado con ${minState.gemsFound} gemas · ×${mult}`);
+}
+
+async function playMinas() {
+  if (!rAuth()) return;
+  const bet = parseInt(document.getElementById('minBet').value) || 0;
+  if (bet < 50) { toast('Mínimo 50 🪙', 'lose'); return; }
+  if (!rCoins(bet)) return;
+  document.getElementById('minBtn').disabled = true;
+  document.getElementById('minBtn').style.display = 'none';
+  document.getElementById('minRes').style.display = 'none';
+  document.getElementById('minasCashoutBtn').style.display = 'none';
+  minState = {
+    diff: minState.diff,
+    board: generateMinesBoard(DIFF_CONFIG[minState.diff].mines),
+    revealed: Array(16).fill(false),
+    gemsFound: 0, bet, active: true,
+  };
+  CS.coins -= bet; updCoins();
+  renderMinasGrid();
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  BATALLA — dados 1v1 contra otro usuario
+// ══════════════════════════════════════════════════════════════════════════
+async function playBatalla() {
+  if (!rAuth()) return;
+  const bet      = parseInt(document.getElementById('batBet').value) || 0;
+  const opponent = document.getElementById('batOpponent').value.trim();
+  if (bet < 100) { toast('Mínimo 100 🪙', 'lose'); return; }
+  if (!opponent || opponent.length < 17) { toast('Ingresa un ID de Discord válido', 'lose'); return; }
+  if (!rCoins(bet)) return;
+  document.getElementById('batBtn').disabled = true;
+  document.getElementById('batRes').style.display = 'none';
+  document.getElementById('batallaDisplay').innerHTML = '<div style="text-align:center;font-size:13px;color:var(--text2)">🎲 Tirando dados...</div>';
+  try {
+    const d = await xfetch('/api/casino/battle', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ bet, opponentId: opponent }),
+    });
+    // Animate dice
+    let frames = 0;
+    const anim = setInterval(() => {
+      const d1 = Math.floor(Math.random()*6)+1, d2 = Math.floor(Math.random()*6)+1;
+      document.getElementById('batallaDisplay').innerHTML =
+        `<div style="display:flex;gap:24px;justify-content:center;align-items:center">
+          <div style="text-align:center"><div style="font-size:36px">${['⚀','⚁','⚂','⚃','⚄','⚅'][d1-1]}</div><div style="font-size:11px;color:var(--text3);margin-top:4px">Tú</div></div>
+          <div style="font-size:20px;color:var(--text3)">vs</div>
+          <div style="text-align:center"><div style="font-size:36px">${['⚀','⚁','⚂','⚃','⚄','⚅'][d2-1]}</div><div style="font-size:11px;color:var(--text3);margin-top:4px">Rival</div></div>
+        </div>`;
+      frames++;
+      if (frames > 8) {
+        clearInterval(anim);
+        const dice = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+        document.getElementById('batallaDisplay').innerHTML =
+          `<div style="display:flex;gap:24px;justify-content:center;align-items:center">
+            <div style="text-align:center"><div style="font-size:40px">${dice[d.myRoll-1]}</div><div style="font-size:11px;color:var(--text3);margin-top:4px">Tú — ${d.myRoll}</div></div>
+            <div style="font-size:20px;color:var(--text3)">vs</div>
+            <div style="text-align:center"><div style="font-size:40px">${dice[d.opponentRoll-1]}</div><div style="font-size:11px;color:var(--text3);margin-top:4px">Rival — ${d.opponentRoll}</div></div>
+          </div>`;
+      }
+    }, 120);
+    await new Promise(r => setTimeout(r, 1100));
+    CS.coins = d.newBalance; updCoins();
+    if (d.tie) { toast('🤝 Empate — apuesta devuelta', ''); document.getElementById('batRes').style.display = 'none'; }
+    else showRes('bat', d.won, bet, d.won ? `🎲 ${d.myRoll} > ${d.opponentRoll} — ¡Ganaste!` : `🎲 ${d.myRoll} < ${d.opponentRoll} — Perdiste`);
+  } catch (e) { toast(e.message || 'Error', 'lose'); }
+  document.getElementById('batBtn').disabled = false;
+}
+
+
+// ── INIT PATCH: show admin button + inventory nav ─────────────────────────
+const _origInit = (async()=>{}).toString(); // just patch after existing init
+document.addEventListener('DOMContentLoaded', () => {
+  // Re-check after init loads user
+  const origFetch = window.xfetch;
+  // Patch init to show admin elements
+  setTimeout(async () => {
+    if (CS.user?.isAdmin) {
+      document.getElementById('adminFloat').style.display = 'block';
+    }
+    if (CS.user) {
+      const inv = document.getElementById('navInventory');
+      if (inv) inv.style.display = 'flex';
+    }
+  }, 1500);
+});
+
+// Patch showPage to handle new pages
+const _origShowPage = showPage;
+showPage = function(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+  const pg = document.getElementById('pg-'+name);
+  if (pg) pg.classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name==='market')     loadMarket();
+  if (name==='leaderboard') loadLeaderboard(CS.lbTab);
+  if (name==='shop')       loadShop();
+  if (name==='profile')    loadProfile();
+  if (name==='cases')      {} // static page
+  if (name==='inventory')  loadInventory();
+  if (name==='trivia')     {} // handled by startTrivia
+};
+
+// ══════════════════════════════════════════════════════════════════════════
+//  TRIVIA — 6 preguntas, gana monedas por acierto
+// ══════════════════════════════════════════════════════════════════════════
+const DIFF_REWARDS = { easy:10, medium:20, hard:35 };
+const DIFF_LABELS  = { easy:'🟢 Fácil', medium:'🟡 Media', hard:'🔴 Difícil' };
+let triviaSession  = null;
+
+async function startTrivia() {
+  if (!rAuth()) return;
+  try {
+    const d = await xfetch('/api/casino/trivia/questions');
+    triviaSession = { questions: d.questions, current: 0, score: 0, coinsEarned: 0 };
+    renderTriviaQuestion();
+  } catch(e) { toast('Error al cargar trivia', 'lose'); }
+}
+
+function renderTriviaQuestion() {
+  const ts = triviaSession;
+  if (!ts || ts.current >= ts.questions.length) {
+    // End
+    document.getElementById('triviaContent').innerHTML = `
+      <div style="text-align:center;padding:32px 20px">
+        <div style="font-size:48px;margin-bottom:14px">🎉</div>
+        <div style="font-size:22px;font-weight:800;margin-bottom:8px">${ts.score} / ${ts.questions.length} correctas</div>
+        <div style="font-size:28px;font-weight:900;color:var(--gold);margin-bottom:20px">+${ts.coinsEarned} 🪙</div>
+        <button class="btn-primary" style="max-width:220px;margin:0 auto" onclick="startTrivia()">🔄 Jugar de nuevo</button>
+      </div>`;
+    return;
+  }
+  const q   = ts.questions[ts.current];
+  const num = ts.current + 1;
+  const tot = ts.questions.length;
+  const rew = DIFF_REWARDS[q.d] || 10;
+  document.getElementById('triviaContent').innerHTML = `
+    <div class="glass-card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px">Pregunta ${num}/${tot}</span>
+        <span style="font-size:11px;background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.2);border-radius:20px;padding:3px 10px;color:var(--gold)">${DIFF_LABELS[q.d]} · ${rew} 🪙</span>
+      </div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:20px;line-height:1.5">${q.q}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${q.o.map((opt, i) => `
+          <button onclick="answerTrivia(${i},this)" style="padding:14px;border-radius:10px;border:1px solid var(--rim);background:var(--s2);color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;text-align:left"
+            onmouseover="if(!this.disabled)this.style.borderColor='rgba(240,192,64,.4)'"
+            onmouseout="if(!this.disabled)this.style.borderColor='var(--rim)'">
+            <span style="color:var(--text3);margin-right:8px">${['A','B','C','D'][i]}</span>${opt}
+          </button>`).join('')}
+      </div>
+    </div>
+    <div style="background:var(--s2);border-radius:6px;height:4px;overflow:hidden">
+      <div style="height:100%;background:linear-gradient(90deg,var(--gold),var(--amber));border-radius:6px;width:${(num/tot)*100}%;transition:width .3s"></div>
+    </div>`;
+}
+
+async function answerTrivia(idx, btn) {
+  const ts = triviaSession; if (!ts) return;
+  // Disable all buttons
+  document.querySelectorAll('#triviaContent button[onclick^="answerTrivia"]').forEach(b => b.disabled = true);
+  try {
+    const d = await xfetch('/api/casino/trivia/answer', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ idx: ts.current, answer: idx }),
+    });
+    const correct = d.correct;
+    // Visual feedback
+    btn.style.background     = correct ? 'rgba(0,230,118,.2)' : 'rgba(255,79,123,.2)';
+    btn.style.borderColor    = correct ? 'rgba(0,230,118,.4)' : 'rgba(255,79,123,.4)';
+    btn.style.color          = correct ? 'var(--em)' : 'var(--rose)';
+    if (!correct) {
+      // Show correct answer
+      const btns = document.querySelectorAll('#triviaContent button[onclick^="answerTrivia"]');
+      if (btns[d.correctAnswer]) {
+        btns[d.correctAnswer].style.background  = 'rgba(0,230,118,.15)';
+        btns[d.correctAnswer].style.borderColor = 'rgba(0,230,118,.3)';
+        btns[d.correctAnswer].style.color       = 'var(--em)';
+      }
+    }
+    if (correct) { ts.score++; ts.coinsEarned += d.reward; }
+    CS.coins = d.newBalance; updCoins();
+    toast(correct ? `✅ +${d.reward} 🪙` : '❌ Incorrecto', correct ? 'win' : 'lose');
+    ts.current++;
+    setTimeout(renderTriviaQuestion, 1400);
+  } catch(e) { toast('Error', 'lose'); }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  CAJAS — sistema de apertura con animación
+// ══════════════════════════════════════════════════════════════════════════
+const RC_WEB = {consumer:'#9ea3b0',industrial:'#5e98d9',milspec:'#4b69ff',restricted:'#8847ff',classified:'#d32ce6',covert:'#eb4b4b',special:'#ffd700'};
+
+async function openCase(caseId) {
+  if (!rAuth()) return;
+  const btn = event?.target;
+  document.getElementById('caseOpenArea').style.display = 'block';
+  document.getElementById('caseResult').style.display   = 'none';
+  // Animate spinner
+  const spinner = document.getElementById('caseSpinner');
+  const status  = document.getElementById('caseStatus');
+  const emojis  = ['📦','🎁','✨','💫','⚡'];
+  let f = 0;
+  const anim = setInterval(() => { spinner.textContent = emojis[f%emojis.length]; f++; }, 120);
+  status.textContent = 'Abriendo caja...';
+  try {
+    const d = await xfetch('/api/casino/case/open', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ caseId }),
+    });
+    clearInterval(anim);
+    await new Promise(r => setTimeout(r, 400));
+    const drop = d.drop;
+    const color = RC_WEB[drop.rarity] || '#aaa';
+    spinner.style.animation = 'none';
+    spinner.textContent = drop.emoji || '🔫';
+    status.textContent  = '';
+    CS.coins = d.newBalance; updCoins();
+    // Show result
+    document.getElementById('caseResult').style.display = 'block';
+    document.getElementById('caseResult').innerHTML = `
+      <div class="glass-card" style="border-color:${color}33;text-align:center;padding:24px;animation:fi .4s ease">
+        <div style="font-size:48px;margin-bottom:10px">${drop.emoji||'🔫'}</div>
+        <div style="font-size:20px;font-weight:800;margin-bottom:4px">${drop.name}</div>
+        <div style="font-size:15px;color:rgba(255,255,255,.6);margin-bottom:10px">${drop.skin}</div>
+        <div style="display:flex;justify-content:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+          <span style="color:${color};font-size:11px;font-weight:700;text-transform:uppercase;background:${color}18;border:1px solid ${color}44;border-radius:20px;padding:3px 10px">${drop.rarity}</span>
+          <span style="color:var(--text2);font-size:11px;background:var(--s2);border:1px solid var(--rim);border-radius:20px;padding:3px 10px">${drop.wearTag}</span>
+        </div>
+        <div style="font-size:22px;font-weight:900;color:var(--gold)">🪙 ${drop.sellPrice.toLocaleString()}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">Valor de venta</div>
+      </div>`;
+    toast(`¡${drop.rarity === 'special' ? '🌟 ESPECIAL' : ''}  ${drop.name} · ${drop.skin}`, 'win');
+    setTimeout(() => { document.getElementById('caseOpenArea').style.display = 'none'; }, 3000);
+  } catch(e) {
+    clearInterval(anim);
+    document.getElementById('caseOpenArea').style.display = 'none';
+    toast(e.message || 'Error al abrir caja', 'lose');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  INVENTARIO
+// ══════════════════════════════════════════════════════════════════════════
+async function loadInventory() {
+  if (!CS.user) { document.getElementById('inventoryContent').innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">Inicia sesión para ver tu inventario</div>'; return; }
+  try {
+    const d = await xfetch('/api/casino/inventory');
+    const el = document.getElementById('inventoryContent');
+    if (!d.arms?.length) {
+      el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);grid-column:1/-1">🔫 Sin armas. ¡Abre algunas cajas!</div>';
+      return;
+    }
+    el.innerHTML = d.arms.map(a => {
+      const color = RC_WEB[a.rarity] || '#aaa';
+      return `<div class="inv-item" style="border-color:${color}22">
+        <div style="font-size:22px;margin-bottom:8px">${a.emoji||'🔫'}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--text)">${a.name}</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:6px">${a.skin}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="color:${color};font-size:9px;font-weight:700;text-transform:uppercase">${a.wearTag}</span>
+          <span style="font-size:11px;font-weight:700;color:var(--gold)">🪙 ${(a.sellPrice||0).toLocaleString()}</span>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { document.getElementById('inventoryContent').innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">Error al cargar inventario</div>'; }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  MERCADO — patch to add Buy button
+// ══════════════════════════════════════════════════════════════════════════
+const _origLoadMarket2 = loadMarket;
+loadMarket = async function() {
+  try {
+    const [p, l] = await Promise.all([xfetch('/api/casino/public/market'), xfetch('/api/casino/public/listings')]);
+    const mt = document.getElementById('mktTable');
+    if (mt) mt.innerHTML = (p.items||[]).map(x => {
+      const pct = ((x.currentPrice-x.openPrice24h)/(x.openPrice24h||1)*100);
+      return `<tr><td><strong>${x.name}</strong> <span style="color:rgba(255,255,255,.3)">·</span> <span style="color:rgba(255,255,255,.5)">${x.skin}</span></td><td><span style="color:${RC_WEB[x.rarity]||'#aaa'};font-size:10px;font-weight:700;text-transform:uppercase">${x.rarity}</span></td><td><strong>${x.currentPrice.toLocaleString()}</strong></td><td style="color:${pct>=0?'var(--em)':'var(--rose)'};font-weight:700">${pct>=0?'+':''}${pct.toFixed(2)}%</td><td class="mono" style="color:var(--em)">${x.high24h.toLocaleString()}</td><td class="mono" style="color:var(--rose)">${x.low24h.toLocaleString()}</td><td class="mono">${x.volume24h||0}</td></tr>`;
+    }).join('') || '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--text3)">Sin datos</td></tr>';
+    const lt = document.getElementById('lstTable');
+    if (lt) lt.innerHTML = (l.items||[]).map(x => {
+      const exp = Math.max(0,Math.floor((new Date(x.expiresAt)-Date.now())/864e5));
+      const canBuy = CS.user && CS.user.id !== x.sellerId;
+      return `<tr>
+        <td><strong>${x.name}</strong> <span style="color:rgba(255,255,255,.3)">·</span> <span style="color:rgba(255,255,255,.5)">${x.skin}</span></td>
+        <td><span style="color:${RC_WEB[x.rarity]||'#aaa'};font-size:10px;font-weight:700;text-transform:uppercase">${x.rarityName||x.rarity}</span></td>
+        <td><span class="mono">${x.wearTag}</span></td>
+        <td><strong style="color:var(--gold)">🪙 ${x.price.toLocaleString()}</strong></td>
+        <td><span class="mono" style="color:rgba(255,255,255,.5)">${x.sellerName||'—'}</span></td>
+        <td><span class="badge b-m">${exp}d</span></td>
+        <td>${canBuy ? `<button class="btn-play" style="font-size:11px" onclick="buyListing('${x._id}',${x.price})">Comprar</button>` : '<span style="color:var(--text3);font-size:11px">—</span>'}</td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--text3)">Sin listings</td></tr>';
+    // Update table header to include buy column
+    const thead = lt?.closest('table')?.querySelector('thead tr');
+    if (thead && thead.children.length === 6) {
+      const th = document.createElement('th');
+      th.textContent = '';
+      thead.appendChild(th);
+    }
+    document.getElementById('mktUp').textContent = 'Actualizado: '+new Date().toLocaleTimeString('es-PE');
+  } catch(e) { console.error('[market]',e); }
+};
+
+async function buyListing(listingId, price) {
+  if (!rAuth()) return;
+  if (!rCoins(price)) return;
+  try {
+    const d = await xfetch('/api/casino/market/buy', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ listingId }),
+    });
+    CS.coins = d.newBalance; updCoins();
+    toast('¡Compra realizada! El arma está en tu inventario 🔫', 'win');
+    loadMarket();
+  } catch(e) { toast(e.message||'Error al comprar', 'lose'); }
+}
+
+// CSS for case animation
+const caseStyle = document.createElement('style');
+caseStyle.textContent = `@keyframes caseSpin{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.2)}100%{transform:rotate(360deg) scale(1)}}`;
+document.head.appendChild(caseStyle);
+
 </script>
 </body>
 </html>
