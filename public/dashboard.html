@@ -43,16 +43,7 @@ body{
     radial-gradient(ellipse 600px 600px at 85% 90%,rgba(62,207,142,0.03) 0%,transparent 70%),
     radial-gradient(ellipse 400px 400px at 50% 50%,rgba(201,168,76,0.015) 0%,transparent 70%);
 }
-/* SIDEBAR */
-.sb{
-  width:var(--sidebar);min-height:100vh;
-  position:fixed;top:0;bottom:0;left:0;z-index:50;
-  display:flex;flex-direction:column;
-  background:rgba(3,3,10,0.72);
-  backdrop-filter:blur(40px) saturate(160%);
-  -webkit-backdrop-filter:blur(40px) saturate(160%);
-  border-right:1px solid var(--rim);
-}
+.sb{width:var(--sidebar);min-height:100vh;position:fixed;top:0;bottom:0;left:0;z-index:50;display:flex;flex-direction:column;background:rgba(3,3,10,0.72);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border-right:1px solid var(--rim)}
 .sb-top{padding:22px 18px 18px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--rim)}
 .sb-bee{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.3));border:1px solid rgba(201,168,76,0.28);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 0 20px rgba(201,168,76,0.07)}
 .sb-wordmark{font-family:'Instrument Serif',serif;font-size:16px;font-style:italic;color:var(--text)}
@@ -73,23 +64,19 @@ body{
 .sb-urole{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-top:1px}
 .sb-exit{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:4px;border-radius:6px;transition:color .15s;line-height:1}
 .sb-exit:hover{color:var(--rose)}
-/* MAIN */
 .main{margin-left:var(--sidebar);flex:1;padding:32px 40px;min-height:100vh}
 .ph{margin-bottom:30px}
 .pt{font-family:'Instrument Serif',serif;font-size:26px;font-style:italic;font-weight:400;color:var(--text);letter-spacing:-0.3px}
 .ps{font-size:11px;color:var(--text3);margin-top:5px;display:flex;align-items:center;gap:6px;letter-spacing:0.2px}
 .live-dot{width:5px;height:5px;border-radius:50%;background:var(--em);box-shadow:0 0 8px var(--em);animation:lp 2.2s ease infinite;flex-shrink:0}
 @keyframes lp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.65)}}
-/* SECTION */
 .section{display:none;width:100%}
 .section.active{display:block;animation:rv .25s cubic-bezier(.2,0,0,1)}
 @keyframes rv{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
-/* GLASS CARD */
 .card{background:var(--glass);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--rim);border-radius:var(--r);padding:22px;margin-bottom:12px;transition:border-color .2s}
 .card:hover{border-color:var(--rim2)}
 .card-hd{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:18px;display:flex;align-items:center;gap:8px}
 .card-hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--rim),transparent)}
-/* STATS */
 .sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
 .sc{background:var(--glass);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--rim);border-radius:var(--r);padding:18px 16px;position:relative;overflow:hidden;transition:border-color .2s,transform .18s}
 .sc:hover{border-color:var(--rim2);transform:translateY(-1px)}
@@ -97,14 +84,12 @@ body{
 .sl{font-size:9px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
 .sv{font-size:26px;font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--text);font-variant-numeric:tabular-nums;line-height:1}
 .si{position:absolute;top:14px;right:14px;font-size:18px;opacity:.07}
-/* TABLE */
 .tw{overflow-x:auto}.tw::-webkit-scrollbar{height:3px}.tw::-webkit-scrollbar-thumb{background:var(--rim2);border-radius:2px}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{text-align:left;padding:8px 14px;color:var(--text3);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1.8px;border-bottom:1px solid var(--rim);white-space:nowrap}
 td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.03);vertical-align:middle;color:var(--ink)}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:rgba(255,255,255,0.018)}
-/* BADGES */
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap;letter-spacing:0.2px}
 .b-g{background:rgba(62,207,142,.1);color:var(--em);border:1px solid rgba(62,207,142,.18)}
 .b-r{background:rgba(240,98,146,.1);color:var(--rose);border:1px solid rgba(240,98,146,.18)}
@@ -112,7 +97,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
 .b-s{background:rgba(100,181,246,.1);color:var(--sky);border:1px solid rgba(100,181,246,.18)}
 .b-m{background:rgba(255,255,255,.05);color:var(--text2);border:1px solid var(--rim)}
 .b-o{background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2)}
-/* USER CELL */
 .uc{display:flex;align-items:center;gap:9px}
 .uc img{width:24px;height:24px;border-radius:50%;object-fit:cover;border:1px solid var(--rim2)}
 .uc .fa{width:24px;height:24px;border-radius:50%;background:var(--dp2);border:1px solid var(--rim);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--text2);flex-shrink:0}
@@ -120,31 +104,25 @@ tr:hover td{background:rgba(255,255,255,0.018)}
 .rk{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)}
 .rk1{color:var(--gold)}.rk2{color:rgba(255,255,255,0.45)}.rk3{color:#b5651d}
 .mono{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
-/* TABS */
 .tabs{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--rim)}
 .tab{padding:8px 16px;border:none;background:none;color:var(--text3);cursor:pointer;font-size:11px;font-weight:500;border-bottom:1px solid transparent;margin-bottom:-1px;transition:all .15s;font-family:'Instrument Sans',sans-serif;letter-spacing:0.3px}
 .tab:hover{color:var(--text2)}
 .tab.active{color:var(--text);border-bottom-color:var(--gold)}
-/* FILTERS */
 .filters{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
 .fbtn{padding:4px 13px;border-radius:20px;border:1px solid var(--rim);background:none;color:var(--text3);cursor:pointer;font-size:10px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;transition:all .15s;font-family:'Instrument Sans',sans-serif}
 .fbtn:hover{border-color:var(--rim2);color:var(--text2)}
 .fbtn.active{border-color:rgba(201,168,76,0.35);color:var(--gold);background:rgba(201,168,76,0.06)}
-/* PAGINATION */
 .pag{display:flex;align-items:center;gap:10px;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid var(--rim)}
 .pg{padding:5px 14px;border-radius:8px;border:1px solid var(--rim);background:none;color:var(--text2);cursor:pointer;font-size:11px;font-weight:500;transition:all .15s;font-family:'Instrument Sans',sans-serif}
 .pg:hover:not(:disabled){border-color:var(--rim2);color:var(--text);background:var(--dp1)}
 .pg:disabled{opacity:.2;cursor:not-allowed}
 .pi{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
-/* LAYOUT */
 .two-col{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
-/* BAR CHART */
 .bchart{display:flex;align-items:flex-end;gap:5px;height:80px}
 .bwrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
 .bar{width:100%;background:var(--dp2);border-radius:4px 4px 0 0;min-height:2px;border:1px solid var(--rim);border-bottom:none;transition:background .2s}
 .bar:hover{background:rgba(201,168,76,0.18);border-color:rgba(201,168,76,0.25)}
 .blabel{font-size:9px;color:var(--text3);font-family:'DM Mono',monospace}
-/* MISC */
 .ms{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
 .ms:last-child{border-bottom:none}
 .ms-label{font-size:11px;color:var(--text2)}
@@ -167,7 +145,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
 .empty .ei{font-size:28px;margin-bottom:10px;opacity:.18}
 .empty div:last-child{font-size:11px;letter-spacing:0.3px}
 .note{background:rgba(255,202,40,.04);border:1px solid rgba(255,202,40,.1);border-radius:8px;padding:10px 14px;font-size:11px;color:rgba(255,202,40,.55);margin-bottom:14px}
-/* WS */
 #wsS{position:fixed;bottom:20px;right:20px;background:rgba(3,3,10,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--rim);border-radius:20px;padding:6px 12px 6px 8px;font-size:10px;font-weight:500;display:flex;align-items:center;gap:7px;z-index:100;opacity:0;transition:opacity .3s;color:var(--text2);letter-spacing:0.3px}
 #wsS.show{opacity:1}
 #wsd{width:5px;height:5px;border-radius:50%}
@@ -178,8 +155,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
 </head>
 <body>
 
-
-<!-- Admin float: go to casino -->
 <div style="position:fixed;bottom:24px;right:24px;z-index:200">
   <a href="/casino" style="display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:12px;background:rgba(62,207,142,0.12);border:1px solid rgba(62,207,142,0.3);color:#3ecf8e;font-weight:700;font-size:13px;text-decoration:none;backdrop-filter:blur(12px);transition:all .2s;box-shadow:0 4px 20px rgba(62,207,142,0.1)"
     onmouseover="this.style.background='rgba(62,207,142,0.22)'" onmouseout="this.style.background='rgba(62,207,142,0.12)'">
@@ -327,7 +302,8 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   <div class="tabs">
     <button class="tab active" onclick="modTab('warns',this)">Warns</button>
     <button class="tab" onclick="modTab('mutes',this)">Mutes</button>
-    <button class="tab" onclick="modTab('logs',this)">Logs</button>
+    <!-- La pestaña Logs se muestra/oculta según permisos en JS -->
+    <button class="tab" id="modLogsTab" onclick="modTab('logs',this)" style="display:none">Logs</button>
   </div>
   <div class="note" id="logNote" style="display:none">Los logs de IP solo aparecen cuando el usuario se verifica mediante el sistema web.</div>
   <div class="card"><div class="tw"><table><thead id="modHead"></thead><tbody id="modTable"></tbody></table></div><div class="pag" id="modPag"></div></div>
@@ -406,8 +382,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </div>
 </div>
 
-
-<!-- ACHIEVEMENTS & MISIONES -->
 <div class="section" id="s-achievements" style="display:none">
   <div class="ph"><div class="pt">Logros & Misiones</div><div class="ps">Progreso de jugadores del servidor</div></div>
   <div class="tabs">
@@ -418,7 +392,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   <div class="card"><div class="tw"><table><thead id="achHead"></thead><tbody id="achTable"></tbody></table></div><div class="pag" id="achPag"></div></div>
 </div>
 
-<!-- TRADES -->
 <div class="section" id="s-trades" style="display:none">
   <div class="ph"><div class="pt">Trades</div><div class="ps">Intercambios entre usuarios</div></div>
   <div class="filters">
@@ -434,7 +407,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="tradePag"></div></div>
 </div>
 
-<!-- TIENDA -->
 <div class="section" id="s-shop" style="display:none">
   <div class="ph"><div class="pt">Tienda</div><div class="ps">Items disponibles en el servidor</div></div>
   <div class="filters">
@@ -448,7 +420,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="shopPag"></div></div>
 </div>
 
-<!-- JUEGOS -->
 <div class="section" id="s-games" style="display:none">
   <div class="ph"><div class="pt">Juegos</div><div class="ps">Historial de partidas grupales</div></div>
   <div class="two-col" style="margin-bottom:12px">
@@ -468,7 +439,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="gamesPag"></div></div>
 </div>
 
-<!-- XP BOOSTS -->
 <div class="section" id="s-xpboosts" style="display:none">
   <div class="ph"><div class="pt">XP Boosts</div><div class="ps">Multiplicadores de XP activos</div></div>
   <div class="card"><div class="tw"><table>
@@ -477,7 +447,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="boostPag"></div></div>
 </div>
 
-<!-- BLACKLIST SORTEOS -->
 <div class="section" id="s-gwblacklist" style="display:none">
   <div class="ph"><div class="pt">Blacklist de Sorteos</div><div class="ps">Usuarios bloqueados de participar</div></div>
   <div class="card"><div class="tw"><table>
@@ -486,8 +455,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="gwblPag"></div></div>
 </div>
 
-
-<!-- AUTOROLES -->
 <div class="section" id="s-autoroles" style="display:none">
   <div class="ph"><div class="pt">AutoRoles</div><div class="ps">Paneles de roles reactivos del servidor</div></div>
   <div class="card"><div class="tw"><table>
@@ -496,7 +463,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="autorolesPag"></div></div>
 </div>
 
-<!-- FONDOS DE PERFIL -->
 <div class="section" id="s-backgrounds" style="display:none">
   <div class="ph"><div class="pt">Fondos de perfil</div><div class="ps">Backgrounds disponibles en el servidor</div></div>
   <div class="filters">
@@ -510,8 +476,6 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="bgPag"></div></div>
 </div>
 
-
-<!-- COMPRAS TIENDA -->
 <div class="section" id="s-purchases" style="display:none">
   <div class="ph"><div class="pt">Compras en tienda</div><div class="ps">Historial de lo que han comprado los usuarios</div></div>
   <div class="card"><div class="tw"><table>
@@ -522,6 +486,9 @@ tr:hover td{background:rgba(255,255,255,0.018)}
 
 </main>
 <script>
+// ── IDs autorizados para ver logs de IP ────────────────────────────────────
+const IP_LOG_ALLOWED = ['990868869449121852', '751153328326443109'];
+
 const S={currentSection:'overview',invites:{page:1},giveaways:{status:'all',page:1},economy:{sort:'coins',page:1},loans:{status:'all',page:1},levels:{page:1},moderation:{tab:'warns',page:1},bans:{page:1},achievements:{tab:'achievements',page:1},loaded:{}};
 const socket=io();
 let wsTmr;
@@ -531,12 +498,12 @@ socket.on('connect',()=>showWS(true,'en línea'));
 socket.on('disconnect',()=>showWS(false,'sin conexión'));
 socket.on('stats:update',d=>{ applyStats(d); });
 
-// Auto-refresh current section every 30 seconds
 setInterval(()=>{
   const loaders={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket,achievements:loadAchievements,trades:loadTrades,shop:loadShop,games:loadGames,xpboosts:loadXpBoosts,gwblacklist:loadGwBlacklist,autoroles:loadAutoRoles,backgrounds:loadBackgrounds,purchases:loadPurchases};
   S.loaded[S.currentSection]=false;
   if(loaders[S.currentSection]) loaders[S.currentSection]();
 }, 30000);
+
 function applyStats(d){
   if(!d) return;
   const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
@@ -549,8 +516,27 @@ function applyStats(d){
   set('st-bets',(d.casinoBets||0).toLocaleString());
   set('st-warns',d.totalWarns||0);
 }
-(async()=>{const me=await api('/api/me');if(!me){location.href='/login';return;}document.getElementById('sbName').textContent=me.username;document.getElementById('sbAvatar').src=me.avatar;loadOverview();})();
+
+(async()=>{
+  const me=await api('/api/me');
+  if(!me){location.href='/login';return;}
+  document.getElementById('sbName').textContent=me.username;
+  document.getElementById('sbAvatar').src=me.avatar;
+
+  // ── Guardar ID del usuario actual globalmente ──────────────────────────
+  window._myId = me.id;
+
+  // ── Mostrar pestaña Logs SOLO si el usuario tiene permiso ──────────────
+  if(IP_LOG_ALLOWED.includes(me.id)){
+    const logsTab = document.getElementById('modLogsTab');
+    if(logsTab) logsTab.style.display = '';
+  }
+
+  loadOverview();
+})();
+
 async function api(url){try{const r=await fetch(url);if(r.status===401){location.href='/login';return null;}return r.json();}catch{return null;}}
+
 window.nav=function(name,btn){
   document.querySelectorAll('.section').forEach(s=>{s.classList.remove('active');s.style.display='none';});
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -561,6 +547,7 @@ window.nav=function(name,btn){
   const map={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket,achievements:loadAchievements,trades:loadTrades,shop:loadShop,games:loadGames,xpboosts:loadXpBoosts,gwblacklist:loadGwBlacklist,autoroles:loadAutoRoles,backgrounds:loadBackgrounds,purchases:loadPurchases};
   if(!S.loaded[name]&&map[name])map[name]();
 };
+
 const uc=(av,nm)=>{const img=av?`<img src="${av}" onerror="this.style.display='none'">`:`<div class="fa">${(nm||'?')[0].toUpperCase()}</div>`;return`<div class="uc">${img}<span>${nm||'—'}</span></div>`;};
 const rk=n=>{const m={1:'rk1',2:'rk2',3:'rk3'},e={1:'🥇',2:'🥈',3:'🥉'};return`<span class="rk ${m[n]||''}">${e[n]||'#'+n}</span>`;};
 function pag(id,page,pages,fnName){
@@ -598,7 +585,7 @@ async function loadGiveaways(page){
 }
 function filterGw(s,b){document.querySelectorAll('#s-giveaways .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.giveaways.status=s;S.giveaways.page=1;loadGiveaways();}
 
-async function loadEconomy(page){if(page)S.economy.page=page;const d=await api(`/api/economy?sort=${S.economy.sort}&page=${S.economy.page}`);if(!d)return;const lv=S.economy.sort==='level';document.getElementById('ecol1').textContent=lv?'Nivel':'Monedas';document.getElementById('ecol2').textContent=lv?'XP':'Total ganado';document.getElementById('econTable').innerHTML=d.users.length?d.users.map(u=>`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td>${lv?`<span class="badge b-o">Nv. ${u.level}</span>`:coin(u.coins)}</td><td>${lv?`<span class="mono">${u.xp.toLocaleString()} XP</span>`:coin(u.totalEarned)}</td></tr>`).join(''):`<tr><td colspan="4">${empty()}</td></tr>`;pag('econPag',S.economy.page,d.pages,'loadEconomy');S.loaded.economy=true;}
+async function loadEconomy(page){if(page)S.economy.page=page;const d=await api(`/api/economy?sort=${S.economy.sort}&page=${S.economy.page}`);if(!d)return;const lv=S.economy.sort==='level';const bg=S.economy.sort==='backgrounds';document.getElementById('ecol1').textContent=bg?'Fondos comprados':(lv?'Nivel':'Monedas');document.getElementById('ecol2').textContent=bg?'Fondo activo':(lv?'XP':'Total ganado');const col3=document.getElementById('ecol3');if(col3)col3.style.display='none';document.getElementById('econTable').innerHTML=d.users.length?d.users.map(u=>{let col1,col2;if(bg){col1=`<span class="mono">${u.ownedBackgrounds?.length||0} fondos</span>`;col2=u.activeBgId?`<span class="badge b-o">${u.activeBgId}</span>`:'<span class="mono" style="color:var(--text3)">—</span>';}else if(lv){col1=`<span class="badge b-o">Nv. ${u.level}</span>`;col2=`<span class="mono">${u.xp.toLocaleString()} XP</span>`;}else{col1=coin(u.coins);col2=coin(u.totalEarned);}return`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td>${col1}</td><td>${col2}</td></tr>`;}).join(''):`<tr><td colspan="4">${empty()}</td></tr>`;pag('econPag',S.economy.page,d.pages,'loadEconomy');S.loaded.economy=true;}
 function econTab(s,b){document.querySelectorAll('#s-economy .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.economy.sort=s;S.economy.page=1;S.loaded.economy=false;loadEconomy();}
 
 async function loadLoans(page){if(page)S.loans.page=page;const d=await api(`/api/loans?status=${S.loans.status}&page=${S.loans.page}`);if(!d)return;const sb=s=>({active:`<span class="badge b-a">Activo</span>`,paid:`<span class="badge b-g">Pagado</span>`,defaulted:`<span class="badge b-r">Impagado</span>`}[s]||`<span class="badge b-m">${s}</span>`);document.getElementById('loanTable').innerHTML=d.loans.length?d.loans.map(l=>`<tr><td>${uc(l.avatar,l.username)}</td><td>${coin(l.amount)}</td><td>${coin(l.debt||0)}</td><td><span class="mono">${(l.interestRate*100).toFixed(0)}%</span></td><td>${sb(l.status)}</td><td>${dt(l.createdAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('loanPag',S.loans.page,d.pages,'loadLoans');S.loaded.loans=true;}
@@ -610,12 +597,24 @@ async function loadLevels(page){
   if(d.distribution?.length){const mx=Math.max(...d.distribution.map(b=>b.count),1);de.innerHTML=d.distribution.map(b=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--text2)">Nv. ${b._id}</span><span class="mono">${b.count}</span></div><div class="prog-wrap"><div class="prog-bar" style="width:${Math.round(b.count/mx*100)}%"></div></div></div>`).join('');}
   else de.innerHTML=empty();
   document.getElementById('levelInfo').innerHTML=`<div class="ms"><span class="ms-label">Total usuarios</span><span class="ms-val">${d.total}</span></div><div class="ms"><span class="ms-label">Página</span><span class="ms-val">${S.levels.page} / ${d.pages||1}</span></div>`;
-  document.getElementById('levelTable').innerHTML=d.users.length?d.users.map(u=>`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td><span class="badge b-o">Nv. ${u.level}</span></td><td><span class="mono">${u.xp.toLocaleString()} XP</span></td></tr>`).join(''):`<tr><td colspan="4">${empty()}</td></tr>`;
+  document.getElementById('levelTable').innerHTML=d.users.length?d.users.map(u=>{const dc=u.dailyChallenges;const challStr=dc?`<span class="mono" style="font-size:10px;color:${dc.messagesCompleted&&dc.vcCompleted?'var(--em)':'var(--text3)'}">💬${dc.messagesCompleted?'✓':'✗'} 🎙${dc.vcCompleted?'✓':'✗'}</span>`:'<span class="mono" style="color:var(--text3)">—</span>';const streakCol=u.streak>0?`<span class="mono" style="color:var(--amb)">${u.streak}🔥</span>`:'<span class="mono" style="color:var(--text3)">0</span>';return`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td><span class="badge b-o">Nv. ${u.level}</span></td><td><span class="mono">${u.xp.toLocaleString()} XP</span></td><td>${streakCol}</td><td>${challStr}</td></tr>`;}).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;
   pag('levelPag',S.levels.page,d.pages,'loadLevels');S.loaded.levels=true;
 }
 
 async function loadModeration(page){
-  if(page)S.moderation.page=page;const{tab}=S.moderation;
+  if(page)S.moderation.page=page;
+  const{tab}=S.moderation;
+
+  // ── Protección en frontend: redirigir si no tiene permiso ──────────────
+  if(tab==='logs' && !IP_LOG_ALLOWED.includes(window._myId)){
+    S.moderation.tab='warns';
+    document.querySelectorAll('#s-moderation .tab').forEach(x=>x.classList.remove('active'));
+    const warnsTabBtn=document.querySelector('#s-moderation .tab');
+    if(warnsTabBtn)warnsTabBtn.classList.add('active');
+    return loadModeration();
+  }
+  // ──────────────────────────────────────────────────────────────────────
+
   document.getElementById('logNote').style.display=tab==='logs'?'':'none';
   const d=await api(`/api/moderation?tab=${tab}&page=${S.moderation.page}`);if(!d)return;
   const h=document.getElementById('modHead'),tb=document.getElementById('modTable');
@@ -624,7 +623,13 @@ async function loadModeration(page){
   else if(tab==='logs'){h.innerHTML='<tr><th>Usuario</th><th>IP</th><th>País</th><th>Estado</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(l=>`<tr><td>${uc(l.avatar,l.username)}</td><td><span class="mono">${l.ip||'—'}</span></td><td>${l.countryCode&&l.countryCode!=='??'?l.countryCode+' ':''}<span style="color:var(--text2)">${l.country||'—'}</span></td><td><span class="badge ${l.flagged?'b-r':'b-g'}">${l.flagged?'Alerta':'OK'}</span></td><td>${dt(l.joinedAt)}</td></tr>`).join(''):`<tr><td colspan="5">${empty()}</td></tr>`;}
   pag('modPag',S.moderation.page,d.pages,'loadModeration');S.loaded.moderation=true;
 }
-function modTab(t,b){document.querySelectorAll('#s-moderation .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.moderation.tab=t;S.moderation.page=1;S.loaded.moderation=false;loadModeration();}
+function modTab(t,b){
+  // ── Bloquear cambio a logs si no tiene permiso ─────────────────────────
+  if(t==='logs' && !IP_LOG_ALLOWED.includes(window._myId)) return;
+  document.querySelectorAll('#s-moderation .tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  S.moderation.tab=t;S.moderation.page=1;S.loaded.moderation=false;loadModeration();
+}
 
 async function loadBans(page){if(page)S.bans.page=page;const d=await api(`/api/bans?page=${S.bans.page}`);if(!d)return;document.getElementById('banTable').innerHTML=d.bans.length?d.bans.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink)">${b.reason}</td></tr>`).join(''):`<tr><td colspan="2">${empty()}</td></tr>`;pag('banPag',S.bans.page,d.pages,'loadBans');S.loaded.bans=true;}
 
@@ -634,6 +639,9 @@ async function loadConfig(){
   document.getElementById('cfgChannels').innerHTML=d.channels?`<div class="cfg-grid">${Object.entries(d.channels).filter(([k])=>!['_id','__v','guildId'].includes(k)).map(([k,v])=>`<div class="cfg-item"><div class="cfg-lbl">${lb[k]||k}</div><div class="cfg-val ${v?'':'cfg-null'}">${v?v.name||v:'—'}</div></div>`).join('')}</div>`:empty();
   const r=d.rewards;
   document.getElementById('cfgRewards').innerHTML=r?`<div class="ms"><span class="ms-label">Monedas iniciales</span><span class="ms-val">${coin(r.initialCoins||500)}</span></div><div class="ms"><span class="ms-label">Trivia fácil</span><span class="ms-val">${coin(r.trivia_easy||50)}</span></div><div class="ms"><span class="ms-label">Trivia media</span><span class="ms-val">${coin(r.trivia_medium||100)}</span></div><div class="ms"><span class="ms-label">Trivia difícil</span><span class="ms-val">${coin(r.trivia_hard||250)}</span></div><div class="ms"><span class="ms-label">Misiones</span><span class="ms-val">${coin(r.misiones_reward||300)}</span></div><div class="ms"><span class="ms-label">Pérdida máx/día</span><span class="ms-val">${coin(r.max_loss_per_day||5000)}</span></div><div class="ms"><span class="ms-label">Apuestas máx/hora</span><span class="ms-val"><span class="mono">${r.max_bets_per_hour||10}</span></span></div>`:empty();
+  const st=d.style;
+  const cfgStyle=document.getElementById('cfgStyle');
+  if(cfgStyle){if(st){const hexColor=n=>n?`<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#${n.toString(16).padStart(6,'0')};display:inline-block"></span><span class="mono">#${n.toString(16).padStart(6,'0')}</span></span>`:'<span class="mono" style="color:var(--text3)">—</span>';cfgStyle.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px"><div><div class="cfg-lbl" style="margin-bottom:10px">Colores</div>${st.colors?Object.entries(st.colors).filter(([,v])=>v).map(([k,v])=>`<div class="ms"><span class="ms-label">${k}</span><span class="ms-val">${hexColor(v)}</span></div>`).join(''):'<div style="color:var(--text3);font-size:11px">Sin colores configurados</div>'}</div><div><div class="cfg-lbl" style="margin-bottom:10px">Estilo general</div><div class="ms"><span class="ms-label">Footer text</span><span class="ms-val" style="color:var(--ink);font-size:11px">${st.footer?.text||'—'}</span></div><div class="ms"><span class="ms-label">Mensaje bienvenida</span><span class="ms-val" style="color:var(--ink);font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${st.welcomeMessage||'—'}</span></div><div class="ms"><span class="ms-label">Timestamp</span><span class="ms-val"><span class="badge ${st.showTimestamp?'b-g':'b-m'}">${st.showTimestamp?'Activo':'Inactivo'}</span></span></div></div></div>`;}else{cfgStyle.innerHTML=empty('Sin configuración de estilo');}}
   S.loaded.config=true;
 }
 
@@ -678,398 +686,112 @@ async function loadChartData(){const sel=document.getElementById('chartItemSelec
 function drawPriceChart(history,current){const c=document.getElementById('priceChart');if(!c||!history?.length)return;const ctx=c.getContext('2d'),W=c.parentElement.offsetWidth||800;c.width=W;c.height=200;ctx.clearRect(0,0,W,200);const pr=history.map(h=>h.close),mn=Math.min(...pr)*.98,mx=Math.max(...pr)*1.02,rg=mx-mn||1;const ty=p=>180-((p-mn)/rg)*160,tx=i=>20+(i/(pr.length-1||1))*(W-40);ctx.beginPath();pr.forEach((p,i)=>i===0?ctx.moveTo(tx(i),ty(p)):ctx.lineTo(tx(i),ty(p)));ctx.lineTo(tx(pr.length-1),180);ctx.lineTo(tx(0),180);ctx.closePath();const up=pr[pr.length-1]>=pr[0],g=ctx.createLinearGradient(0,0,0,180);g.addColorStop(0,up?'rgba(62,207,142,0.15)':'rgba(240,98,146,0.12)');g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fill();ctx.beginPath();pr.forEach((p,i)=>i===0?ctx.moveTo(tx(i),ty(p)):ctx.lineTo(tx(i),ty(p)));ctx.strokeStyle=up?'#3ecf8e':'#f06292';ctx.lineWidth=1.5;ctx.lineJoin='round';ctx.stroke();ctx.font='9px "DM Mono",monospace';ctx.fillStyle='rgba(255,255,255,0.22)';ctx.textAlign='right';[mn,mx,(mn+mx)/2].forEach(v=>ctx.fillText(Math.round(v).toLocaleString(),16,ty(v)+4));}
 function marketTab(t,b){document.querySelectorAll('#s-market .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');marketState.tab=t;marketState.page=1;S.loaded.market=false;loadMarket();}
 
-// ── ACHIEVEMENTS & MISIONES ────────────────────────────────────────────────
-const achState = { tab: 'achievements', page: 1 };
-async function loadAchievements(page) {
-  if (page) achState.page = page;
-  const d = await api(`/api/achievements?tab=${achState.tab}&page=${achState.page}`);
-  if (!d) return;
-  const h = document.getElementById('achHead'), tb = document.getElementById('achTable');
-
-  if (achState.tab === 'achievements') {
-    h.innerHTML = '<tr><th>#</th><th>Usuario</th><th>Logros</th><th>Wins casino</th><th>Wins trivia</th><th>Racha máx</th><th>Apuesta máx</th></tr>';
-    tb.innerHTML = d.items.length ? d.items.map(a => `<tr>
-      <td>${rk(a.rank)}</td>
-      <td>${uc(a.avatar, a.username)}</td>
-      <td><span class="badge b-o">★ ${a.badges}</span></td>
-      <td><span class="mono" style="color:var(--em)">${a.casino_wins}</span></td>
-      <td><span class="mono" style="color:var(--sky)">${a.trivia_wins}</span></td>
-      <td><span class="mono">${a.win_streak}</span></td>
-      <td>${coin(a.max_bet)}</td>
-    </tr>`).join('') : `<tr><td colspan="7">${empty()}</td></tr>`;
-  } else if (achState.tab === 'missions') {
-    h.innerHTML = '<tr><th>Usuario</th><th>Completadas</th><th>Progreso</th><th>Reclamado</th></tr>';
-    tb.innerHTML = d.items.length ? d.items.map(m => {
-      const pct = m.total > 0 ? Math.round(m.completed / m.total * 100) : 0;
-      return `<tr>
-        <td>${uc(m.avatar, m.username)}</td>
-        <td><strong>${m.completed} / ${m.total}</strong></td>
-        <td>
-          <div style="display:flex;align-items:center;gap:8px;min-width:120px">
-            <div class="prog-wrap" style="flex:1"><div class="prog-bar" style="width:${pct}%"></div></div>
-            <span class="mono">${pct}%</span>
-          </div>
-        </td>
-        <td><span class="badge ${m.claimed ? 'b-g' : 'b-m'}">${m.claimed ? 'Reclamado' : 'Pendiente'}</span></td>
-      </tr>`;
-    }).join('') : `<tr><td colspan="4">${empty('Sin progreso esta semana')}</td></tr>`;
-  } else if (achState.tab === 'trivia') {
-    h.innerHTML = '<tr><th>#</th><th>Usuario</th><th>Victorias</th><th>Derrotas</th><th>Win rate</th><th>Racha</th></tr>';
-    tb.innerHTML = d.items.length ? d.items.map(t => `<tr>
-      <td>${rk(t.rank)}</td>
-      <td>${uc(t.avatar, t.username)}</td>
-      <td><span class="mono" style="color:var(--em)">${t.totalWins}</span></td>
-      <td><span class="mono" style="color:var(--rose)">${t.totalFails}</span></td>
-      <td>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="prog-wrap" style="width:60px"><div class="prog-bar" style="width:${t.winRate}%"></div></div>
-          <span class="mono">${t.winRate}%</span>
-        </div>
-      </td>
-      <td><span class="mono">${t.streak}🔥</span></td>
-    </tr>`).join('') : `<tr><td colspan="6">${empty()}</td></tr>`;
-  }
-
-  pag('achPag',achState.page,d.pages,'loadAchievements');
-  S.loaded.achievements = true;
+const achState={tab:'achievements',page:1};
+async function loadAchievements(page){
+  if(page)achState.page=page;
+  const d=await api(`/api/achievements?tab=${achState.tab}&page=${achState.page}`);if(!d)return;
+  const h=document.getElementById('achHead'),tb=document.getElementById('achTable');
+  if(achState.tab==='achievements'){h.innerHTML='<tr><th>#</th><th>Usuario</th><th>Logros</th><th>Wins casino</th><th>Wins trivia</th><th>Racha máx</th><th>Apuesta máx</th></tr>';tb.innerHTML=d.items.length?d.items.map(a=>`<tr><td>${rk(a.rank)}</td><td>${uc(a.avatar,a.username)}</td><td><span class="badge b-o">★ ${a.badges}</span></td><td><span class="mono" style="color:var(--em)">${a.casino_wins}</span></td><td><span class="mono" style="color:var(--sky)">${a.trivia_wins}</span></td><td><span class="mono">${a.win_streak}</span></td><td>${coin(a.max_bet)}</td></tr>`).join(''):`<tr><td colspan="7">${empty()}</td></tr>`;}
+  else if(achState.tab==='missions'){h.innerHTML='<tr><th>Usuario</th><th>Completadas</th><th>Progreso</th><th>Reclamado</th></tr>';tb.innerHTML=d.items.length?d.items.map(m=>{const pct=m.total>0?Math.round(m.completed/m.total*100):0;return`<tr><td>${uc(m.avatar,m.username)}</td><td><strong>${m.completed} / ${m.total}</strong></td><td><div style="display:flex;align-items:center;gap:8px;min-width:120px"><div class="prog-wrap" style="flex:1"><div class="prog-bar" style="width:${pct}%"></div></div><span class="mono">${pct}%</span></div></td><td><span class="badge ${m.claimed?'b-g':'b-m'}">${m.claimed?'Reclamado':'Pendiente'}</span></td></tr>`;}).join(''):`<tr><td colspan="4">${empty('Sin progreso esta semana')}</td></tr>`;}
+  else if(achState.tab==='trivia'){h.innerHTML='<tr><th>#</th><th>Usuario</th><th>Victorias</th><th>Derrotas</th><th>Win rate</th><th>Racha</th></tr>';tb.innerHTML=d.items.length?d.items.map(t=>`<tr><td>${rk(t.rank)}</td><td>${uc(t.avatar,t.username)}</td><td><span class="mono" style="color:var(--em)">${t.totalWins}</span></td><td><span class="mono" style="color:var(--rose)">${t.totalFails}</span></td><td><div style="display:flex;align-items:center;gap:8px"><div class="prog-wrap" style="width:60px"><div class="prog-bar" style="width:${t.winRate}%"></div></div><span class="mono">${t.winRate}%</span></div></td><td><span class="mono">${t.streak}🔥</span></td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;}
+  pag('achPag',achState.page,d.pages,'loadAchievements');S.loaded.achievements=true;
 }
-function achTab(t, b) { document.querySelectorAll('#s-achievements .tab').forEach(x => x.classList.remove('active')); b.classList.add('active'); achState.tab = t; achState.page = 1; S.loaded.achievements = false; loadAchievements(); }
+function achTab(t,b){document.querySelectorAll('#s-achievements .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');achState.tab=t;achState.page=1;S.loaded.achievements=false;loadAchievements();}
 
-// ── TRADES ─────────────────────────────────────────────────────────────────
-const tradeState = { status: 'all', page: 1 };
-async function loadTrades(page) {
-  if (page) tradeState.page = page;
-  const d = await api(`/api/trades?status=${tradeState.status}&page=${tradeState.page}`);
-  if (!d) return;
-  const statusBadge = s => ({
-    pending:   '<span class="badge b-a">Pendiente</span>',
-    accepted:  '<span class="badge b-g">Aceptado</span>',
-    rejected:  '<span class="badge b-r">Rechazado</span>',
-    cancelled: '<span class="badge b-m">Cancelado</span>',
-    expired:   '<span class="badge b-m">Expirado</span>',
-  }[s] || `<span class="badge b-m">${s}</span>`);
-
-  document.getElementById('tradeTable').innerHTML = d.trades.length ? d.trades.map(t => `<tr>
-    <td>${uc(t.fromAvatar, t.fromUsername)}</td>
-    <td>${uc(t.toAvatar, t.toUsername)}</td>
-    <td>${t.fromCoins > 0 ? coin(t.fromCoins) : '<span class="mono" style="color:var(--text3)">—</span>'}</td>
-    <td>${t.toCoins > 0 ? coin(t.toCoins) : '<span class="mono" style="color:var(--text3)">—</span>'}</td>
-    <td>${statusBadge(t.status)}</td>
-    <td>${dt(t.createdAt)}</td>
-  </tr>`).join('') : `<tr><td colspan="6">${empty('Sin trades')}</td></tr>`;
-  pag('tradePag',tradeState.page,d.pages,'loadTrades');
-  S.loaded.trades = true;
+const tradeState={status:'all',page:1};
+async function loadTrades(page){
+  if(page)tradeState.page=page;const d=await api(`/api/trades?status=${tradeState.status}&page=${tradeState.page}`);if(!d)return;
+  const statusBadge=s=>({pending:'<span class="badge b-a">Pendiente</span>',accepted:'<span class="badge b-g">Aceptado</span>',rejected:'<span class="badge b-r">Rechazado</span>',cancelled:'<span class="badge b-m">Cancelado</span>',expired:'<span class="badge b-m">Expirado</span>'}[s]||`<span class="badge b-m">${s}</span>`);
+  document.getElementById('tradeTable').innerHTML=d.trades.length?d.trades.map(t=>`<tr><td>${uc(t.fromAvatar,t.fromUsername)}</td><td>${uc(t.toAvatar,t.toUsername)}</td><td>${t.fromCoins>0?coin(t.fromCoins):'<span class="mono" style="color:var(--text3)">—</span>'}</td><td>${t.toCoins>0?coin(t.toCoins):'<span class="mono" style="color:var(--text3)">—</span>'}</td><td>${statusBadge(t.status)}</td><td>${dt(t.createdAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty('Sin trades')}</td></tr>`;
+  pag('tradePag',tradeState.page,d.pages,'loadTrades');S.loaded.trades=true;
 }
-function filterTrade(s, b) { document.querySelectorAll('#s-trades .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); tradeState.status = s; tradeState.page = 1; loadTrades(); }
+function filterTrade(s,b){document.querySelectorAll('#s-trades .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');tradeState.status=s;tradeState.page=1;loadTrades();}
 
-// ── TIENDA ─────────────────────────────────────────────────────────────────
-const shopState = { active: 'all', page: 1 };
-async function loadShop(page) {
-  if (page) shopState.page = page;
-  const active = shopState.active === 'all' ? '' : shopState.active;
-  const d = await api(`/api/shop?active=${active}&page=${shopState.page}`);
-  if (!d) return;
-  document.getElementById('shopTable').innerHTML = d.items.length ? d.items.map(item => `<tr>
-    <td>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:18px">${item.emoji || '🛒'}</span>
-        <strong style="color:var(--text)">${item.name}</strong>
-      </div>
-    </td>
-    <td style="color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.description}</td>
-    <td>${coin(item.price)}</td>
-    <td><span class="badge ${item.active ? 'b-g' : 'b-r'}">${item.active ? 'Activo' : 'Inactivo'}</span></td>
-    <td><span class="mono" style="color:var(--text2)">${item.createdByName || '—'}</span></td>
-    <td>${dt(item.createdAt)}</td>
-  </tr>`).join('') : `<tr><td colspan="6">${empty('Tienda vacía')}</td></tr>`;
-  pag('shopPag',shopState.page,d.pages,'loadShop');
-  S.loaded.shop = true;
+const shopState={active:'all',page:1};
+async function loadShop(page){
+  if(page)shopState.page=page;const active=shopState.active==='all'?'':shopState.active;const d=await api(`/api/shop?active=${active}&page=${shopState.page}`);if(!d)return;
+  document.getElementById('shopTable').innerHTML=d.items.length?d.items.map(item=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">${item.emoji||'🛒'}</span><strong style="color:var(--text)">${item.name}</strong></div></td><td style="color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.description}</td><td>${coin(item.price)}</td><td><span class="badge ${item.active?'b-g':'b-r'}">${item.active?'Activo':'Inactivo'}</span></td><td><span class="mono" style="color:var(--text2)">${item.createdByName||'—'}</span></td><td>${dt(item.createdAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty('Tienda vacía')}</td></tr>`;
+  pag('shopPag',shopState.page,d.pages,'loadShop');S.loaded.shop=true;
 }
-function filterShop(a, b) { document.querySelectorAll('#s-shop .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); shopState.active = a; shopState.page = 1; loadShop(); }
+function filterShop(a,b){document.querySelectorAll('#s-shop .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');shopState.active=a;shopState.page=1;loadShop();}
 
-// ── JUEGOS ─────────────────────────────────────────────────────────────────
-const gamesState = { game: 'all', page: 1 };
-async function loadGames(page) {
-  if (page) gamesState.page = page;
-  const d = await api(`/api/games?game=${gamesState.game}&page=${gamesState.page}`);
-  if (!d) return;
-
-  // Top juegos
-  if (d.topGames?.length) {
-    document.getElementById('topGamesBox').innerHTML = d.topGames.map(g => `
-      <div class="ms">
-        <span class="ms-label">${g._id}</span>
-        <span class="ms-val"><span class="mono">${g.count} partidas</span></span>
-      </div>`).join('');
-  }
-
-  document.getElementById('gamesSummaryBox').innerHTML = `
-    <div class="ms"><span class="ms-label">Total partidas</span><span class="ms-val">${d.games.length > 0 ? (gamesState.page > 1 ? '...' : d.games.length) : 0}</span></div>
-    <div class="ms"><span class="ms-label">Juegos distintos</span><span class="ms-val">${d.topGames?.length || 0}</span></div>`;
-
-  const tb = document.getElementById('gamesTable');
-  tb.innerHTML = d.games.length ? d.games.map(g => {
-    const winners = g.players?.filter(p => p.won).map(p => p.username).join(', ') || '—';
-    const totalPot = g.players?.reduce((acc, p) => acc + (p.amount || 0), 0) || 0;
-    return `<tr>
-      <td><span class="badge b-s">${g.game}</span></td>
-      <td><span class="mono">${g.players?.length || 0}</span></td>
-      <td>${totalPot > 0 ? coin(totalPot) : '<span class="mono" style="color:var(--text3)">—</span>'}</td>
-      <td style="color:var(--em);font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${winners}</td>
-      <td>${dt(g.endedAt)}</td>
-    </tr>`;
-  }).join('') : `<tr><td colspan="5">${empty('Sin partidas')}</td></tr>`;
-  pag('gamesPag',gamesState.page,d.pages,'loadGames');
-  S.loaded.games = true;
+const gamesState={game:'all',page:1};
+async function loadGames(page){
+  if(page)gamesState.page=page;const d=await api(`/api/games?game=${gamesState.game}&page=${gamesState.page}`);if(!d)return;
+  if(d.topGames?.length){document.getElementById('topGamesBox').innerHTML=d.topGames.map(g=>`<div class="ms"><span class="ms-label">${g._id}</span><span class="ms-val"><span class="mono">${g.count} partidas</span></span></div>`).join('');}
+  document.getElementById('gamesSummaryBox').innerHTML=`<div class="ms"><span class="ms-label">Total partidas</span><span class="ms-val">${d.games.length>0?(gamesState.page>1?'...':d.games.length):0}</span></div><div class="ms"><span class="ms-label">Juegos distintos</span><span class="ms-val">${d.topGames?.length||0}</span></div>`;
+  document.getElementById('gamesTable').innerHTML=d.games.length?d.games.map(g=>{const winners=g.players?.filter(p=>p.won).map(p=>p.username).join(', ')||'—';const totalPot=g.players?.reduce((acc,p)=>acc+(p.amount||0),0)||0;return`<tr><td><span class="badge b-s">${g.game}</span></td><td><span class="mono">${g.players?.length||0}</span></td><td>${totalPot>0?coin(totalPot):'<span class="mono" style="color:var(--text3)">—</span>'}</td><td style="color:var(--em);font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${winners}</td><td>${dt(g.endedAt)}</td></tr>`;}).join(''):`<tr><td colspan="5">${empty('Sin partidas')}</td></tr>`;
+  pag('gamesPag',gamesState.page,d.pages,'loadGames');S.loaded.games=true;
 }
-function filterGame(g, b) { document.querySelectorAll('#s-games .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); gamesState.game = g; gamesState.page = 1; S.loaded.games = false; loadGames(); }
+function filterGame(g,b){document.querySelectorAll('#s-games .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');gamesState.game=g;gamesState.page=1;S.loaded.games=false;loadGames();}
 
-// ── XP BOOSTS ──────────────────────────────────────────────────────────────
-const boostState = { page: 1 };
-async function loadXpBoosts(page) {
-  if (page) boostState.page = page;
-  const d = await api(`/api/xpboosts?page=${boostState.page}`);
-  if (!d) return;
-  document.getElementById('boostTable').innerHTML = d.items.length ? d.items.map(b => `<tr>
-    <td>${uc(b.avatar, b.username)}</td>
-    <td><span class="badge b-o">×${b.multiplier} XP</span></td>
-    <td><span class="mono" style="color:var(--text2)">${b.grantedByName || '—'}</span></td>
-    <td>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span class="mono" style="color:${b.hoursLeft < 2 ? 'var(--rose)' : 'var(--amb)'}">${b.hoursLeft}h</span>
-      </div>
-    </td>
-    <td>${dt(b.expiresAt)}</td>
-  </tr>`).join('') : `<tr><td colspan="5">${empty('Sin boosts activos')}</td></tr>`;
-  pag('boostPag',boostState.page,d.pages,'loadXpBoosts');
-  S.loaded.xpboosts = true;
+const boostState={page:1};
+async function loadXpBoosts(page){
+  if(page)boostState.page=page;const d=await api(`/api/xpboosts?page=${boostState.page}`);if(!d)return;
+  document.getElementById('boostTable').innerHTML=d.items.length?d.items.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td><span class="badge b-o">×${b.multiplier} XP</span></td><td><span class="mono" style="color:var(--text2)">${b.grantedByName||'—'}</span></td><td><span class="mono" style="color:${b.hoursLeft<2?'var(--rose)':'var(--amb)'}">${b.hoursLeft}h</span></td><td>${dt(b.expiresAt)}</td></tr>`).join(''):`<tr><td colspan="5">${empty('Sin boosts activos')}</td></tr>`;
+  pag('boostPag',boostState.page,d.pages,'loadXpBoosts');S.loaded.xpboosts=true;
 }
 
-// ── BLACKLIST SORTEOS ──────────────────────────────────────────────────────
-const gwblState = { page: 1 };
-async function loadGwBlacklist(page) {
-  if (page) gwblState.page = page;
-  const d = await api(`/api/giveaway-blacklist?page=${gwblState.page}`);
-  if (!d) return;
-  document.getElementById('gwblTable').innerHTML = d.items.length ? d.items.map(b => `<tr>
-    <td>${uc(b.avatar, b.username)}</td>
-    <td style="color:var(--ink);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.reason || '—'}</td>
-    <td><span class="mono" style="color:var(--text2)">${b.addedByName || '—'}</span></td>
-    <td>${dt(b.addedAt)}</td>
-  </tr>`).join('') : `<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;
-  pag('gwblPag',gwblState.page,d.pages,'loadGwBlacklist');
-  S.loaded.gwblacklist = true;
+const gwblState={page:1};
+async function loadGwBlacklist(page){
+  if(page)gwblState.page=page;const d=await api(`/api/giveaway-blacklist?page=${gwblState.page}`);if(!d)return;
+  document.getElementById('gwblTable').innerHTML=d.items.length?d.items.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.reason||'—'}</td><td><span class="mono" style="color:var(--text2)">${b.addedByName||'—'}</span></td><td>${dt(b.addedAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;
+  pag('gwblPag',gwblState.page,d.pages,'loadGwBlacklist');S.loaded.gwblacklist=true;
 }
 
-
-// ── AUTOROLES ─────────────────────────────────────────────────────────────
-const arState = { page: 1 };
-async function loadAutoRoles(page) {
-  if (page) arState.page = page;
-  const d = await api(`/api/autoroles?page=${arState.page}`);
-  if (!d) return;
-  document.getElementById('autorolesTable').innerHTML = d.items.length ? d.items.map(ar => `<tr>
-    <td>
-      <div style="font-weight:600;color:var(--text)">${ar.name}</div>
-      <div style="font-size:10px;color:var(--text3)">${ar.title}</div>
-    </td>
-    <td><span class="mono" style="font-size:10px;color:var(--sky)">#${ar.channelId}</span></td>
-    <td><span class="badge b-o">${ar.roles?.length || 0} roles</span></td>
-    <td><span class="badge ${ar.requireConfirm ? 'b-g' : 'b-m'}">${ar.requireConfirm ? 'Sí' : 'No'}</span></td>
-    <td><span class="mono">${ar.maxRoles === 0 ? 'Sin límite' : ar.maxRoles}</span></td>
-    <td>${dt(ar.updatedAt)}</td>
-  </tr>`).join('') : `<tr><td colspan="6">${empty('Sin paneles de autoroles')}</td></tr>`;
-  pag('autorolesPag',arState.page,d.pages,'loadAutoRoles');
-  S.loaded.autoroles = true;
+const arState={page:1};
+async function loadAutoRoles(page){
+  if(page)arState.page=page;const d=await api(`/api/autoroles?page=${arState.page}`);if(!d)return;
+  document.getElementById('autorolesTable').innerHTML=d.items.length?d.items.map(ar=>`<tr><td><div style="font-weight:600;color:var(--text)">${ar.name}</div><div style="font-size:10px;color:var(--text3)">${ar.title}</div></td><td><span class="mono" style="font-size:10px;color:var(--sky)">#${ar.channelId}</span></td><td><span class="badge b-o">${ar.roles?.length||0} roles</span></td><td><span class="badge ${ar.requireConfirm?'b-g':'b-m'}">${ar.requireConfirm?'Sí':'No'}</span></td><td><span class="mono">${ar.maxRoles===0?'Sin límite':ar.maxRoles}</span></td><td>${dt(ar.updatedAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty('Sin paneles de autoroles')}</td></tr>`;
+  pag('autorolesPag',arState.page,d.pages,'loadAutoRoles');S.loaded.autoroles=true;
 }
 
-// ── FONDOS DE PERFIL ──────────────────────────────────────────────────────
-const bgState = { filter: 'all', page: 1 };
-async function loadBackgrounds(page) {
-  if (page) bgState.page = page;
-  const d = await api(`/api/backgrounds?filter=${bgState.filter}&page=${bgState.page}`);
-  if (!d) return;
-  document.getElementById('bgTable').innerHTML = d.items.length ? d.items.map(bg => `<tr>
-    <td><span class="mono" style="color:var(--gold)">${bg.bgId}</span></td>
-    <td><strong style="color:var(--text)">${bg.name}</strong></td>
-    <td style="color:var(--text2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${bg.description || '—'}</td>
-    <td>${bg.price === 0 ? '<span class="badge b-g">Gratis</span>' : coin(bg.price)}</td>
-    <td><span class="badge ${bg.isDefault ? 'b-s' : 'b-m'}">${bg.isDefault ? 'Por defecto' : 'Personalizado'}</span></td>
-    <td><span class="mono" style="color:var(--text2)">${bg.createdByName || '—'}</span></td>
-    <td>${dt(bg.createdAt)}</td>
-  </tr>`).join('') : `<tr><td colspan="7">${empty('Sin fondos configurados')}</td></tr>`;
-  pag('bgPag',bgState.page,d.pages,'loadBackgrounds');
-  S.loaded.backgrounds = true;
+const bgState={filter:'all',page:1};
+async function loadBackgrounds(page){
+  if(page)bgState.page=page;const d=await api(`/api/backgrounds?filter=${bgState.filter}&page=${bgState.page}`);if(!d)return;
+  document.getElementById('bgTable').innerHTML=d.items.length?d.items.map(bg=>`<tr><td><span class="mono" style="color:var(--gold)">${bg.bgId}</span></td><td><strong style="color:var(--text)">${bg.name}</strong></td><td style="color:var(--text2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${bg.description||'—'}</td><td>${bg.price===0?'<span class="badge b-g">Gratis</span>':coin(bg.price)}</td><td><span class="badge ${bg.isDefault?'b-s':'b-m'}">${bg.isDefault?'Por defecto':'Personalizado'}</span></td><td><span class="mono" style="color:var(--text2)">${bg.createdByName||'—'}</span></td><td>${dt(bg.createdAt)}</td></tr>`).join(''):`<tr><td colspan="7">${empty('Sin fondos configurados')}</td></tr>`;
+  pag('bgPag',bgState.page,d.pages,'loadBackgrounds');S.loaded.backgrounds=true;
 }
-function filterBg(f, b) { document.querySelectorAll('#s-backgrounds .fbtn').forEach(x => x.classList.remove('active')); b.classList.add('active'); bgState.filter = f; bgState.page = 1; loadBackgrounds(); }
+function filterBg(f,b){document.querySelectorAll('#s-backgrounds .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');bgState.filter=f;bgState.page=1;loadBackgrounds();}
 
-// ── EXPANSIÓN SORTEOS: Blacklist + Config inline ───────────────────────────
-const gwTabState = { tab: 'list', blPage: 1 };
-function gwMainTab(tab, btn) {
-  document.querySelectorAll('#s-giveaways .tab').forEach(x => x.classList.remove('active'));
-  btn.classList.add('active');
-  gwTabState.tab = tab;
-  document.getElementById('gwTabList').style.display = tab === 'list' ? '' : 'none';
-  document.getElementById('gwTabBl').style.display   = tab === 'blacklist' ? '' : 'none';
-  document.getElementById('gwTabCfg').style.display  = tab === 'config' ? '' : 'none';
-  if (tab === 'blacklist' && !gwTabState.blLoaded) loadGwBLInline();
-  if (tab === 'config'    && !gwTabState.cfgLoaded) loadGwCfgInline();
+const gwTabState={tab:'list',blPage:1};
+function gwMainTab(tab,btn){
+  document.querySelectorAll('#s-giveaways .tab').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');gwTabState.tab=tab;
+  document.getElementById('gwTabList').style.display=tab==='list'?'':'none';
+  document.getElementById('gwTabBl').style.display=tab==='blacklist'?'':'none';
+  document.getElementById('gwTabCfg').style.display=tab==='config'?'':'none';
+  if(tab==='blacklist'&&!gwTabState.blLoaded)loadGwBLInline();
+  if(tab==='config'&&!gwTabState.cfgLoaded)loadGwCfgInline();
 }
-async function loadGwBLInline(page) {
-  if (page) gwTabState.blPage = page;
-  const d = await api(`/api/giveaway-blacklist?page=${gwTabState.blPage}`);
-  if (!d) return;
-  document.getElementById('gwBLTable').innerHTML = d.items.length
-    ? d.items.map(b => `<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink)">${b.reason||'—'}</td><td><span class="mono" style="color:var(--text2)">${b.addedByName||'—'}</span></td><td>${dt(b.addedAt)}</td></tr>`).join('')
-    : `<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;
-  pag('gwBLPag',gwTabState.blPage,d.pages,'loadGwBLInline');
-  gwTabState.blLoaded = true;
+async function loadGwBLInline(page){
+  if(page)gwTabState.blPage=page;const d=await api(`/api/giveaway-blacklist?page=${gwTabState.blPage}`);if(!d)return;
+  document.getElementById('gwBLTable').innerHTML=d.items.length?d.items.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink)">${b.reason||'—'}</td><td><span class="mono" style="color:var(--text2)">${b.addedByName||'—'}</span></td><td>${dt(b.addedAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;
+  pag('gwBLPag',gwTabState.blPage,d.pages,'loadGwBLInline');gwTabState.blLoaded=true;
 }
-async function loadGwCfgInline() {
-  const d = await api('/api/giveaway-config');
-  if (!d) return;
-  const hrs = d.config ? Math.round(d.config.claimTimeout / 3600000) : 24;
-  document.getElementById('gwCfgBox').innerHTML = `
-    <div class="ms"><span class="ms-label">Tiempo para reclamar premio</span><span class="ms-val"><span class="mono">${hrs} horas</span></span></div>
-    <div class="ms"><span class="ms-label">En milisegundos</span><span class="ms-val"><span class="mono">${d.config?.claimTimeout || 86400000}</span></span></div>`;
-  gwTabState.cfgLoaded = true;
+async function loadGwCfgInline(){
+  const d=await api('/api/giveaway-config');if(!d)return;
+  const hrs=d.config?Math.round(d.config.claimTimeout/3600000):24;
+  document.getElementById('gwCfgBox').innerHTML=`<div class="ms"><span class="ms-label">Tiempo para reclamar premio</span><span class="ms-val"><span class="mono">${hrs} horas</span></span></div><div class="ms"><span class="ms-label">En milisegundos</span><span class="ms-val"><span class="mono">${d.config?.claimTimeout||86400000}</span></span></div>`;
+  gwTabState.cfgLoaded=true;
 }
 
-// ── EXPANSIÓN NIVELES: streak + daily challenges ───────────────────────────
-// Patch loadLevels to show streak and daily challenges
-const _origLoadLevels = loadLevels;
-window.loadLevels = loadLevels = async function(page) {
-  if (page) S.levels.page = page;
-  const d = await api(`/api/levels?page=${S.levels.page}`);
-  if (!d) return;
-  const de = document.getElementById('levelDist');
-  if (d.distribution?.length) {
-    const mx = Math.max(...d.distribution.map(b => b.count), 1);
-    de.innerHTML = d.distribution.map(b => `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--text2)">Nv. ${b._id}</span><span class="mono">${b.count}</span></div><div class="prog-wrap"><div class="prog-bar" style="width:${Math.round(b.count/mx*100)}%"></div></div></div>`).join('');
-  } else de.innerHTML = empty();
-  document.getElementById('levelInfo').innerHTML = `<div class="ms"><span class="ms-label">Total usuarios</span><span class="ms-val">${d.total}</span></div><div class="ms"><span class="ms-label">Página</span><span class="ms-val">${S.levels.page} / ${d.pages||1}</span></div>`;
-  document.getElementById('levelTable').innerHTML = d.users.length
-    ? d.users.map(u => {
-        const dc = u.dailyChallenges;
-        const challStr = dc ? `<span class="mono" style="font-size:10px;color:${dc.messagesCompleted&&dc.vcCompleted?'var(--em)':'var(--text3)'}">💬${dc.messagesCompleted?'✓':'✗'} 🎙${dc.vcCompleted?'✓':'✗'}</span>` : '<span class="mono" style="color:var(--text3)">—</span>';
-        const streakCol = u.streak > 0 ? `<span class="mono" style="color:var(--amb)">${u.streak}🔥</span>` : '<span class="mono" style="color:var(--text3)">0</span>';
-        return `<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td><span class="badge b-o">Nv. ${u.level}</span></td><td><span class="mono">${u.xp.toLocaleString()} XP</span></td><td>${streakCol}</td><td>${challStr}</td></tr>`;
-      }).join('')
-    : `<tr><td colspan="6">${empty()}</td></tr>`;
-  pag('levelPag',S.levels.page,d.pages,'loadLevels');
-  S.loaded.levels = true;
-};
+const purchasesState={page:1};
+async function loadPurchases(page){
+  if(page)purchasesState.page=page;const d=await api('/api/admin/purchases?page='+purchasesState.page);if(!d)return;
+  document.getElementById('purchasesTable').innerHTML=d.items.length?d.items.map(p=>`<tr><td>${uc(p.avatar,p.username)}</td><td><strong style="color:var(--text)">${p.itemName||'—'}</strong></td><td>${coin(p.price)}</td><td>${dt(p.purchasedAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Sin compras registradas')}</td></tr>`;
+  pag('purchasesPag',purchasesState.page,d.pages,'loadPurchases');S.loaded.purchases=true;
+}
 
-// ── EXPANSIÓN ECONOMÍA: Backgrounds comprados ─────────────────────────────
-const _origEconTab = econTab;
-econTab = function(s, b) {
-  document.querySelectorAll('#s-economy .tab').forEach(x => x.classList.remove('active'));
-  b.classList.add('active');
-  S.economy.sort = s; S.economy.page = 1; S.loaded.economy = false;
-  const col3 = document.getElementById('ecol3');
-  if (col3) col3.style.display = s === 'backgrounds' ? '' : 'none';
-  loadEconomy();
-};
-const _origLoadEconomy = loadEconomy;
-window.loadEconomy = loadEconomy = async function(page) {
-  if (page) S.economy.page = page;
-  const d = await api(`/api/economy?sort=${S.economy.sort}&page=${S.economy.page}`);
-  if (!d) return;
-  const lv = S.economy.sort === 'level';
-  const bg = S.economy.sort === 'backgrounds';
-  document.getElementById('ecol1').textContent = bg ? 'Fondos comprados' : (lv ? 'Nivel' : 'Monedas');
-  document.getElementById('ecol2').textContent = bg ? 'Fondo activo' : (lv ? 'XP' : 'Total ganado');
-  const col3 = document.getElementById('ecol3');
-  if (col3) col3.style.display = 'none';
-  document.getElementById('econTable').innerHTML = d.users.length
-    ? d.users.map(u => {
-        let col1, col2;
-        if (bg) {
-          col1 = `<span class="mono">${u.ownedBackgrounds?.length || 0} fondos</span>`;
-          col2 = u.activeBgId ? `<span class="badge b-o">${u.activeBgId}</span>` : '<span class="mono" style="color:var(--text3)">—</span>';
-        } else if (lv) {
-          col1 = `<span class="badge b-o">Nv. ${u.level}</span>`;
-          col2 = `<span class="mono">${u.xp.toLocaleString()} XP</span>`;
-        } else {
-          col1 = coin(u.coins);
-          col2 = coin(u.totalEarned);
-        }
-        return `<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td>${col1}</td><td>${col2}</td></tr>`;
-      }).join('')
-    : `<tr><td colspan="4">${empty()}</td></tr>`;
-  pag('econPag',S.economy.page,d.pages,'loadEconomy');
-  S.loaded.economy = true;
-};
-
-// ── EXPANSIÓN CONFIG: GuildStyle ──────────────────────────────────────────
-const _origLoadConfig = loadConfig;
-window.loadConfig = loadConfig = async function() {
-  const d = await api('/api/config');
-  if (!d) return;
-  const lb = {logs:'Logs general',modLogs:'Logs mod',welcome:'Bienvenida',levels:'Niveles',verification:'Verificación',tiktok:'TikTok',security:'Seguridad',invites:'Invitaciones'};
-  document.getElementById('cfgChannels').innerHTML = d.channels
-    ? `<div class="cfg-grid">${Object.entries(d.channels).filter(([k])=>!['_id','__v','guildId'].includes(k)).map(([k,v])=>`<div class="cfg-item"><div class="cfg-lbl">${lb[k]||k}</div><div class="cfg-val ${v?'':'cfg-null'}">${v?v.name||v:'—'}</div></div>`).join('')}</div>`
-    : empty();
-  const r = d.rewards;
-  document.getElementById('cfgRewards').innerHTML = r
-    ? `<div class="ms"><span class="ms-label">Monedas iniciales</span><span class="ms-val">${coin(r.initialCoins||500)}</span></div><div class="ms"><span class="ms-label">Trivia fácil</span><span class="ms-val">${coin(r.trivia_easy||50)}</span></div><div class="ms"><span class="ms-label">Trivia media</span><span class="ms-val">${coin(r.trivia_medium||100)}</span></div><div class="ms"><span class="ms-label">Trivia difícil</span><span class="ms-val">${coin(r.trivia_hard||250)}</span></div><div class="ms"><span class="ms-label">Misiones</span><span class="ms-val">${coin(r.misiones_reward||300)}</span></div><div class="ms"><span class="ms-label">Pérdida máx/día</span><span class="ms-val">${coin(r.max_loss_per_day||5000)}</span></div><div class="ms"><span class="ms-label">Apuestas máx/hora</span><span class="ms-val"><span class="mono">${r.max_bets_per_hour||10}</span></span></div>`
-    : empty();
-  // GuildStyle
-  const st = d.style;
-  const cfgStyle = document.getElementById('cfgStyle');
-  if (cfgStyle) {
-    if (st) {
-      const hexColor = n => n ? `<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#${n.toString(16).padStart(6,'0')};display:inline-block"></span><span class="mono">#${n.toString(16).padStart(6,'0')}</span></span>` : '<span class="mono" style="color:var(--text3)">—</span>';
-      cfgStyle.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-        <div>
-          <div class="cfg-lbl" style="margin-bottom:10px">Colores</div>
-          ${st.colors ? Object.entries(st.colors).filter(([,v])=>v).map(([k,v])=>`<div class="ms"><span class="ms-label">${k}</span><span class="ms-val">${hexColor(v)}</span></div>`).join('') : '<div style="color:var(--text3);font-size:11px">Sin colores configurados</div>'}
-        </div>
-        <div>
-          <div class="cfg-lbl" style="margin-bottom:10px">Estilo general</div>
-          <div class="ms"><span class="ms-label">Footer text</span><span class="ms-val" style="color:var(--ink);font-size:11px">${st.footer?.text||'—'}</span></div>
-          <div class="ms"><span class="ms-label">Mensaje bienvenida</span><span class="ms-val" style="color:var(--ink);font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${st.welcomeMessage||'—'}</span></div>
-          <div class="ms"><span class="ms-label">Timestamp</span><span class="ms-val"><span class="badge ${st.showTimestamp?'b-g':'b-m'}">${st.showTimestamp?'Activo':'Inactivo'}</span></span></div>
-        </div>
-      </div>`;
-    } else {
-      cfgStyle.innerHTML = empty('Sin configuración de estilo');
-    }
-  }
-  S.loaded.config = true;
-};
-
-
-// Expose all loaders globally for pag() onclick handlers
+// ── Exponer todas las funciones globalmente para los handlers de pag() ─────
 window.loadOverview=loadOverview;window.loadInvites=loadInvites;window.loadGiveaways=loadGiveaways;
 window.loadEconomy=loadEconomy;window.loadLoans=loadLoans;window.loadLevels=loadLevels;
 window.loadModeration=loadModeration;window.loadBans=loadBans;window.loadConfig=loadConfig;
 window.loadCasino=loadCasino;window.loadArms=loadArms;window.loadMarket=loadMarket;
 window.loadAchievements=loadAchievements;window.loadTrades=loadTrades;window.loadShop=loadShop;
 window.loadGames=loadGames;window.loadXpBoosts=loadXpBoosts;window.loadGwBlacklist=loadGwBlacklist;
-window.loadAutoRoles=loadAutoRoles;window.loadBackgrounds=loadBackgrounds;
+window.loadAutoRoles=loadAutoRoles;window.loadBackgrounds=loadBackgrounds;window.loadPurchases=loadPurchases;
 window.loadGwBLInline=loadGwBLInline;window.loadChartData=loadChartData;
-
-
-// ── COMPRAS TIENDA ─────────────────────────────────────────────────────────
-const purchasesState = { page: 1 };
-window.loadPurchases = async function(page) {
-  if (page) purchasesState.page = page;
-  const d = await api('/api/admin/purchases?page='+purchasesState.page);
-  if (!d) return;
-  const coin = n => `<span class="mono" style="color:var(--gold)">🪙 ${(n||0).toLocaleString()}</span>`;
-  document.getElementById('purchasesTable').innerHTML = d.items.length
-    ? d.items.map(p => `<tr>
-        <td>${uc(p.avatar, p.username)}</td>
-        <td><strong style="color:var(--text)">${p.itemName||'—'}</strong></td>
-        <td>${coin(p.price)}</td>
-        <td>${dt(p.purchasedAt)}</td>
-      </tr>`).join('')
-    : `<tr><td colspan="4">${empty('Sin compras registradas')}</td></tr>`;
-  pag('purchasesPag', purchasesState.page, d.pages, 'loadPurchases');
-  S.loaded.purchases = true;
-};
-
 </script>
 </body>
 </html>

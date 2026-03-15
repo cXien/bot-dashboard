@@ -17,8 +17,6 @@ global.io = io;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ── Sirve fondos de perfil en /backgrounds/:bgId.png ──────────────────────
-// Copia tus fondos con copy-arms.bat → public/backgrounds/
 app.use('/backgrounds', express.static(path.join(__dirname, 'public', 'backgrounds')));
 
 app.use(session({
@@ -64,6 +62,9 @@ const ShopPurchase = mongoose.models.ShopPurchase || model('ShopPurchase', new S
   userId: String, guildId: String, itemId: String, itemName: String,
   price: Number, purchasedAt: { type: Date, default: Date.now }
 }));
+
+// ── IDs con acceso a logs de IP ────────────────────────────────────────────
+const IP_LOG_ALLOWED = ['990868869449121852', '751153328326443109'];
 
 // ── Discord helpers ────────────────────────────────────────────────────────
 const GUILD_ID       = process.env.GUILD_ID;
@@ -248,6 +249,13 @@ app.get('/api/levels', requireAuth, async (req, res) => {
 app.get('/api/moderation', requireAuth, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1, tab = req.query.tab || 'warns', limit = 15;
+
+    // ── Restricción de logs de IP: solo IDs autorizados ────────────────────
+    if (tab === 'logs' && !IP_LOG_ALLOWED.includes(req.session.user.id)) {
+      return res.status(403).json({ error: 'No tienes permiso para ver los logs de IP' });
+    }
+    // ──────────────────────────────────────────────────────────────────────
+
     let items = [], count = 0;
     if (tab === 'warns') {
       const agg = await Warn.find({ guildId: GUILD_ID }).sort({ createdAt: -1 }).skip((page-1)*limit).limit(limit).lean();
@@ -537,7 +545,6 @@ app.get('/api/casino/me', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ── /api/casino/me/full — incluye activeBgId para el perfil del casino ─────
 app.get('/api/casino/me/full', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -551,7 +558,7 @@ app.get('/api/casino/me/full', async (req, res) => {
     res.json({
       coins:        coins?.coins        || 0,
       totalEarned:  coins?.totalEarned  || 0,
-      activeBgId:   coins?.activeBgId   || null,   // ← fondo activo del usuario
+      activeBgId:   coins?.activeBgId   || null,
       ownedBackgrounds: coins?.ownedBackgrounds || [],
       level:        level?.level        || 0,
       xp:           level?.xp           || 0,
