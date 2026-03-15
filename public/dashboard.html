@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Bee Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="/socket.io/socket.io.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -367,6 +368,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 <script>
 // ── Estado ──────────────────────────────────────────────────────────────────
 const S = {
+  currentSection: 'overview',
   invites:    { page:1 },
   giveaways:  { status:'all', page:1 },
   economy:    { sort:'coins', page:1 },
@@ -376,6 +378,30 @@ const S = {
   bans:       { page:1 },
   loaded:     {},
 };
+
+// ── WebSocket: Conexión en tiempo real ──────────────────────────────────────
+const socket = io();
+
+socket.on('connect', () => {
+  console.log('[WS] Conectado al servidor en tiempo real');
+});
+
+socket.on('stats:update', (stats) => {
+  if (S.currentSection === 'overview' || !S.currentSection) {
+    document.getElementById('st-members').textContent  = stats.members.toLocaleString();
+    document.getElementById('st-online').textContent   = stats.online.toLocaleString();
+    document.getElementById('st-users').textContent    = stats.registeredUsers.toLocaleString();
+    document.getElementById('st-flagged').textContent  = stats.flaggedJoins;
+    document.getElementById('st-giveaways').textContent= stats.activeGiveaways;
+    document.getElementById('st-loans').textContent    = stats.activeLoans;
+    document.getElementById('st-bets').textContent     = stats.casinoBets.toLocaleString();
+    document.getElementById('st-warns').textContent    = stats.totalWarns;
+  }
+});
+
+socket.on('disconnect', () => {
+  console.log('[WS] Desconectado del servidor');
+});
 
 // ── Init ────────────────────────────────────────────────────────────────────
 (async()=>{
@@ -404,6 +430,7 @@ function nav(name, btn){
     target.style.display = 'block';
   }
   if(btn) btn.classList.add('active');
+  S.currentSection = name;
   if(!S.loaded[name]){
     const loaders={invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig};
     if(loaders[name]) loaders[name]();
