@@ -40,6 +40,19 @@ const MarketListing  = model('MarketListing',  new Schema({ guildId: String, sel
 const ArmCurrentPrice= model('ArmCurrentPrice',new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, rarityColor: Number, currentPrice: Number, openPrice24h: Number, high24h: Number, low24h: Number, volume24h: { type: Number, default: 0 }, lastUpdated: Date }));
 const ArmPrice       = model('ArmPrice',       new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, open: Number, high: Number, low: Number, close: Number, volume: Number, timestamp: { type: Date, default: Date.now } }));
 const MarketTx       = model('MarketTx',       new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, price: Number, sellerId: String, buyerId: String, timestamp: { type: Date, default: Date.now } }));
+const Achievements      = model('Achievements',      new Schema({ userId:String, guildId:String, badges:[{id:String,name:String,unlockedAt:Date}], trivia_wins:{type:Number,default:0}, casino_wins:{type:Number,default:0}, win_streak:{type:Number,default:0}, max_bet:{type:Number,default:0}, createdAt:{type:Date,default:Date.now} }));
+const MissionProgress   = model('MissionProgress',   new Schema({ userId:String, guildId:String, week:Number, year:Number, missions:[{id:String,name:String,target:Number,progress:{type:Number,default:0},completed:{type:Boolean,default:false},reward:{type:Number,default:300}}], claimed:{type:Boolean,default:false}, claimedAt:Date, createdAt:{type:Date,default:Date.now} }));
+const TriviaProgress    = model('TriviaProgress',    new Schema({ userId:String, guildId:String, totalWins:{type:Number,default:0}, totalFails:{type:Number,default:0}, streak:{type:Number,default:0}, triviaCount:{type:Number,default:0}, createdAt:{type:Date,default:Date.now} }));
+const Trade             = model('Trade',             new Schema({ guildId:String, fromUserId:String, toUserId:String, fromCoins:{type:Number,default:0}, toCoins:{type:Number,default:0}, status:{type:String,default:'pending'}, expiresAt:Date, createdAt:{type:Date,default:Date.now} }));
+const ShopItem          = model('ShopItem',          new Schema({ guildId:String, itemId:String, name:String, description:String, price:Number, emoji:{type:String,default:'🛒'}, active:{type:Boolean,default:true}, createdBy:String, createdAt:{type:Date,default:Date.now} }));
+const GiveawayBlacklist = model('GiveawayBlacklist', new Schema({ guildId:String, userId:String, reason:{type:String,default:'Sin razón'}, addedBy:String, addedAt:{type:Date,default:Date.now} }));
+const GiveawayConfig    = model('GiveawayConfig',    new Schema({ guildId:{type:String,unique:true}, claimTimeout:{type:Number,default:86400000} }));
+const XpBoost           = model('XpBoost',           new Schema({ userId:String, guildId:String, multiplier:Number, expiresAt:Date, grantedBy:String }));
+const GameHistory       = model('GameHistory',       new Schema({ guildId:String, game:String, result:mongoose.Schema.Types.Mixed, players:[{userId:String,betType:String,amount:Number,won:Boolean,delta:Number}], endedAt:{type:Date,default:Date.now} }));
+const AutoRole          = model('AutoRole',          new Schema({ guildId:String, panelId:{type:String,unique:true}, channelId:String, messageId:String, name:String, title:String, description:String, requireConfirm:{type:Boolean,default:true}, maxRoles:{type:Number,default:0}, roles:[{roleId:String,emoji:String,label:String,description:String,order:Number,minLevel:{type:Number,default:0},requiredRole:String}], createdAt:{type:Date,default:Date.now}, updatedAt:{type:Date,default:Date.now} }));
+const ServerBackground  = model('ServerBackground',  new Schema({ guildId:String, bgId:String, name:String, description:String, price:{type:Number,default:0}, filePath:String, isDefault:{type:Boolean,default:false}, createdBy:String, createdAt:{type:Date,default:Date.now} }));
+const GuildStyle        = model('GuildStyle',        new Schema({ guildId:{type:String,unique:true}, colors:{primary:Number,success:Number,warning:Number,danger:Number,info:Number,welcome:Number,giveaway:Number,level:Number}, footer:{text:String,iconUrl:String}, welcomeMessage:String, showTimestamp:{type:Boolean,default:true} }));
+
 
 // ── Discord helpers ────────────────────────────────────────────────────────
 const GUILD_ID       = process.env.GUILD_ID;
@@ -197,21 +210,39 @@ app.get('/api/giveaways', requireAuth, async (req, res) => {
   } catch (e) { console.error('[giveaways]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-// ── API: Economía ──────────────────────────────────────────────────────────
+// ── [REEMPLAZAR] /api/economy ──────────────────────────────────────────────
 app.get('/api/economy', requireAuth, async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const sort = req.query.sort || 'coins';
+    const page  = parseInt(req.query.page) || 1;
+    const sort  = req.query.sort || 'coins';
     const limit = 15;
+ 
+    if (sort === 'backgrounds') {
+      const [agg, countAgg] = await Promise.all([
+        UserCoins.aggregate([
+          { $match: { guildId: GUILD_ID, 'ownedBackgrounds.0': { $exists: true } } },
+          { $addFields: { bgCount: { $size: '$ownedBackgrounds' } } },
+          { $sort: { bgCount: -1 } },
+          { $skip: (page - 1) * limit }, { $limit: limit },
+        ]),
+        UserCoins.countDocuments({ guildId: GUILD_ID, 'ownedBackgrounds.0': { $exists: true } }),
+      ]);
+      const enriched = await Promise.all(agg.map(async (u, i) => {
+        const user = await getUser(u.userId);
+        return { rank: (page-1)*limit+i+1, userId: u.userId, username: user.username, avatar: user.avatar, coins: u.coins, totalEarned: u.totalEarned, ownedBackgrounds: u.ownedBackgrounds||[], activeBgId: u.activeBgId||null, level: 0, xp: 0 };
+      }));
+      return res.json({ users: enriched, pages: Math.ceil(countAgg / limit) });
+    }
+ 
     const sortObj = sort === 'level' ? { level: -1, xp: -1 } : { coins: -1 };
     const [agg, countAgg] = await Promise.all([
-      UserCoins.find({ guildId: GUILD_ID }).sort(sortObj).skip((page - 1) * limit).limit(limit).lean(),
+      UserCoins.find({ guildId: GUILD_ID }).sort(sortObj).skip((page-1)*limit).limit(limit).lean(),
       UserCoins.countDocuments({ guildId: GUILD_ID }),
     ]);
     const enriched = await Promise.all(agg.map(async (u, i) => {
       const user = await getUser(u.userId);
-      const lvl = await Level.findOne({ userId: u.userId, guildId: GUILD_ID }).lean();
-      return { rank: (page - 1) * limit + i + 1, userId: u.userId, username: user.username, avatar: user.avatar, coins: u.coins, totalEarned: u.totalEarned, level: lvl?.level || 0, xp: lvl?.xp || 0 };
+      const lvl  = await Level.findOne({ userId: u.userId, guildId: GUILD_ID }).lean();
+      return { rank: (page-1)*limit+i+1, userId: u.userId, username: user.username, avatar: user.avatar, coins: u.coins, totalEarned: u.totalEarned, ownedBackgrounds: u.ownedBackgrounds||[], activeBgId: u.activeBgId||null, level: lvl?.level||0, xp: lvl?.xp||0 };
     }));
     res.json({ users: enriched, pages: Math.ceil(countAgg / limit) });
   } catch (e) { console.error('[economy]', e); res.status(500).json({ error: 'Error' }); }
@@ -237,23 +268,143 @@ app.get('/api/loans', requireAuth, async (req, res) => {
   } catch (e) { console.error('[loans]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-// ── API: Niveles ───────────────────────────────────────────────────────────
+// ── [REEMPLAZAR] /api/levels ───────────────────────────────────────────────
 app.get('/api/levels', requireAuth, async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
+    const page  = parseInt(req.query.page) || 1;
     const limit = 15;
     const [agg, countAgg, dist] = await Promise.all([
-      Level.find({ guildId: GUILD_ID }).sort({ level: -1, xp: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+      Level.find({ guildId: GUILD_ID }).sort({ level: -1, xp: -1 })
+        .skip((page - 1) * limit).limit(limit).lean(),
       Level.countDocuments({ guildId: GUILD_ID }),
-      Level.aggregate([{ $match: { guildId: GUILD_ID } }, { $bucket: { groupBy: '$level', boundaries: [0, 5, 10, 20, 50, 999], default: '50+', output: { count: { $sum: 1 } } } }]),
+      Level.aggregate([
+        { $match: { guildId: GUILD_ID } },
+        { $bucket: { groupBy: '$level', boundaries: [0, 5, 10, 20, 50, 999], default: '50+', output: { count: { $sum: 1 } } } },
+      ]),
     ]);
     const enriched = await Promise.all(agg.map(async (l, i) => {
       const u = await getUser(l.userId);
-      return { rank: (page - 1) * limit + i + 1, userId: l.userId, username: u.username, avatar: u.avatar, level: l.level, xp: l.xp };
+      return {
+        rank: (page - 1) * limit + i + 1,
+        userId: l.userId, username: u.username, avatar: u.avatar,
+        level: l.level, xp: l.xp,
+        streak: l.streak || 0,
+        dailyChallenges: l.dailyChallenges || null,
+      };
     }));
-    const distribution = dist.map(d => ({ _id: d._id === 0 ? '0' : d._id === 5 ? '1' : d._id === 10 ? '5' : d._id === 20 ? '10' : d._id === 50 ? '20' : '50+', count: d.count }));
+    const distribution = dist.map(d => ({
+      _id: d._id === 0 ? '0' : d._id === 5 ? '1–4' : d._id === 10 ? '5–9' : d._id === 20 ? '10–19' : d._id === 50 ? '20–49' : '50+',
+      count: d.count,
+    }));
     res.json({ users: enriched, pages: Math.ceil(countAgg / limit), total: countAgg, distribution });
   } catch (e) { console.error('[levels]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+// ── [NUEVO] /api/achievements ──────────────────────────────────────────────
+app.get('/api/achievements', requireAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1, tab = req.query.tab || 'achievements', limit = 15;
+    if (tab === 'achievements') {
+      const [agg, count] = await Promise.all([Achievements.find({ guildId: GUILD_ID }).sort({ casino_wins: -1 }).skip((page-1)*limit).limit(limit).lean(), Achievements.countDocuments({ guildId: GUILD_ID })]);
+      const enriched = await Promise.all(agg.map(async (a, i) => { const u = await getUser(a.userId); return { rank:(page-1)*limit+i+1, userId:a.userId, username:u.username, avatar:u.avatar, badges:a.badges?.length||0, trivia_wins:a.trivia_wins||0, casino_wins:a.casino_wins||0, win_streak:a.win_streak||0, max_bet:a.max_bet||0 }; }));
+      return res.json({ items: enriched, pages: Math.ceil(count/limit) });
+    }
+    if (tab === 'missions') {
+      const now = new Date(), week = Math.ceil(((now - new Date(now.getFullYear(),0,1))/86400000 + new Date(now.getFullYear(),0,1).getDay() + 1) / 7);
+      const [agg, count] = await Promise.all([MissionProgress.find({ guildId: GUILD_ID, year: now.getFullYear(), week }).sort({ claimed:1, createdAt:-1 }).skip((page-1)*limit).limit(limit).lean(), MissionProgress.countDocuments({ guildId: GUILD_ID, year: now.getFullYear(), week })]);
+      const enriched = await Promise.all(agg.map(async p => { const u = await getUser(p.userId); return { userId:p.userId, username:u.username, avatar:u.avatar, completed:p.missions?.filter(m=>m.completed).length||0, total:p.missions?.length||0, claimed:p.claimed, missions:p.missions }; }));
+      return res.json({ items: enriched, pages: Math.ceil(count/limit) });
+    }
+    if (tab === 'trivia') {
+      const [agg, count] = await Promise.all([TriviaProgress.find({ guildId: GUILD_ID }).sort({ totalWins:-1 }).skip((page-1)*limit).limit(limit).lean(), TriviaProgress.countDocuments({ guildId: GUILD_ID })]);
+      const enriched = await Promise.all(agg.map(async (t, i) => { const u = await getUser(t.userId); const tot=(t.totalWins||0)+(t.totalFails||0); return { rank:(page-1)*limit+i+1, userId:t.userId, username:u.username, avatar:u.avatar, totalWins:t.totalWins||0, totalFails:t.totalFails||0, streak:t.streak||0, winRate:tot>0?Math.round(t.totalWins/tot*100):0 }; }));
+      return res.json({ items: enriched, pages: Math.ceil(count/limit) });
+    }
+    res.json({ items: [], pages: 0 });
+  } catch (e) { console.error('[achievements]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+// ── [NUEVO] /api/trades ────────────────────────────────────────────────────
+app.get('/api/trades', requireAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page)||1, status = req.query.status||'all', limit = 15;
+    const query = { guildId: GUILD_ID }; if (status !== 'all') query.status = status;
+    const [agg, count] = await Promise.all([Trade.find(query).sort({ createdAt:-1 }).skip((page-1)*limit).limit(limit).lean(), Trade.countDocuments(query)]);
+    const enriched = await Promise.all(agg.map(async t => { const from = await getUser(t.fromUserId), to = await getUser(t.toUserId); return { ...t, fromUsername:from.username, fromAvatar:from.avatar, toUsername:to.username, toAvatar:to.avatar }; }));
+    res.json({ trades: enriched, pages: Math.ceil(count/limit) });
+  } catch (e) { console.error('[trades]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+// ── [NUEVO] /api/shop ──────────────────────────────────────────────────────
+app.get('/api/shop', requireAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page)||1, active = req.query.active, limit = 20;
+    const query = { guildId: GUILD_ID }; if (active === 'true') query.active=true; if (active === 'false') query.active=false;
+    const [items, count] = await Promise.all([ShopItem.find(query).sort({ price:1 }).skip((page-1)*limit).limit(limit).lean(), ShopItem.countDocuments(query)]);
+    const enriched = await Promise.all(items.map(async item => { const u = await getUser(item.createdBy); return { ...item, createdByName:u.username }; }));
+    res.json({ items: enriched, pages: Math.ceil(count/limit) });
+  } catch (e) { console.error('[shop]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+// ── [NUEVO] /api/shop ──────────────────────────────────────────────────────
+app.get('/api/shop', requireAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page)||1, active = req.query.active, limit = 20;
+    const query = { guildId: GUILD_ID }; if (active === 'true') query.active=true; if (active === 'false') query.active=false;
+    const [items, count] = await Promise.all([ShopItem.find(query).sort({ price:1 }).skip((page-1)*limit).limit(limit).lean(), ShopItem.countDocuments(query)]);
+    const enriched = await Promise.all(items.map(async item => { const u = await getUser(item.createdBy); return { ...item, createdByName:u.username }; }));
+    res.json({ items: enriched, pages: Math.ceil(count/limit) });
+  } catch (e) { console.error('[shop]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+// ── [NUEVO] /api/xpboosts ─────────────────────────────────────────────────
+app.get('/api/xpboosts', requireAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page)||1, limit = 15, now = new Date();
+    const [agg, count] = await Promise.all([XpBoost.find({ guildId: GUILD_ID, expiresAt:{ $gt:now } }).sort({ expiresAt:1 }).skip((page-1)*limit).limit(limit).lean(), XpBoost.countDocuments({ guildId: GUILD_ID, expiresAt:{ $gt:now } })]);
+    const enriched = await Promise.all(agg.map(async b => { const u=await getUser(b.userId), g=await getUser(b.grantedBy); return { ...b, username:u.username, avatar:u.avatar, grantedByName:g.username, hoursLeft:Math.max(0,Math.floor((new Date(b.expiresAt)-now)/3600000)) }; }));
+    res.json({ items: enriched, pages: Math.ceil(count/limit) });
+  } catch (e) { console.error('[xpboosts]', e); res.status(500).json({ error: 'Error' }); }
+});
+ 
+// ── [NUEVO] /api/games ────────────────────────────────────────────────────
+app.get('/api/games', requireAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page)||1, game = req.query.game||'all', limit = 15;
+    const query = { guildId: GUILD_ID }; if (game !== 'all') query.game = game;
+    const [agg, count, topGames] = await Promise.all([
+      GameHistory.find(query).sort({ endedAt:-1 }).skip((page-1)*limit).limit(limit).lean(),
+      GameHistory.countDocuments(query),
+      GameHistory.aggregate([{ $match:{ guildId:GUILD_ID } }, { $group:{ _id:'$game', count:{ $sum:1 }, totalPot:{ $sum:{ $sum:'$players.amount' } } } }, { $sort:{ count:-1 } }]),
+    ]);
+    const enriched = await Promise.all(agg.map(async g => {
+      const players = await Promise.all((g.players||[]).slice(0,5).map(async p => { const u=await getUser(p.userId); return { ...p, username:u.username }; }));
+      return { ...g, players };
+    }));
+    res.json({ games: enriched, pages: Math.ceil(count/limit), topGames });
+  } catch (e) { console.error('[games]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+// ── [NUEVO] /api/autoroles ────────────────────────────────────────────────
+app.get('/api/autoroles', requireAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page)||1, limit = 15;
+    const [agg, count] = await Promise.all([AutoRole.find({ guildId: GUILD_ID }).sort({ updatedAt:-1 }).skip((page-1)*limit).limit(limit).lean(), AutoRole.countDocuments({ guildId: GUILD_ID })]);
+    res.json({ items: agg, pages: Math.ceil(count/limit) });
+  } catch (e) { console.error('[autoroles]', e); res.status(500).json({ error: 'Error' }); }
+});
+ 
+// ── [NUEVO] /api/backgrounds ──────────────────────────────────────────────
+app.get('/api/backgrounds', requireAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page)||1, filter = req.query.filter||'all', limit = 20;
+    const query = { guildId: GUILD_ID };
+    if (filter === 'default') query.isDefault = true;
+    if (filter === 'custom')  query.isDefault = false;
+    const [items, count] = await Promise.all([ServerBackground.find(query).sort({ createdAt:-1 }).skip((page-1)*limit).limit(limit).lean(), ServerBackground.countDocuments(query)]);
+    const enriched = await Promise.all(items.map(async bg => { const u=await getUser(bg.createdBy); return { ...bg, createdByName:u.username }; }));
+    res.json({ items: enriched, pages: Math.ceil(count/limit) });
+  } catch (e) { console.error('[backgrounds]', e); res.status(500).json({ error: 'Error' }); }
 });
 
 // ── API: Moderación ───────────────────────────────────────────────────────
@@ -441,12 +592,15 @@ app.get('/api/market', requireAuth, async (req, res) => {
   } catch (e) { console.error('[market]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-// ── API: Configuración ─────────────────────────────────────────────────────
+// ── [REEMPLAZAR] /api/config ───────────────────────────────────────────────
 app.get('/api/config', requireAuth, async (req, res) => {
   try {
-    const channels = await ChannelsConfig.findOne({ guildId: GUILD_ID }).lean();
-    const rewards = await RewardsConfig.findOne({ guildId: GUILD_ID }).lean();
-    res.json({ channels, rewards });
+    const [channels, rewards, style] = await Promise.all([
+      ChannelsConfig.findOne({ guildId: GUILD_ID }).lean(),
+      RewardsConfig.findOne({ guildId: GUILD_ID }).lean(),
+      GuildStyle.findOne({ guildId: GUILD_ID }).lean(),
+    ]);
+    res.json({ channels, rewards, style });
   } catch (e) { console.error('[config]', e); res.status(500).json({ error: 'Error' }); }
 });
 
