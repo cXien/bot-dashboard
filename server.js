@@ -346,15 +346,22 @@ app.get('/api/shop', requireAuth, async (req, res) => {
   } catch (e) { console.error('[shop]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-// ── [NUEVO] /api/shop ──────────────────────────────────────────────────────
-app.get('/api/shop', requireAuth, async (req, res) => {
+// ── [NUEVO] /api/giveaway-blacklist ───────────────────────────────────────
+app.get('/api/giveaway-blacklist', requireAuth, async (req, res) => {
   try {
-    const page = parseInt(req.query.page)||1, active = req.query.active, limit = 20;
-    const query = { guildId: GUILD_ID }; if (active === 'true') query.active=true; if (active === 'false') query.active=false;
-    const [items, count] = await Promise.all([ShopItem.find(query).sort({ price:1 }).skip((page-1)*limit).limit(limit).lean(), ShopItem.countDocuments(query)]);
-    const enriched = await Promise.all(items.map(async item => { const u = await getUser(item.createdBy); return { ...item, createdByName:u.username }; }));
+    const page = parseInt(req.query.page)||1, limit = 15;
+    const [agg, count] = await Promise.all([GiveawayBlacklist.find({ guildId: GUILD_ID }).sort({ addedAt:-1 }).skip((page-1)*limit).limit(limit).lean(), GiveawayBlacklist.countDocuments({ guildId: GUILD_ID })]);
+    const enriched = await Promise.all(agg.map(async b => { const u=await getUser(b.userId), a=await getUser(b.addedBy); return { ...b, username:u.username, avatar:u.avatar, addedByName:a.username }; }));
     res.json({ items: enriched, pages: Math.ceil(count/limit) });
-  } catch (e) { console.error('[shop]', e); res.status(500).json({ error: 'Error' }); }
+  } catch (e) { console.error('[gw-blacklist]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+// ── [NUEVO] /api/giveaway-config ──────────────────────────────────────────
+app.get('/api/giveaway-config', requireAuth, async (req, res) => {
+  try {
+    const config = await GiveawayConfig.findOne({ guildId: GUILD_ID }).lean();
+    res.json({ config });
+  } catch (e) { console.error('[gw-config]', e); res.status(500).json({ error: 'Error' }); }
 });
 
 // ── [NUEVO] /api/xpboosts ─────────────────────────────────────────────────
@@ -490,7 +497,8 @@ app.get('/api/casino', requireAuth, async (req, res) => {
       if (activity[key]) activity[key].count++;
     });
     const stats = await CasinoLog.aggregate([{ $match: { guildId: GUILD_ID } }, { $group: { _id: null, totalBets: { $sum: 1 }, totalBetAmount: { $sum: '$bet' }, houseProfit: { $sum: '$profit' } } }]);
-    const winRate = stats[0]?.totalBets ? Math.round((logs.filter(l => l.result === 'win').length / stats[0].totalBets) * 100) : 0;
+    const totalWins = await CasinoLog.countDocuments({ guildId: GUILD_ID, ...(game !== 'all' ? { game } : {}), profit: { $gt: 0 } });
+    const winRate = stats[0]?.totalBets ? Math.round((totalWins / stats[0].totalBets) * 100) : 0;
     res.json({ logs: enrichedLogs, topWinners: enrichedWinners, topLosers: enrichedLosers, activity, stats: { ...stats[0], winRate }, pages: Math.ceil(countAgg / limit) });
   } catch (e) { console.error('[casino]', e); res.status(500).json({ error: 'Error' }); }
 });
