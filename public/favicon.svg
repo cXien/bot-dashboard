@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -55 100 110">
+<defs>
+  <style>
+    @media (prefers-reduced-motion: no-preference) {
+      .wl { animation: wl .2s ease-in-out infinite; transform-origin: 0 -16px; transform-box: fill-box; }
+      .wr { animation: wr .2s ease-in-out infinite; transform-origin: 0 -16px; transform-box: fill-box; }
+      .bg { animation: bf .55s ease-in-out infinite; transform-box: fill-box; }
+      .bd { animation: fl .55s ease-in-out infinite; transform-origin: 0 0; transform-box: fill-box; }
+      .al { animation: al .55s ease-in-out infinite; transform-origin: 0 18px; transform-box: fill-box; }
+      .ar { animation: ar .55s ease-in-out infinite; transform-origin: 0 18px; transform-box: fill-box; }
+      .el { animation: bk 3.5s ease-in-out infinite; transform-box: fill-box; }
+      .er { animation: bk 3.5s ease-in-out infinite .05s; transform-box: fill-box; }
+      @keyframes wl { 0%,100%{transform:scaleX(1)} 50%{transform:scaleX(.3)} }
+      @keyframes wr { 0%,100%{transform:scaleX(1)} 50%{transform:scaleX(.3)} }
+      @keyframes bf { 0%,100%{opacity:1} 50%{opacity:.75} }
+      @keyframes fl { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-2.5px)} }
+      @keyframes al { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(-6deg)} }
+      @keyframes ar { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(6deg)} }
+      @keyframes bk { 0%,90%,100%{transform:scaleY(1)} 95%{transform:scaleY(.08)} }
+    }
+  </style>
+  <linearGradient id="gg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#e8c96a"/>
+    <stop offset="100%" stop-color="#b8892a"/>
+  </linearGradient>
+  <linearGradient id="gb" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#2a2a2a"/>
+    <stop offset="100%" stop-color="#161616"/>
+  </linearGradient>
+</defs>
+<g class="bg">
+  <polygon fill="#141008" stroke="#c9a84c" stroke-width="1.2"
+    points="0,-48 41.6,-24 41.6,24 0,48 -41.6,24 -41.6,-24"/>
+  <polygon fill="none" stroke="rgba(201,168,76,0.2)" stroke-width="0.6"
+    points="0,-40 34.6,-20 34.6,20 0,40 -34.6,20 -34.6,-20"/>
+</g>
+<g class="bd">
+  <g class="wl">
+    <ellipse fill="rgba(180,220,255,0.16)" stroke="rgba(160,200,255,0.55)" stroke-width="0.7"
+      cx="-17" cy="-16" rx="17" ry="9" transform="rotate(-22,-17,-16)"/>
+  </g>
+  <g class="wr">
+    <ellipse fill="rgba(180,220,255,0.16)" stroke="rgba(160,200,255,0.55)" stroke-width="0.7"
+      cx="17" cy="-16" rx="17" ry="9" transform="rotate(22,17,-16)"/>
+  </g>
+  <g class="wl">
+    <ellipse fill="rgba(180,220,255,0.1)" stroke="rgba(160,200,255,0.35)" stroke-width="0.5"
+      cx="-15" cy="-7" rx="11" ry="6" transform="rotate(-14,-15,-7)"/>
+  </g>
+  <g class="wr">
+    <ellipse fill="rgba(180,220,255,0.1)" stroke="rgba(160,200,255,0.35)" stroke-width="0.5"
+      cx="15" cy="-7" rx="11" ry="6" transform="rotate(14,15,-7)"/>
+  </g>
+  <path fill="url(#gg)" stroke="none" d="M-11,0 Q0,-1.5 11,0 Q12,5 11,10 Q0,8.5 -11,10 Q-12,5 -11,0Z"/>
+  <path fill="url(#gb)" stroke="none" d="M-12,10 Q0,8.5 12,10 Q12.5,16 11,21 Q0,19.5 -11,21 Q-12.5,16 -12,10Z"/>
+  <path fill="url(#gg)" stroke="none" d="M-11,21 Q0,19.5 11,21 Q11,26 9.5,30 Q0,28.5 -9.5,30 Q-11,26 -11,21Z"/>
+  <path fill="url(#gb)" stroke="#c9a84c" stroke-width="0.6"
+    d="M-12,-3 Q-12,-11 0,-14 Q12,-11 12,-3 Q12,0 11,0 Q0,-1 -11,0 Q-12,0 -12,-3Z"/>
+  <path fill="#9a7020" stroke="none" d="M-3,30 Q0,28.5 3,30 Q1.5,37 0,40 Q-1.5,37 -3,30Z"/>
+  <circle fill="url(#gb)" stroke="#c9a84c" stroke-width="0.7" cx="0" cy="-19" r="9"/>
+  <g class="el">
+    <circle fill="#c9a84c" cx="-3.8" cy="-20" r="2.6"/>
+    <circle fill="rgba(0,0,0,0.75)" cx="-3.8" cy="-20" r="1.2"/>
+    <circle fill="rgba(255,255,255,0.6)" cx="-3.2" cy="-20.8" r="0.55"/>
+  </g>
+  <g class="er">
+    <circle fill="#c9a84c" cx="3.8" cy="-20" r="2.6"/>
+    <circle fill="rgba(0,0,0,0.75)" cx="3.8" cy="-20" r="1.2"/>
+    <circle fill="rgba(255,255,255,0.6)" cx="4.4" cy="-20.8" r="0.55"/>
+  </g>
+  <g class="al">
+    <path fill="none" stroke="#c9a84c" stroke-width="0.9" stroke-linecap="round"
+      d="M-3,-27 Q-7,-35 -5,-42"/>
+    <circle fill="#c9a84c" cx="-5" cy="-42" r="1.9"/>
+  </g>
+  <g class="ar">
+    <path fill="none" stroke="#c9a84c" stroke-width="0.9" stroke-linecap="round"
+      d="M3,-27 Q7,-35 5,-42"/>
+    <circle fill="#c9a84c" cx="5" cy="-42" r="1.9"/>
+  </g>
+</g>
+</svg>

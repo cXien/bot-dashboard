@@ -4,250 +4,249 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Bee Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii01MCAtNTUgMTAwIDExMCI+CjxkZWZzPgogIDxzdHlsZT4KICAgIEBtZWRpYSAocHJlZmVycy1yZWR1Y2VkLW1vdGlvbjogbm8tcHJlZmVyZW5jZSkgewogICAgICAud2wgeyBhbmltYXRpb246IHdsIC4ycyBlYXNlLWluLW91dCBpbmZpbml0ZTsgdHJhbnNmb3JtLW9yaWdpbjogMCAtMTZweDsgdHJhbnNmb3JtLWJveDogZmlsbC1ib3g7IH0KICAgICAgLndyIHsgYW5pbWF0aW9uOiB3ciAuMnMgZWFzZS1pbi1vdXQgaW5maW5pdGU7IHRyYW5zZm9ybS1vcmlnaW46IDAgLTE2cHg7IHRyYW5zZm9ybS1ib3g6IGZpbGwtYm94OyB9CiAgICAgIC5iZyB7IGFuaW1hdGlvbjogYmYgLjU1cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgdHJhbnNmb3JtLWJveDogZmlsbC1ib3g7IH0KICAgICAgLmJkIHsgYW5pbWF0aW9uOiBmbCAuNTVzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB0cmFuc2Zvcm0tb3JpZ2luOiAwIDA7IHRyYW5zZm9ybS1ib3g6IGZpbGwtYm94OyB9CiAgICAgIC5hbCB7IGFuaW1hdGlvbjogYWwgLjU1cyBlYXNlLWluLW91dCBpbmZpbml0ZTsgdHJhbnNmb3JtLW9yaWdpbjogMCAxOHB4OyB0cmFuc2Zvcm0tYm94OiBmaWxsLWJveDsgfQogICAgICAuYXIgeyBhbmltYXRpb246IGFyIC41NXMgZWFzZS1pbi1vdXQgaW5maW5pdGU7IHRyYW5zZm9ybS1vcmlnaW46IDAgMThweDsgdHJhbnNmb3JtLWJveDogZmlsbC1ib3g7IH0KICAgICAgLmVsIHsgYW5pbWF0aW9uOiBiayAzLjVzIGVhc2UtaW4tb3V0IGluZmluaXRlOyB0cmFuc2Zvcm0tYm94OiBmaWxsLWJveDsgfQogICAgICAuZXIgeyBhbmltYXRpb246IGJrIDMuNXMgZWFzZS1pbi1vdXQgaW5maW5pdGUgLjA1czsgdHJhbnNmb3JtLWJveDogZmlsbC1ib3g7IH0KICAgICAgQGtleWZyYW1lcyB3bCB7IDAlLDEwMCV7dHJhbnNmb3JtOnNjYWxlWCgxKX0gNTAle3RyYW5zZm9ybTpzY2FsZVgoLjMpfSB9CiAgICAgIEBrZXlmcmFtZXMgd3IgeyAwJSwxMDAle3RyYW5zZm9ybTpzY2FsZVgoMSl9IDUwJXt0cmFuc2Zvcm06c2NhbGVYKC4zKX0gfQogICAgICBAa2V5ZnJhbWVzIGJmIHsgMCUsMTAwJXtvcGFjaXR5OjF9IDUwJXtvcGFjaXR5Oi43NX0gfQogICAgICBAa2V5ZnJhbWVzIGZsIHsgMCUsMTAwJXt0cmFuc2Zvcm06dHJhbnNsYXRlWSgwKX0gNTAle3RyYW5zZm9ybTp0cmFuc2xhdGVZKC0yLjVweCl9IH0KICAgICAgQGtleWZyYW1lcyBhbCB7IDAlLDEwMCV7dHJhbnNmb3JtOnJvdGF0ZSgwZGVnKX0gNTAle3RyYW5zZm9ybTpyb3RhdGUoLTZkZWcpfSB9CiAgICAgIEBrZXlmcmFtZXMgYXIgeyAwJSwxMDAle3RyYW5zZm9ybTpyb3RhdGUoMGRlZyl9IDUwJXt0cmFuc2Zvcm06cm90YXRlKDZkZWcpfSB9CiAgICAgIEBrZXlmcmFtZXMgYmsgeyAwJSw5MCUsMTAwJXt0cmFuc2Zvcm06c2NhbGVZKDEpfSA5NSV7dHJhbnNmb3JtOnNjYWxlWSguMDgpfSB9CiAgICB9CiAgPC9zdHlsZT4KICA8bGluZWFyR3JhZGllbnQgaWQ9ImdnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CiAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZThjOTZhIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNiODg5MmEiLz4KICA8L2xpbmVhckdyYWRpZW50PgogIDxsaW5lYXJHcmFkaWVudCBpZD0iZ2IiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMyYTJhMmEiLz4KICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzE2MTYxNiIvPgogIDwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPGcgY2xhc3M9ImJnIj4KICA8cG9seWdvbiBmaWxsPSIjMTQxMDA4IiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iMS4yIgogICAgcG9pbnRzPSIwLC00OCA0MS42LC0yNCA0MS42LDI0IDAsNDggLTQxLjYsMjQgLTQxLjYsLTI0Ii8+CiAgPHBvbHlnb24gZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDIwMSwxNjgsNzYsMC4yKSIgc3Ryb2tlLXdpZHRoPSIwLjYiCiAgICBwb2ludHM9IjAsLTQwIDM0LjYsLTIwIDM0LjYsMjAgMCw0MCAtMzQuNiwyMCAtMzQuNiwtMjAiLz4KPC9nPgo8ZyBjbGFzcz0iYmQiPgogIDxnIGNsYXNzPSJ3bCI+CiAgICA8ZWxsaXBzZSBmaWxsPSJyZ2JhKDE4MCwyMjAsMjU1LDAuMTYpIiBzdHJva2U9InJnYmEoMTYwLDIwMCwyNTUsMC41NSkiIHN0cm9rZS13aWR0aD0iMC43IgogICAgICBjeD0iLTE3IiBjeT0iLTE2IiByeD0iMTciIHJ5PSI5IiB0cmFuc2Zvcm09InJvdGF0ZSgtMjIsLTE3LC0xNikiLz4KICA8L2c+CiAgPGcgY2xhc3M9IndyIj4KICAgIDxlbGxpcHNlIGZpbGw9InJnYmEoMTgwLDIyMCwyNTUsMC4xNikiIHN0cm9rZT0icmdiYSgxNjAsMjAwLDI1NSwwLjU1KSIgc3Ryb2tlLXdpZHRoPSIwLjciCiAgICAgIGN4PSIxNyIgY3k9Ii0xNiIgcng9IjE3IiByeT0iOSIgdHJhbnNmb3JtPSJyb3RhdGUoMjIsMTcsLTE2KSIvPgogIDwvZz4KICA8ZyBjbGFzcz0id2wiPgogICAgPGVsbGlwc2UgZmlsbD0icmdiYSgxODAsMjIwLDI1NSwwLjEpIiBzdHJva2U9InJnYmEoMTYwLDIwMCwyNTUsMC4zNSkiIHN0cm9rZS13aWR0aD0iMC41IgogICAgICBjeD0iLTE1IiBjeT0iLTciIHJ4PSIxMSIgcnk9IjYiIHRyYW5zZm9ybT0icm90YXRlKC0xNCwtMTUsLTcpIi8+CiAgPC9nPgogIDxnIGNsYXNzPSJ3ciI+CiAgICA8ZWxsaXBzZSBmaWxsPSJyZ2JhKDE4MCwyMjAsMjU1LDAuMSkiIHN0cm9rZT0icmdiYSgxNjAsMjAwLDI1NSwwLjM1KSIgc3Ryb2tlLXdpZHRoPSIwLjUiCiAgICAgIGN4PSIxNSIgY3k9Ii03IiByeD0iMTEiIHJ5PSI2IiB0cmFuc2Zvcm09InJvdGF0ZSgxNCwxNSwtNykiLz4KICA8L2c+CiAgPHBhdGggZmlsbD0idXJsKCNnZykiIHN0cm9rZT0ibm9uZSIgZD0iTS0xMSwwIFEwLC0xLjUgMTEsMCBRMTIsNSAxMSwxMCBRMCw4LjUgLTExLDEwIFEtMTIsNSAtMTEsMFoiLz4KICA8cGF0aCBmaWxsPSJ1cmwoI2diKSIgc3Ryb2tlPSJub25lIiBkPSJNLTEyLDEwIFEwLDguNSAxMiwxMCBRMTIuNSwxNiAxMSwyMSBRMCwxOS41IC0xMSwyMSBRLTEyLjUsMTYgLTEyLDEwWiIvPgogIDxwYXRoIGZpbGw9InVybCgjZ2cpIiBzdHJva2U9Im5vbmUiIGQ9Ik0tMTEsMjEgUTAsMTkuNSAxMSwyMSBRMTEsMjYgOS41LDMwIFEwLDI4LjUgLTkuNSwzMCBRLTExLDI2IC0xMSwyMVoiLz4KICA8cGF0aCBmaWxsPSJ1cmwoI2diKSIgc3Ryb2tlPSIjYzlhODRjIiBzdHJva2Utd2lkdGg9IjAuNiIKICAgIGQ9Ik0tMTIsLTMgUS0xMiwtMTEgMCwtMTQgUTEyLC0xMSAxMiwtMyBRMTIsMCAxMSwwIFEwLC0xIC0xMSwwIFEtMTIsMCAtMTIsLTNaIi8+CiAgPHBhdGggZmlsbD0iIzlhNzAyMCIgc3Ryb2tlPSJub25lIiBkPSJNLTMsMzAgUTAsMjguNSAzLDMwIFExLjUsMzcgMCw0MCBRLTEuNSwzNyAtMywzMFoiLz4KICA8Y2lyY2xlIGZpbGw9InVybCgjZ2IpIiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iMC43IiBjeD0iMCIgY3k9Ii0xOSIgcj0iOSIvPgogIDxnIGNsYXNzPSJlbCI+CiAgICA8Y2lyY2xlIGZpbGw9IiNjOWE4NGMiIGN4PSItMy44IiBjeT0iLTIwIiByPSIyLjYiLz4KICAgIDxjaXJjbGUgZmlsbD0icmdiYSgwLDAsMCwwLjc1KSIgY3g9Ii0zLjgiIGN5PSItMjAiIHI9IjEuMiIvPgogICAgPGNpcmNsZSBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiIGN4PSItMy4yIiBjeT0iLTIwLjgiIHI9IjAuNTUiLz4KICA8L2c+CiAgPGcgY2xhc3M9ImVyIj4KICAgIDxjaXJjbGUgZmlsbD0iI2M5YTg0YyIgY3g9IjMuOCIgY3k9Ii0yMCIgcj0iMi42Ii8+CiAgICA8Y2lyY2xlIGZpbGw9InJnYmEoMCwwLDAsMC43NSkiIGN4PSIzLjgiIGN5PSItMjAiIHI9IjEuMiIvPgogICAgPGNpcmNsZSBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNikiIGN4PSI0LjQiIGN5PSItMjAuOCIgcj0iMC41NSIvPgogIDwvZz4KICA8ZyBjbGFzcz0iYWwiPgogICAgPHBhdGggZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYzlhODRjIiBzdHJva2Utd2lkdGg9IjAuOSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgICBkPSJNLTMsLTI3IFEtNywtMzUgLTUsLTQyIi8+CiAgICA8Y2lyY2xlIGZpbGw9IiNjOWE4NGMiIGN4PSItNSIgY3k9Ii00MiIgcj0iMS45Ii8+CiAgPC9nPgogIDxnIGNsYXNzPSJhciI+CiAgICA8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iMC45IiBzdHJva2UtbGluZWNhcD0icm91bmQiCiAgICAgIGQ9Ik0zLC0yNyBRNywtMzUgNSwtNDIiLz4KICAgIDxjaXJjbGUgZmlsbD0iI2M5YTg0YyIgY3g9IjUiIGN5PSItNDIiIHI9IjEuOSIvPgogIDwvZz4KPC9nPgo8L3N2Zz4K">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="/socket.io/socket.io.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-  --bg:      #000;
-  --s1:      #0a0a0a;
-  --s2:      #111;
-  --s3:      #1a1a1a;
-  --border:  #222;
-  --border2: #2a2a2a;
-  --text:    #e8e8e8;
-  --muted:   #555;
-  --muted2:  #777;
-  --accent:  #fff;
-  --green:   #22c55e;
-  --red:     #ef4444;
-  --yellow:  #eab308;
-  --blue:    #3b82f6;
-  --orange:  #f97316;
-  --sidebar: 220px;
-  --r:       8px;
+  --void:#03030a;
+  --dp1:rgba(255,255,255,0.028);
+  --dp2:rgba(255,255,255,0.048);
+  --dp3:rgba(255,255,255,0.07);
+  --glass:rgba(255,255,255,0.045);
+  --rim:rgba(255,255,255,0.07);
+  --rim2:rgba(255,255,255,0.11);
+  --text:rgba(255,255,255,0.92);
+  --text2:rgba(255,255,255,0.45);
+  --text3:rgba(255,255,255,0.22);
+  --ink:rgba(255,255,255,0.6);
+  --gold:#c9a84c;
+  --em:#3ecf8e;
+  --rose:#f06292;
+  --sky:#64b5f6;
+  --amb:#ffca28;
+  --sidebar:220px;
+  --r:12px;
 }
-
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;display:flex;min-height:100vh;line-height:1.5}
-
-/* ── Sidebar ── */
-.sb{width:var(--sidebar);min-height:100vh;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:50}
-.sb-top{padding:20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
-.sb-icon{width:32px;height:32px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.sb-title{font-size:13px;font-weight:600;color:var(--text)}
-.sb-sub{font-size:11px;color:var(--muted2);margin-top:1px}
-.sb-nav{flex:1;padding:12px 8px;display:flex;flex-direction:column;gap:1px}
-.sb-sec{font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:12px 8px 4px}
-.nav-btn{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:400;color:var(--muted2);border:none;background:none;width:100%;text-align:left;transition:all .12s}
-.nav-btn:hover{background:var(--s2);color:var(--text)}
-.nav-btn.active{background:var(--s2);color:var(--text)}
-.nav-btn .ic{width:14px;height:14px;opacity:.6}
-.nav-btn.active .ic{opacity:1}
-.sb-user{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px}
-.sb-avatar{width:28px;height:28px;border-radius:50%;background:var(--s3)}
-.sb-name{font-size:12px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-role{font-size:10px;color:var(--muted2)}
-.sb-logout{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 4px;border-radius:4px;transition:color .12s;line-height:1}
-.sb-logout:hover{color:var(--red)}
-
-/* ── Main ── */
-.main{margin-left:var(--sidebar);flex:1;padding:20px 32px;min-height:100vh;width:calc(100% - var(--sidebar))}
-.ph{margin-bottom:24px}
-.pt{font-size:20px;font-weight:600;color:var(--text)}
-.ps{font-size:12px;color:var(--muted2);margin-top:3px}
-
-/* ── Section ── */
+html,body{height:100%}
+body{
+  background:var(--void);
+  color:var(--text);
+  font-family:'Instrument Sans',sans-serif;
+  font-size:13px;
+  display:flex;
+  min-height:100vh;
+  line-height:1.55;
+  background-image:
+    radial-gradient(ellipse 700px 500px at 15% 10%,rgba(100,181,246,0.04) 0%,transparent 70%),
+    radial-gradient(ellipse 600px 600px at 85% 90%,rgba(62,207,142,0.03) 0%,transparent 70%),
+    radial-gradient(ellipse 400px 400px at 50% 50%,rgba(201,168,76,0.015) 0%,transparent 70%);
+}
+/* SIDEBAR */
+.sb{
+  width:var(--sidebar);min-height:100vh;
+  position:fixed;top:0;bottom:0;left:0;z-index:50;
+  display:flex;flex-direction:column;
+  background:rgba(3,3,10,0.72);
+  backdrop-filter:blur(40px) saturate(160%);
+  -webkit-backdrop-filter:blur(40px) saturate(160%);
+  border-right:1px solid var(--rim);
+}
+.sb-top{padding:22px 18px 18px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--rim)}
+.sb-bee{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.3));border:1px solid rgba(201,168,76,0.28);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 0 20px rgba(201,168,76,0.07)}
+.sb-wordmark{font-family:'Instrument Serif',serif;font-size:16px;font-style:italic;color:var(--text)}
+.sb-tag{font-size:9px;font-weight:500;color:var(--text3);letter-spacing:1.8px;text-transform:uppercase;margin-top:1px}
+.sb-nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:1px;overflow-y:auto}
+.sb-nav::-webkit-scrollbar{display:none}
+.nav-lbl{font-size:9px;font-weight:600;color:var(--text3);letter-spacing:2px;text-transform:uppercase;padding:14px 8px 5px}
+.nav-lbl:first-child{padding-top:2px}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);border:none;background:none;width:100%;text-align:left;transition:all .18s;font-family:'Instrument Sans',sans-serif;position:relative}
+.nav-btn:hover{color:var(--text);background:var(--dp1)}
+.nav-btn.active{color:var(--text);background:var(--dp2);border:1px solid var(--rim)}
+.nav-btn.active::before{content:'';position:absolute;left:0;top:25%;bottom:25%;width:2px;background:var(--gold);border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(201,168,76,0.5)}
+.nav-ic{font-size:12px;width:15px;text-align:center;flex-shrink:0;opacity:.45}
+.nav-btn.active .nav-ic{opacity:.8}
+.sb-foot{padding:13px 18px;border-top:1px solid var(--rim);display:flex;align-items:center;gap:10px}
+.sb-av{width:28px;height:28px;border-radius:50%;background:var(--dp2);object-fit:cover;border:1px solid var(--rim2);flex-shrink:0}
+.sb-uname{font-size:12px;font-weight:500;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-urole{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-top:1px}
+.sb-exit{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:4px;border-radius:6px;transition:color .15s;line-height:1}
+.sb-exit:hover{color:var(--rose)}
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;padding:32px 40px;min-height:100vh}
+.ph{margin-bottom:30px}
+.pt{font-family:'Instrument Serif',serif;font-size:26px;font-style:italic;font-weight:400;color:var(--text);letter-spacing:-0.3px}
+.ps{font-size:11px;color:var(--text3);margin-top:5px;display:flex;align-items:center;gap:6px;letter-spacing:0.2px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--em);box-shadow:0 0 8px var(--em);animation:lp 2.2s ease infinite;flex-shrink:0}
+@keyframes lp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.65)}}
+/* SECTION */
 .section{display:none;width:100%}
-.section.active{display:block;animation:fi .2s ease;width:100%}
-@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── Stats grid ── */
-.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.sc{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative}
-.sl{font-size:11px;color:var(--muted2);margin-bottom:6px;font-weight:500}
-.sv{font-size:22px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
-.si{position:absolute;top:14px;right:14px;font-size:18px;opacity:.2}
-
-/* ── Card ── */
-.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:12px}
-.card-title{font-size:12px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;display:flex;align-items:center;gap:6px}
-
-/* ── Two col ── */
-.two-col{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
-
-/* ── Bar chart ── */
-.bchart{display:flex;align-items:flex-end;gap:6px;height:80px}
-.bwrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
-.bar{width:100%;background:var(--s3);border-radius:3px 3px 0 0;min-height:3px;transition:background .2s}
-.bar:hover{background:var(--muted)}
-.blabel{font-size:9px;color:var(--muted);white-space:nowrap;font-family:'JetBrains Mono',monospace}
-
-/* ── Mini stats ── */
-.ms{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
-.ms:last-child{border-bottom:none}
-.ms-label{font-size:12px;color:var(--muted2)}
-.ms-val{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
-
-/* ── Table ── */
-.tw{overflow-x:auto}
+.section.active{display:block;animation:rv .25s cubic-bezier(.2,0,0,1)}
+@keyframes rv{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+/* GLASS CARD */
+.card{background:var(--glass);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--rim);border-radius:var(--r);padding:22px;margin-bottom:12px;transition:border-color .2s}
+.card:hover{border-color:var(--rim2)}
+.card-hd{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.card-hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--rim),transparent)}
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.sc{background:var(--glass);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--rim);border-radius:var(--r);padding:18px 16px;position:relative;overflow:hidden;transition:border-color .2s,transform .18s}
+.sc:hover{border-color:var(--rim2);transform:translateY(-1px)}
+.sc::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.02) 0%,transparent 50%);pointer-events:none}
+.sl{font-size:9px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.sv{font-size:26px;font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--text);font-variant-numeric:tabular-nums;line-height:1}
+.si{position:absolute;top:14px;right:14px;font-size:18px;opacity:.07}
+/* TABLE */
+.tw{overflow-x:auto}.tw::-webkit-scrollbar{height:3px}.tw::-webkit-scrollbar-thumb{background:var(--rim2);border-radius:2px}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;padding:8px 12px;color:var(--muted);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+th{text-align:left;padding:8px 14px;color:var(--text3);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1.8px;border-bottom:1px solid var(--rim);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.03);vertical-align:middle;color:var(--ink)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(255,255,255,.015)}
-
-/* ── Badges ── */
-.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:500;white-space:nowrap}
-.bg-green{background:rgba(34,197,94,.1);color:var(--green)}
-.bg-red{background:rgba(239,68,68,.1);color:var(--red)}
-.bg-yellow{background:rgba(234,179,8,.1);color:var(--yellow)}
-.bg-blue{background:rgba(59,130,246,.1);color:var(--blue)}
-.bg-gray{background:rgba(255,255,255,.06);color:var(--muted2)}
-.bg-orange{background:rgba(249,115,22,.1);color:var(--orange)}
-
-/* ── User cell ── */
-.uc{display:flex;align-items:center;gap:8px}
-.uc img{width:24px;height:24px;border-radius:50%}
-.uc .fa{width:24px;height:24px;border-radius:50%;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--muted2);flex-shrink:0}
-
-/* ── Rank ── */
-.rk{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--muted)}
-.rk1{color:#fbbf24}.rk2{color:#9ca3af}.rk3{color:#b45309}
-
-/* ── Mono ── */
-.mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted2)}
-
-/* ── Tabs ── */
-.tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid var(--border)}
-.tab{padding:8px 14px;border:none;background:none;color:var(--muted2);cursor:pointer;font-size:12px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s}
-.tab:hover{color:var(--text)}
-.tab.active{color:var(--text);border-bottom-color:var(--text)}
-
-/* ── Filters ── */
-.filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.fbtn{padding:5px 12px;border-radius:4px;border:1px solid var(--border);background:none;color:var(--muted2);cursor:pointer;font-size:11px;transition:all .12s}
-.fbtn:hover{border-color:var(--border2);color:var(--text)}
-.fbtn.active{border-color:var(--muted);color:var(--text);background:var(--s2)}
-
-/* ── Pagination ── */
-.pag{display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
-.pg{padding:5px 12px;border-radius:4px;border:1px solid var(--border);background:none;color:var(--muted2);cursor:pointer;font-size:11px;transition:all .12s}
-.pg:hover:not(:disabled){border-color:var(--border2);color:var(--text)}
-.pg:disabled{opacity:.3;cursor:not-allowed}
-.pi{font-size:11px;color:var(--muted)}
-
-/* ── Config grid ── */
-.cfg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.cfg-item{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:12px}
-.cfg-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
-.cfg-val{font-size:12px;font-weight:500;color:var(--text)}
-.cfg-null{color:var(--muted);font-style:italic}
-
-/* ── Giveaway cards ── */
+tr:hover td{background:rgba(255,255,255,0.018)}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap;letter-spacing:0.2px}
+.b-g{background:rgba(62,207,142,.1);color:var(--em);border:1px solid rgba(62,207,142,.18)}
+.b-r{background:rgba(240,98,146,.1);color:var(--rose);border:1px solid rgba(240,98,146,.18)}
+.b-a{background:rgba(255,202,40,.08);color:var(--amb);border:1px solid rgba(255,202,40,.15)}
+.b-s{background:rgba(100,181,246,.1);color:var(--sky);border:1px solid rgba(100,181,246,.18)}
+.b-m{background:rgba(255,255,255,.05);color:var(--text2);border:1px solid var(--rim)}
+.b-o{background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2)}
+/* USER CELL */
+.uc{display:flex;align-items:center;gap:9px}
+.uc img{width:24px;height:24px;border-radius:50%;object-fit:cover;border:1px solid var(--rim2)}
+.uc .fa{width:24px;height:24px;border-radius:50%;background:var(--dp2);border:1px solid var(--rim);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--text2);flex-shrink:0}
+.uc span{font-weight:500;color:var(--ink)}
+.rk{font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)}
+.rk1{color:var(--gold)}.rk2{color:rgba(255,255,255,0.45)}.rk3{color:#b5651d}
+.mono{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+/* TABS */
+.tabs{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid var(--rim)}
+.tab{padding:8px 16px;border:none;background:none;color:var(--text3);cursor:pointer;font-size:11px;font-weight:500;border-bottom:1px solid transparent;margin-bottom:-1px;transition:all .15s;font-family:'Instrument Sans',sans-serif;letter-spacing:0.3px}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--text);border-bottom-color:var(--gold)}
+/* FILTERS */
+.filters{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.fbtn{padding:4px 13px;border-radius:20px;border:1px solid var(--rim);background:none;color:var(--text3);cursor:pointer;font-size:10px;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;transition:all .15s;font-family:'Instrument Sans',sans-serif}
+.fbtn:hover{border-color:var(--rim2);color:var(--text2)}
+.fbtn.active{border-color:rgba(201,168,76,0.35);color:var(--gold);background:rgba(201,168,76,0.06)}
+/* PAGINATION */
+.pag{display:flex;align-items:center;gap:10px;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid var(--rim)}
+.pg{padding:5px 14px;border-radius:8px;border:1px solid var(--rim);background:none;color:var(--text2);cursor:pointer;font-size:11px;font-weight:500;transition:all .15s;font-family:'Instrument Sans',sans-serif}
+.pg:hover:not(:disabled){border-color:var(--rim2);color:var(--text);background:var(--dp1)}
+.pg:disabled{opacity:.2;cursor:not-allowed}
+.pi{font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)}
+/* LAYOUT */
+.two-col{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
+/* BAR CHART */
+.bchart{display:flex;align-items:flex-end;gap:5px;height:80px}
+.bwrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.bar{width:100%;background:var(--dp2);border-radius:4px 4px 0 0;min-height:2px;border:1px solid var(--rim);border-bottom:none;transition:background .2s}
+.bar:hover{background:rgba(201,168,76,0.18);border-color:rgba(201,168,76,0.25)}
+.blabel{font-size:9px;color:var(--text3);font-family:'DM Mono',monospace}
+/* MISC */
+.ms{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.ms:last-child{border-bottom:none}
+.ms-label{font-size:11px;color:var(--text2)}
+.ms-val{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
 .gc-list{display:flex;flex-direction:column;gap:8px}
-.gc{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:14px 16px;display:flex;align-items:center;gap:14px}
+.gc{background:var(--dp1);border:1px solid var(--rim);border-radius:10px;padding:15px 18px;display:flex;align-items:center;gap:16px;transition:border-color .2s}
+.gc:hover{border-color:var(--rim2)}
+.gc-ic{font-size:20px;opacity:.3;flex-shrink:0}
 .gc-info{flex:1}
-.gc-prize{font-size:13px;font-weight:600;margin-bottom:3px}
-.gc-meta{font-size:11px;color:var(--muted2)}
-
-/* ── Progress bar ── */
-.prog-wrap{background:var(--s3);border-radius:2px;height:4px;margin-top:6px}
-.prog-bar{height:4px;border-radius:2px;background:var(--text);transition:width .6s ease}
-
-/* ── Empty ── */
-.empty{text-align:center;padding:40px;color:var(--muted)}
-.empty .ei{font-size:28px;margin-bottom:8px;opacity:.4}
-
-/* ── Note ── */
-.note{background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.15);border-radius:5px;padding:10px 14px;font-size:11px;color:var(--yellow);margin-bottom:14px}
+.gc-prize{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.gc-meta{font-size:11px;color:var(--text2)}
+.prog-wrap{background:var(--dp2);border-radius:2px;height:2px;margin-top:6px}
+.prog-bar{height:2px;border-radius:2px;background:var(--gold);box-shadow:0 0 6px rgba(201,168,76,0.4);transition:width .6s ease}
+.cfg-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.cfg-item{background:var(--dp1);border:1px solid var(--rim);border-radius:8px;padding:12px 14px}
+.cfg-lbl{font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;font-weight:600}
+.cfg-val{font-size:12px;font-weight:500;color:var(--ink)}
+.cfg-null{color:var(--text3);font-style:italic}
+.empty{text-align:center;padding:44px 20px;color:var(--text3)}
+.empty .ei{font-size:28px;margin-bottom:10px;opacity:.18}
+.empty div:last-child{font-size:11px;letter-spacing:0.3px}
+.note{background:rgba(255,202,40,.04);border:1px solid rgba(255,202,40,.1);border-radius:8px;padding:10px 14px;font-size:11px;color:rgba(255,202,40,.55);margin-bottom:14px}
+/* WS */
+#wsS{position:fixed;bottom:20px;right:20px;background:rgba(3,3,10,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--rim);border-radius:20px;padding:6px 12px 6px 8px;font-size:10px;font-weight:500;display:flex;align-items:center;gap:7px;z-index:100;opacity:0;transition:opacity .3s;color:var(--text2);letter-spacing:0.3px}
+#wsS.show{opacity:1}
+#wsd{width:5px;height:5px;border-radius:50%}
+#wsd.on{background:var(--em);box-shadow:0 0 6px var(--em)}
+#wsd.off{background:var(--rose)}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--rim2);border-radius:2px}
 </style>
 </head>
 <body>
 
-<!-- Sidebar -->
+<div id="wsS"><div id="wsd"></div><span id="wst">conectando</span></div>
+
 <aside class="sb">
   <div class="sb-top">
-    <div class="sb-icon">🐝</div>
+    <div class="sb-bee"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -55 100 110" width="20" height="20" style="display:block;overflow:visible"><defs><style>@media(prefers-reduced-motion:no-preference){.wl{animation:wl .2s ease-in-out infinite;transform-origin:0 -16px;transform-box:fill-box}.wr{animation:wr .2s ease-in-out infinite;transform-origin:0 -16px;transform-box:fill-box}.bd{animation:fl .55s ease-in-out infinite;transform-box:fill-box}.al{animation:al .55s ease-in-out infinite;transform-origin:0 18px;transform-box:fill-box}.ar{animation:ar .55s ease-in-out infinite;transform-origin:0 18px;transform-box:fill-box}@keyframes wl{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.3)}}@keyframes wr{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.3)}}@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}@keyframes al{0%,100%{transform:rotate(0)}50%{transform:rotate(-6deg)}}@keyframes ar{0%,100%{transform:rotate(0)}50%{transform:rotate(6deg)}}}</style><linearGradient id="igg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8c96a"/><stop offset="100%" stop-color="#b8892a"/></linearGradient><linearGradient id="igb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#161616"/></linearGradient></defs><polygon fill="#141008" stroke="#c9a84c" stroke-width="1.2" points="0,-48 41.6,-24 41.6,24 0,48 -41.6,24 -41.6,-24"/><g class="bd"><g class="wl"><ellipse fill="rgba(180,220,255,0.16)" stroke="rgba(160,200,255,0.55)" stroke-width="0.8" cx="-17" cy="-16" rx="17" ry="9" transform="rotate(-22,-17,-16)"/></g><g class="wr"><ellipse fill="rgba(180,220,255,0.16)" stroke="rgba(160,200,255,0.55)" stroke-width="0.8" cx="17" cy="-16" rx="17" ry="9" transform="rotate(22,17,-16)"/></g><path fill="url(#igg)" stroke="none" d="M-11,0 Q0,-1.5 11,0 Q12,5 11,10 Q0,8.5 -11,10 Q-12,5 -11,0Z"/><path fill="url(#igb)" stroke="none" d="M-12,10 Q0,8.5 12,10 Q12.5,16 11,21 Q0,19.5 -11,21 Q-12.5,16 -12,10Z"/><path fill="url(#igg)" stroke="none" d="M-11,21 Q0,19.5 11,21 Q11,26 9.5,30 Q0,28.5 -9.5,30 Q-11,26 -11,21Z"/><path fill="url(#igb)" stroke="#c9a84c" stroke-width="0.6" d="M-12,-3 Q-12,-11 0,-14 Q12,-11 12,-3 Q12,0 11,0 Q0,-1 -11,0 Q-12,0 -12,-3Z"/><circle fill="url(#igb)" stroke="#c9a84c" stroke-width="0.7" cx="0" cy="-19" r="9"/><circle fill="#c9a84c" cx="-3.8" cy="-20" r="2.6"/><circle fill="#c9a84c" cx="3.8" cy="-20" r="2.6"/><circle fill="rgba(0,0,0,0.75)" cx="-3.8" cy="-20" r="1.2"/><circle fill="rgba(0,0,0,0.75)" cx="3.8" cy="-20" r="1.2"/><g class="al"><path fill="none" stroke="#c9a84c" stroke-width="0.9" stroke-linecap="round" d="M-3,-27 Q-7,-35 -5,-42"/><circle fill="#c9a84c" cx="-5" cy="-42" r="1.9"/></g><g class="ar"><path fill="none" stroke="#c9a84c" stroke-width="0.9" stroke-linecap="round" d="M3,-27 Q7,-35 5,-42"/><circle fill="#c9a84c" cx="5" cy="-42" r="1.9"/></g></g></svg></div>
     <div>
-      <div class="sb-title">Bee Dashboard</div>
-      <div class="sb-sub">Panel Admin</div>
+      <div class="sb-wordmark">Bee</div>
+      <div class="sb-tag">Dashboard</div>
     </div>
   </div>
   <nav class="sb-nav">
-    <div class="sb-sec">General</div>
-    <button class="nav-btn active" onclick="nav('overview',this)"><span class="ic">📊</span> Estadísticas</button>
-    <div class="sb-sec">Gestión</div>
-    <button class="nav-btn" onclick="nav('invites',this)"><span class="ic">📨</span> Invitaciones</button>
-    <button class="nav-btn" onclick="nav('giveaways',this)"><span class="ic">🎉</span> Sorteos</button>
-    <button class="nav-btn" onclick="nav('economy',this)"><span class="ic">🪙</span> Economía</button>
-    <button class="nav-btn" onclick="nav('loans',this)"><span class="ic">💸</span> Préstamos</button>
-    <button class="nav-btn" onclick="nav('levels',this)"><span class="ic">⭐</span> Niveles</button>
-    <div class="sb-sec">Moderación</div>
-    <button class="nav-btn" onclick="nav('moderation',this)"><span class="ic">🛡️</span> Moderación</button>
-    <button class="nav-btn" onclick="nav('bans',this)"><span class="ic">🔨</span> Bans</button>
-    <div class="sb-sec">Casino & Armas</div>
-    <button class="nav-btn" onclick="nav('casino',this)"><span class="ic">🎰</span> Casino</button>
-    <button class="nav-btn" onclick="nav('arms',this)"><span class="ic">🔫</span> Armas</button>
-    <button class="nav-btn" onclick="nav('market',this)"><span class="ic">📈</span> Mercado</button>
-    <div class="sb-sec">Servidor</div>
-    <button class="nav-btn" onclick="nav('config',this)"><span class="ic">⚙️</span> Configuración</button>
+    <div class="nav-lbl">General</div>
+    <button class="nav-btn active" onclick="nav('overview',this)"><span class="nav-ic">◈</span> Estadísticas</button>
+    <div class="nav-lbl">Gestión</div>
+    <button class="nav-btn" onclick="nav('invites',this)"><span class="nav-ic">⟶</span> Invitaciones</button>
+    <button class="nav-btn" onclick="nav('giveaways',this)"><span class="nav-ic">◎</span> Sorteos</button>
+    <button class="nav-btn" onclick="nav('economy',this)"><span class="nav-ic">◇</span> Economía</button>
+    <button class="nav-btn" onclick="nav('loans',this)"><span class="nav-ic">⧖</span> Préstamos</button>
+    <button class="nav-btn" onclick="nav('levels',this)"><span class="nav-ic">△</span> Niveles</button>
+    <div class="nav-lbl">Moderación</div>
+    <button class="nav-btn" onclick="nav('moderation',this)"><span class="nav-ic">⊕</span> Moderación</button>
+    <button class="nav-btn" onclick="nav('bans',this)"><span class="nav-ic">⊗</span> Bans</button>
+    <div class="nav-lbl">Economía avanzada</div>
+    <button class="nav-btn" onclick="nav('casino',this)"><span class="nav-ic">⬡</span> Casino</button>
+    <button class="nav-btn" onclick="nav('arms',this)"><span class="nav-ic">⬢</span> Armas</button>
+    <button class="nav-btn" onclick="nav('market',this)"><span class="nav-ic">⟆</span> Mercado</button>
+    <div class="nav-lbl">Sistema</div>
+    <button class="nav-btn" onclick="nav('config',this)"><span class="nav-ic">⊞</span> Configuración</button>
   </nav>
-  <div class="sb-user">
-    <img class="sb-avatar" id="sbAvatar" src="" alt="">
+  <div class="sb-foot">
+    <img class="sb-av" id="sbAvatar" src="" alt="">
     <div style="flex:1;min-width:0">
-      <div class="sb-name" id="sbName">—</div>
-      <div class="sb-role">Admin</div>
+      <div class="sb-uname" id="sbName">—</div>
+      <div class="sb-urole">Admin</div>
     </div>
-    <a href="/auth/logout" class="sb-logout" title="Salir">↩</a>
+    <a href="/auth/logout" class="sb-exit" title="Salir">↩</a>
   </div>
 </aside>
 
-<!-- Main -->
 <main class="main">
 
-<!-- OVERVIEW -->
 <div class="section active" id="s-overview">
-  <div class="ph"><div class="pt">Estadísticas</div><div class="ps" id="lastUp">—</div></div>
+  <div class="ph">
+    <div class="pt">Estadísticas</div>
+    <div class="ps"><span class="live-dot"></span><span id="lastUp">actualizando…</span></div>
+  </div>
   <div class="sg">
     <div class="sc"><div class="si">👥</div><div class="sl">Miembros</div><div class="sv" id="st-members">—</div></div>
-    <div class="sc"><div class="si">🟢</div><div class="sl">En línea</div><div class="sv" id="st-online">—</div></div>
-    <div class="sc"><div class="si">🪙</div><div class="sl">Usuarios registrados</div><div class="sv" id="st-users">—</div></div>
-    <div class="sc"><div class="si">⚠️</div><div class="sl">Joins sospechosos</div><div class="sv" id="st-flagged" style="color:var(--yellow)">—</div></div>
-    <div class="sc"><div class="si">🎉</div><div class="sl">Sorteos activos</div><div class="sv" id="st-giveaways">—</div></div>
-    <div class="sc"><div class="si">💸</div><div class="sl">Préstamos activos</div><div class="sv" id="st-loans">—</div></div>
-    <div class="sc"><div class="si">🎰</div><div class="sl">Total apuestas</div><div class="sv" id="st-bets">—</div></div>
-    <div class="sc"><div class="si">📋</div><div class="sl">Total warns</div><div class="sv" id="st-warns">—</div></div>
+    <div class="sc"><div class="si">●</div><div class="sl">En línea</div><div class="sv" id="st-online" style="color:var(--em)">—</div></div>
+    <div class="sc"><div class="si">◇</div><div class="sl">Registrados</div><div class="sv" id="st-users">—</div></div>
+    <div class="sc"><div class="si">⚠</div><div class="sl">Sospechosos</div><div class="sv" id="st-flagged" style="color:var(--amb)">—</div></div>
+    <div class="sc"><div class="si">◎</div><div class="sl">Sorteos activos</div><div class="sv" id="st-giveaways">—</div></div>
+    <div class="sc"><div class="si">⧖</div><div class="sl">Préstamos</div><div class="sv" id="st-loans">—</div></div>
+    <div class="sc"><div class="si">⬡</div><div class="sl">Apuestas</div><div class="sv" id="st-bets">—</div></div>
+    <div class="sc"><div class="si">⊕</div><div class="sl">Warns</div><div class="sv" id="st-warns">—</div></div>
   </div>
   <div class="two-col">
-    <div class="card">
-      <div class="card-title">📈 Joins últimos 7 días</div>
-      <div class="bchart" id="joinChart"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">📋 Resumen</div>
-      <div id="summaryBox"></div>
-    </div>
+    <div class="card"><div class="card-hd">Actividad — últimos 7 días</div><div class="bchart" id="joinChart"></div></div>
+    <div class="card"><div class="card-hd">Resumen</div><div id="summaryBox"></div></div>
   </div>
 </div>
 
-<!-- INVITACIONES -->
 <div class="section" id="s-invites">
-  <div class="ph"><div class="pt">Invitaciones</div><div class="ps">Ranking de invitaciones del servidor</div></div>
-  <div class="card">
-    <div class="tw">
-      <table>
-        <thead><tr><th>#</th><th>Usuario</th><th>Reales</th><th>Total</th><th>Salidas</th><th>Falsas</th></tr></thead>
-        <tbody id="inviteTable"></tbody>
-      </table>
-    </div>
-    <div class="pag" id="invitePag"></div>
-  </div>
+  <div class="ph"><div class="pt">Invitaciones</div><div class="ps">Ranking del servidor</div></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Usuario</th><th>Reales</th><th>Total</th><th>Salidas</th><th>Falsas</th></tr></thead><tbody id="inviteTable"></tbody></table></div><div class="pag" id="invitePag"></div></div>
 </div>
 
-<!-- SORTEOS -->
 <div class="section" id="s-giveaways">
-  <div class="ph"><div class="pt">Sorteos</div><div class="ps">Historial de sorteos del servidor</div></div>
+  <div class="ph"><div class="pt">Sorteos</div><div class="ps">Historial del servidor</div></div>
   <div class="filters">
     <button class="fbtn active" onclick="filterGw('all',this)">Todos</button>
     <button class="fbtn" onclick="filterGw('active',this)">Activos</button>
@@ -257,25 +256,15 @@ tr:hover td{background:rgba(255,255,255,.015)}
   <div class="pag" id="gwPag"></div>
 </div>
 
-<!-- ECONOMÍA -->
 <div class="section" id="s-economy">
   <div class="ph"><div class="pt">Economía</div><div class="ps">Rankings del servidor</div></div>
   <div class="tabs">
     <button class="tab active" onclick="econTab('coins',this)">Monedas</button>
     <button class="tab" onclick="econTab('level',this)">Niveles</button>
   </div>
-  <div class="card">
-    <div class="tw">
-      <table>
-        <thead><tr><th>#</th><th>Usuario</th><th id="ecol1">Monedas</th><th id="ecol2">Total ganado</th></tr></thead>
-        <tbody id="econTable"></tbody>
-      </table>
-    </div>
-    <div class="pag" id="econPag"></div>
-  </div>
+  <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Usuario</th><th id="ecol1">Monedas</th><th id="ecol2">Total ganado</th></tr></thead><tbody id="econTable"></tbody></table></div><div class="pag" id="econPag"></div></div>
 </div>
 
-<!-- PRÉSTAMOS -->
 <div class="section" id="s-loans">
   <div class="ph"><div class="pt">Préstamos</div><div class="ps">Estado de todos los préstamos</div></div>
   <div class="filters">
@@ -284,497 +273,60 @@ tr:hover td{background:rgba(255,255,255,.015)}
     <button class="fbtn" onclick="filterLoan('paid',this)">Pagados</button>
     <button class="fbtn" onclick="filterLoan('defaulted',this)">Impagados</button>
   </div>
-  <div class="card">
-    <div class="tw">
-      <table>
-        <thead><tr><th>Usuario</th><th>Monto</th><th>Deuda</th><th>Interés</th><th>Estado</th><th>Fecha</th></tr></thead>
-        <tbody id="loanTable"></tbody>
-      </table>
-    </div>
-    <div class="pag" id="loanPag"></div>
-  </div>
+  <div class="card"><div class="tw"><table><thead><tr><th>Usuario</th><th>Monto</th><th>Deuda</th><th>Interés</th><th>Estado</th><th>Fecha</th></tr></thead><tbody id="loanTable"></tbody></table></div><div class="pag" id="loanPag"></div></div>
 </div>
 
-<!-- NIVELES -->
 <div class="section" id="s-levels">
   <div class="ph"><div class="pt">Niveles</div><div class="ps">Sistema de XP del servidor</div></div>
   <div class="two-col" style="margin-bottom:12px">
-    <div class="card" style="margin-bottom:0">
-      <div class="card-title">📊 Distribución de niveles</div>
-      <div id="levelDist"></div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="card-title">📋 Info</div>
-      <div id="levelInfo"></div>
-    </div>
+    <div class="card" style="margin-bottom:0"><div class="card-hd">Distribución</div><div id="levelDist"></div></div>
+    <div class="card" style="margin-bottom:0"><div class="card-hd">Info</div><div id="levelInfo"></div></div>
   </div>
-  <div class="card">
-    <div class="tw">
-      <table>
-        <thead><tr><th>#</th><th>Usuario</th><th>Nivel</th><th>XP</th></tr></thead>
-        <tbody id="levelTable"></tbody>
-      </table>
-    </div>
-    <div class="pag" id="levelPag"></div>
-  </div>
+  <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Usuario</th><th>Nivel</th><th>XP</th></tr></thead><tbody id="levelTable"></tbody></table></div><div class="pag" id="levelPag"></div></div>
 </div>
 
-<!-- MODERACIÓN -->
 <div class="section" id="s-moderation">
   <div class="ph"><div class="pt">Moderación</div><div class="ps">Warns, mutes y logs de seguridad</div></div>
   <div class="tabs">
-    <button class="tab active" onclick="modTab('warns',this)">⚠️ Warns</button>
-    <button class="tab" onclick="modTab('mutes',this)">🔇 Mutes</button>
-    <button class="tab" onclick="modTab('logs',this)">🔒 Logs</button>
+    <button class="tab active" onclick="modTab('warns',this)">Warns</button>
+    <button class="tab" onclick="modTab('mutes',this)">Mutes</button>
+    <button class="tab" onclick="modTab('logs',this)">Logs</button>
   </div>
-  <div class="note" id="logNote" style="display:none">Los logs muestran IPs solo cuando el usuario se verifica a través del sistema web. Si la IP aparece vacía, el usuario entró antes de activar la verificación web.</div>
-  <div class="card">
-    <div class="tw"><table><thead id="modHead"></thead><tbody id="modTable"></tbody></table></div>
-    <div class="pag" id="modPag"></div>
-  </div>
+  <div class="note" id="logNote" style="display:none">Los logs de IP solo aparecen cuando el usuario se verifica mediante el sistema web.</div>
+  <div class="card"><div class="tw"><table><thead id="modHead"></thead><tbody id="modTable"></tbody></table></div><div class="pag" id="modPag"></div></div>
 </div>
 
-<!-- BANS -->
 <div class="section" id="s-bans">
   <div class="ph"><div class="pt">Bans</div><div class="ps">Usuarios baneados del servidor</div></div>
-  <div class="card">
-    <div class="tw">
-      <table>
-        <thead><tr><th>Usuario</th><th>Razón</th></tr></thead>
-        <tbody id="banTable"></tbody>
-      </table>
-    </div>
-    <div class="pag" id="banPag"></div>
-  </div>
+  <div class="card"><div class="tw"><table><thead><tr><th>Usuario</th><th>Razón</th></tr></thead><tbody id="banTable"></tbody></table></div><div class="pag" id="banPag"></div></div>
 </div>
 
-<!-- CONFIG -->
 <div class="section" id="s-config">
   <div class="ph"><div class="pt">Configuración</div><div class="ps">Canales y ajustes del servidor</div></div>
   <div class="two-col">
-    <div class="card" style="margin-bottom:0">
-      <div class="card-title">📢 Canales configurados</div>
-      <div id="cfgChannels"></div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="card-title">🪙 Recompensas</div>
-      <div id="cfgRewards"></div>
-    </div>
+    <div class="card" style="margin-bottom:0"><div class="card-hd">Canales</div><div id="cfgChannels"></div></div>
+    <div class="card" style="margin-bottom:0"><div class="card-hd">Recompensas</div><div id="cfgRewards"></div></div>
   </div>
 </div>
 
-</main>
-
-<script>
-// ── Estado ──────────────────────────────────────────────────────────────────
-const S = {
-  currentSection: 'overview',
-  invites:    { page:1 },
-  giveaways:  { status:'all', page:1 },
-  economy:    { sort:'coins', page:1 },
-  loans:      { status:'all', page:1 },
-  levels:     { page:1 },
-  moderation: { tab:'warns', page:1 },
-  bans:       { page:1 },
-  loaded:     {},
-};
-
-// ── WebSocket: Conexión en tiempo real ──────────────────────────────────────
-const socket = io();
-
-socket.on('connect', () => {
-  console.log('[WS] Conectado al servidor en tiempo real');
-});
-
-socket.on('stats:update', (stats) => {
-  if (S.currentSection === 'overview' || !S.currentSection) {
-    document.getElementById('st-members').textContent  = stats.members.toLocaleString();
-    document.getElementById('st-online').textContent   = stats.online.toLocaleString();
-    document.getElementById('st-users').textContent    = stats.registeredUsers.toLocaleString();
-    document.getElementById('st-flagged').textContent  = stats.flaggedJoins;
-    document.getElementById('st-giveaways').textContent= stats.activeGiveaways;
-    document.getElementById('st-loans').textContent    = stats.activeLoans;
-    document.getElementById('st-bets').textContent     = stats.casinoBets.toLocaleString();
-    document.getElementById('st-warns').textContent    = stats.totalWarns;
-  }
-});
-
-socket.on('disconnect', () => {
-  console.log('[WS] Desconectado del servidor');
-});
-
-// ── Init ────────────────────────────────────────────────────────────────────
-(async()=>{
-  const me = await api('/api/me');
-  if(!me){ location.href='/login'; return; }
-  document.getElementById('sbName').textContent  = me.username;
-  document.getElementById('sbAvatar').src = me.avatar;
-  loadOverview();
-})();
-
-async function api(url){
-  try{ const r=await fetch(url); if(r.status===401){location.href='/login';return null;} return r.json(); }
-  catch{ return null; }
-}
-
-// ── Nav ─────────────────────────────────────────────────────────────────────
-function nav(name, btn){
-  document.querySelectorAll('.section').forEach(s=>{
-    s.classList.remove('active');
-    s.style.display = 'none';
-  });
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const target = document.getElementById('s-'+name);
-  if(target) {
-    target.classList.add('active');
-    target.style.display = 'block';
-  }
-  if(btn) btn.classList.add('active');
-  S.currentSection = name;
-  if(!S.loaded[name]){
-    const loaders={invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig};
-    if(loaders[name]) loaders[name]();
-  }
-}
-
-// ── User cell helper ─────────────────────────────────────────────────────────
-function uc(avatar, username){
-  const img = avatar ? `<img src="${avatar}" onerror="this.style.display='none'">` : `<div class="fa">${(username||'?')[0].toUpperCase()}</div>`;
-  return `<div class="uc">${img}<span>${username||'—'}</span></div>`;
-}
-
-function rankCell(n){
-  const map={1:'rk1',2:'rk2',3:'rk3'};
-  const medal={1:'🥇',2:'🥈',3:'🥉'};
-  return `<span class="rk ${map[n]||''}">${medal[n]||'#'+n}</span>`;
-}
-
-function pag(containerId, page, pages, cb){
-  const el = document.getElementById(containerId);
-  if(pages<=1){el.innerHTML='';return;}
-  el.innerHTML=`<button class="pg" onclick="(${cb.toString()})(${page-1})" ${page<=1?'disabled':''}>← Anterior</button><span class="pi">Página ${page} de ${pages}</span><button class="pg" onclick="(${cb.toString()})(${page+1})" ${page>=pages?'disabled':''}>Siguiente →</button>`;
-}
-
-function empty(msg='Sin datos'){return `<div class="empty"><div class="ei">—</div><div>${msg}</div></div>`;}
-
-// ── OVERVIEW ─────────────────────────────────────────────────────────────────
-async function loadOverview(){
-  const d = await api('/api/stats');
-  if(!d) return;
-  document.getElementById('st-members').textContent  = d.members.toLocaleString();
-  document.getElementById('st-online').textContent   = d.online.toLocaleString();
-  document.getElementById('st-users').textContent    = d.registeredUsers.toLocaleString();
-  document.getElementById('st-flagged').textContent  = d.flaggedJoins;
-  document.getElementById('st-giveaways').textContent= d.activeGiveaways;
-  document.getElementById('st-loans').textContent    = d.activeLoans;
-  document.getElementById('st-bets').textContent     = d.casinoBets.toLocaleString();
-  document.getElementById('st-warns').textContent    = d.totalWarns;
-  document.getElementById('lastUp').textContent      = 'Actualizado: '+new Date().toLocaleTimeString('es-PE');
-
-  // Bar chart
-  const vals = Object.values(d.joinsByDay);
-  const max  = Math.max(...vals,1);
-  document.getElementById('joinChart').innerHTML = Object.entries(d.joinsByDay).map(([k,v])=>
-    `<div class="bwrap"><div class="bar" style="height:${Math.max(v/max*100,3)}%" title="${v}"></div><div class="blabel">${k}</div></div>`
-  ).join('');
-
-  // Summary
-  const profit = d.casinoProfit >= 0
-    ? `<span style="color:var(--red)">-${Math.abs(d.casinoProfit).toLocaleString()}</span>`
-    : `<span style="color:var(--green)">+${Math.abs(d.casinoProfit).toLocaleString()}</span>`;
-  document.getElementById('summaryBox').innerHTML = `
-    <div class="ms"><span class="ms-label">Miembros registrados</span><span class="ms-val">${d.registeredUsers}</span></div>
-    <div class="ms"><span class="ms-label">Sorteos activos</span><span class="ms-val">${d.activeGiveaways}</span></div>
-    <div class="ms"><span class="ms-label">Préstamos activos</span><span class="ms-val">${d.activeLoans}</span></div>
-    <div class="ms"><span class="ms-label">Warns totales</span><span class="ms-val">${d.totalWarns}</span></div>
-    <div class="ms"><span class="ms-label">Apuestas de casino</span><span class="ms-val">${d.casinoBets}</span></div>
-    <div class="ms"><span class="ms-label">Balance casino (casa)</span><span class="ms-val">${profit} 🪙</span></div>
-  `;
-  S.loaded.overview=true;
-}
-
-// ── INVITACIONES ──────────────────────────────────────────────────────────────
-async function loadInvites(page){
-  if(page) S.invites.page=page;
-  const d = await api(`/api/invites?page=${S.invites.page}`);
-  if(!d) return;
-  const tb = document.getElementById('inviteTable');
-  if(!d.invites.length){ tb.innerHTML=`<tr><td colspan="6">${empty('Sin datos de invitaciones')}</td></tr>`; }
-  else tb.innerHTML = d.invites.map(u=>`
-    <tr>
-      <td>${rankCell(u.rank)}</td>
-      <td>${uc(u.avatar,u.username)}</td>
-      <td><strong style="color:var(--green)">${u.reales}</strong></td>
-      <td><span class="mono">${u.total}</span></td>
-      <td><span class="mono" style="color:var(--red)">${u.left}</span></td>
-      <td><span class="mono" style="color:var(--yellow)">${u.fake}</span></td>
-    </tr>`).join('');
-  pag('invitePag',S.invites.page,d.pages,loadInvites);
-  S.loaded.invites=true;
-}
-
-// ── SORTEOS ───────────────────────────────────────────────────────────────────
-async function loadGiveaways(page){
-  if(page) S.giveaways.page=page;
-  const d = await api(`/api/giveaways?status=${S.giveaways.status}&page=${S.giveaways.page}`);
-  if(!d) return;
-  const el = document.getElementById('gwList');
-  if(!d.giveaways.length){ el.innerHTML=empty('Sin sorteos'); }
-  else el.innerHTML=`<div class="gc-list">${d.giveaways.map(g=>{
-    const ended    = g.ended;
-    const parts    = g.participants?.length||0;
-    const claimed  = g.claimedBy?.length||0;
-    const winners  = g.winnerIds?.length||0;
-    const endsAt   = new Date(g.endsAt);
-    const timeStr  = ended ? 'Finalizado' : `Termina ${endsAt.toLocaleDateString('es-PE',{day:'numeric',month:'short'})}`;
-    return `<div class="gc">
-      <div style="font-size:22px;opacity:.5">🎉</div>
-      <div class="gc-info">
-        <div class="gc-prize">${g.prize}</div>
-        <div class="gc-meta">${parts} participantes · ${g.winners} ganador(es) · ${timeStr}${ended&&winners?` · Reclamados: ${claimed}/${winners}`:''}</div>
-        <div class="gc-meta" style="margin-top:2px">Por <strong>${g.hostedByName}</strong></div>
-      </div>
-      <span class="badge ${ended?'bg-gray':'bg-green'}">${ended?'Finalizado':'● Activo'}</span>
-    </div>`;
-  }).join('')}</div>`;
-  pag('gwPag',S.giveaways.page,d.pages,loadGiveaways);
-  S.loaded.giveaways=true;
-}
-
-function filterGw(status,btn){
-  document.querySelectorAll('#s-giveaways .fbtn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  S.giveaways.status=status; S.giveaways.page=1; loadGiveaways();
-}
-
-// ── ECONOMÍA ──────────────────────────────────────────────────────────────────
-async function loadEconomy(page){
-  if(page) S.economy.page=page;
-  const d = await api(`/api/economy?sort=${S.economy.sort}&page=${S.economy.page}`);
-  if(!d) return;
-  const isLvl = S.economy.sort==='level';
-  document.getElementById('ecol1').textContent = isLvl ? 'Nivel' : 'Monedas';
-  document.getElementById('ecol2').textContent = isLvl ? 'XP' : 'Total ganado';
-  const tb = document.getElementById('econTable');
-  if(!d.users.length){ tb.innerHTML=`<tr><td colspan="4">${empty()}</td></tr>`; }
-  else tb.innerHTML = d.users.map(u=>`
-    <tr>
-      <td>${rankCell(u.rank)}</td>
-      <td>${uc(u.avatar,u.username)}</td>
-      <td><strong>${isLvl?`Nv. ${u.level}`:u.coins.toLocaleString()}</strong></td>
-      <td><span class="mono">${isLvl?u.xp.toLocaleString()+' XP':u.totalEarned.toLocaleString()}</span></td>
-    </tr>`).join('');
-  pag('econPag',S.economy.page,d.pages,loadEconomy);
-  S.loaded.economy=true;
-}
-
-function econTab(sort,btn){
-  document.querySelectorAll('#s-economy .tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  S.economy.sort=sort; S.economy.page=1; S.loaded.economy=false; loadEconomy();
-}
-
-// ── PRÉSTAMOS ─────────────────────────────────────────────────────────────────
-async function loadLoans(page){
-  if(page) S.loans.page=page;
-  const d = await api(`/api/loans?status=${S.loans.status}&page=${S.loans.page}`);
-  if(!d) return;
-  const tb = document.getElementById('loanTable');
-  const statusBadge = s => ({active:`<span class="badge bg-yellow">Activo</span>`,paid:`<span class="badge bg-green">Pagado</span>`,defaulted:`<span class="badge bg-red">Impagado</span>`}[s]||`<span class="badge bg-gray">${s}</span>`);
-  if(!d.loans.length){ tb.innerHTML=`<tr><td colspan="6">${empty('Sin préstamos')}</td></tr>`; }
-  else tb.innerHTML = d.loans.map(l=>`
-    <tr>
-      <td>${uc(l.avatar,l.username)}</td>
-      <td><strong>🪙 ${l.amount.toLocaleString()}</strong></td>
-      <td><span class="mono ${l.debt>0?'':''}">🪙 ${(l.debt||0).toLocaleString()}</span></td>
-      <td><span class="mono">${(l.interestRate*100).toFixed(0)}%</span></td>
-      <td>${statusBadge(l.status)}</td>
-      <td><span class="mono">${new Date(l.createdAt).toLocaleDateString('es-PE')}</span></td>
-    </tr>`).join('');
-  pag('loanPag',S.loans.page,d.pages,loadLoans);
-  S.loaded.loans=true;
-}
-
-function filterLoan(status,btn){
-  document.querySelectorAll('#s-loans .fbtn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  S.loans.status=status; S.loans.page=1; loadLoans();
-}
-
-// ── NIVELES ───────────────────────────────────────────────────────────────────
-async function loadLevels(page){
-  if(page) S.levels.page=page;
-  const d = await api(`/api/levels?page=${S.levels.page}`);
-  if(!d) return;
-
-  // Distribution
-  const distEl = document.getElementById('levelDist');
-  if(d.distribution?.length){
-    const maxCount = Math.max(...d.distribution.map(b=>b.count),1);
-    distEl.innerHTML = d.distribution.map(b=>{
-      const label = b._id==='50+' ? '50+' : `${b._id}–${({0:0,1:4,5:9,10:19,20:49}[b._id]??'+')}`;
-      const pct = Math.round(b.count/maxCount*100);
-      return `<div style="margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;color:var(--muted2)">Nv. ${label}</span><span class="mono">${b.count}</span></div>
-        <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
-      </div>`;
-    }).join('');
-  } else distEl.innerHTML = empty('Sin datos');
-
-  document.getElementById('levelInfo').innerHTML = `
-    <div class="ms"><span class="ms-label">Total usuarios</span><span class="ms-val">${d.total}</span></div>
-    <div class="ms"><span class="ms-label">Página actual</span><span class="ms-val">${S.levels.page} / ${d.pages||1}</span></div>
-  `;
-
-  const tb = document.getElementById('levelTable');
-  if(!d.users.length){ tb.innerHTML=`<tr><td colspan="4">${empty()}</td></tr>`; }
-  else tb.innerHTML = d.users.map(u=>`
-    <tr>
-      <td>${rankCell(u.rank)}</td>
-      <td>${uc(u.avatar,u.username)}</td>
-      <td><strong>Nv. ${u.level}</strong></td>
-      <td><span class="mono">${u.xp.toLocaleString()} XP</span></td>
-    </tr>`).join('');
-  pag('levelPag',S.levels.page,d.pages,loadLevels);
-  S.loaded.levels=true;
-}
-
-// ── MODERACIÓN ────────────────────────────────────────────────────────────────
-async function loadModeration(page){
-  if(page) S.moderation.page=page;
-  const { tab } = S.moderation;
-  document.getElementById('logNote').style.display = tab==='logs' ? '' : 'none';
-  const d = await api(`/api/moderation?tab=${tab}&page=${S.moderation.page}`);
-  if(!d) return;
-
-  const head = document.getElementById('modHead');
-  const tb   = document.getElementById('modTable');
-
-  if(tab==='warns'){
-    head.innerHTML='<tr><th>Usuario</th><th>Razón</th><th>Moderador</th><th>Fecha</th></tr>';
-    tb.innerHTML = d.items.length ? d.items.map(w=>`
-      <tr>
-        <td>${uc(w.avatar,w.username)}</td>
-        <td style="color:var(--muted2);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.reason}</td>
-        <td><span class="badge bg-blue">${w.modName}</span></td>
-        <td><span class="mono">${new Date(w.createdAt).toLocaleDateString('es-PE')}</span></td>
-      </tr>`).join('') : `<tr><td colspan="4">${empty('Sin warns')}</td></tr>`;
-  }
-
-  if(tab==='mutes'){
-    head.innerHTML='<tr><th>Usuario</th><th>Razón</th><th>Estado</th></tr>';
-    tb.innerHTML = d.items.length ? d.items.map(m=>{
-      const exp = m.expiresAt && new Date(m.expiresAt)<new Date();
-      return `<tr>
-        <td>${uc(m.avatar,m.username)}</td>
-        <td style="color:var(--muted2)">${m.reason}</td>
-        <td><span class="badge ${exp?'bg-gray':'bg-red'}">${m.expiresAt?(exp?'Expirado':new Date(m.expiresAt).toLocaleDateString('es-PE')):'Permanente'}</span></td>
-      </tr>`;}).join('') : `<tr><td colspan="3">${empty('Sin mutes')}</td></tr>`;
-  }
-
-  if(tab==='logs'){
-    head.innerHTML='<tr><th>Usuario</th><th>IP</th><th>País</th><th>Estado</th><th>Fecha</th></tr>';
-    tb.innerHTML = d.items.length ? d.items.map(l=>`
-      <tr>
-        <td>${uc(l.avatar,l.username)}</td>
-        <td><span class="mono">${l.ip||'—'}</span></td>
-        <td>${l.countryCode&&l.countryCode!=='??'?l.countryCode+' ':''}<span style="color:var(--muted2)">${l.country||'—'}</span></td>
-        <td><span class="badge ${l.flagged?'bg-red':'bg-green'}">${l.flagged?'⚠️ Alerta':'✓ OK'}</span></td>
-        <td><span class="mono">${new Date(l.joinedAt).toLocaleDateString('es-PE')}</span></td>
-      </tr>`).join('') : `<tr><td colspan="5">${empty('Sin logs de verificación')}</td></tr>`;
-  }
-
-  pag('modPag',S.moderation.page,d.pages,loadModeration);
-  S.loaded.moderation=true;
-}
-
-function modTab(tab,btn){
-  document.querySelectorAll('#s-moderation .tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  S.moderation.tab=tab; S.moderation.page=1; S.loaded.moderation=false; loadModeration();
-}
-
-// ── BANS ──────────────────────────────────────────────────────────────────────
-async function loadBans(page){
-  if(page) S.bans.page=page;
-  const d = await api(`/api/bans?page=${S.bans.page}`);
-  if(!d) return;
-  const tb = document.getElementById('banTable');
-  if(!d.bans.length){ tb.innerHTML=`<tr><td colspan="2">${empty('Sin bans')}</td></tr>`; }
-  else tb.innerHTML = d.bans.map(b=>`
-    <tr>
-      <td>${uc(b.avatar,b.username)}</td>
-      <td style="color:var(--muted2)">${b.reason}</td>
-    </tr>`).join('');
-  pag('banPag',S.bans.page,d.pages,loadBans);
-  S.loaded.bans=true;
-}
-
-// ── CONFIG ────────────────────────────────────────────────────────────────────
-async function loadConfig(){
-  const d = await api('/api/config');
-  if(!d) return;
-
-  // Canales
-  const chEl = document.getElementById('cfgChannels');
-  if(d.channels){
-    const labels = {logs:'Logs general',modLogs:'Logs de mod',welcome:'Bienvenida',levels:'Niveles',verification:'Verificación',tiktok:'TikTok',security:'Seguridad',invites:'Invitaciones'};
-    chEl.innerHTML = `<div class="cfg-grid">${Object.entries(d.channels).map(([k,v])=>`
-      <div class="cfg-item">
-        <div class="cfg-label">${labels[k]||k}</div>
-        <div class="cfg-val ${v?'':'cfg-null'}">${v?v.name:'No configurado'}</div>
-      </div>`).join('')}</div>`;
-  } else chEl.innerHTML = empty('Sin configuración de canales');
-
-  // Recompensas
-  const rwEl = document.getElementById('cfgRewards');
-  if(d.rewards){
-    const r = d.rewards;
-    rwEl.innerHTML = `
-      <div class="ms"><span class="ms-label">Monedas iniciales</span><span class="ms-val">🪙 ${r.initialCoins||500}</span></div>
-      <div class="ms"><span class="ms-label">Trivia fácil</span><span class="ms-val">🪙 ${r.trivia_easy||50}</span></div>
-      <div class="ms"><span class="ms-label">Trivia media</span><span class="ms-val">🪙 ${r.trivia_medium||100}</span></div>
-      <div class="ms"><span class="ms-label">Trivia difícil</span><span class="ms-val">🪙 ${r.trivia_hard||250}</span></div>
-      <div class="ms"><span class="ms-label">Recompensa misiones</span><span class="ms-val">🪙 ${r.misiones_reward||300}</span></div>
-      <div class="ms"><span class="ms-label">Pérdida máx/día</span><span class="ms-val">🪙 ${r.max_loss_per_day||5000}</span></div>
-      <div class="ms"><span class="ms-label">Apuestas máx/hora</span><span class="ms-val">${r.max_bets_per_hour||10}</span></div>
-    `;
-  } else rwEl.innerHTML = empty('Sin configuración de recompensas');
-
-  S.loaded.config=true;
-}
-</script>
-
-<!-- ══════════════════════════════════════════════════════════ -->
-<!-- CASINO SECTION -->
-<!-- ══════════════════════════════════════════════════════════ -->
 <div class="section" id="s-casino" style="display:none">
-  <div class="ph"><div class="pt">Casino</div><div class="ps">Historial y estadísticas del casino</div></div>
-
+  <div class="ph"><div class="pt">Casino</div><div class="ps">Historial y estadísticas</div></div>
   <div class="sg" style="grid-template-columns:repeat(4,1fr)">
-    <div class="sc" style="--accent-color:var(--blue)"><div class="si">🎲</div><div class="sl">Total apuestas</div><div class="sv" id="cs-bets">—</div></div>
-    <div class="sc" style="--accent-color:var(--yellow)"><div class="si">💰</div><div class="sl">Total apostado</div><div class="sv" id="cs-volume">—</div></div>
-    <div class="sc" style="--accent-color:var(--green)"><div class="si">🏦</div><div class="sl">Ganancia casa</div><div class="sv" id="cs-profit">—</div></div>
-    <div class="sc" style="--accent-color:var(--orange)"><div class="si">📊</div><div class="sl">Win rate jugadores</div><div class="sv" id="cs-winrate">—</div></div>
+    <div class="sc"><div class="si">⬡</div><div class="sl">Apuestas</div><div class="sv" id="cs-bets">—</div></div>
+    <div class="sc"><div class="si">◇</div><div class="sl">Volumen</div><div class="sv" id="cs-volume">—</div></div>
+    <div class="sc"><div class="si">⧖</div><div class="sl">Casa gana</div><div class="sv" id="cs-profit">—</div></div>
+    <div class="sc"><div class="si">△</div><div class="sl">Win rate</div><div class="sv" id="cs-winrate">—</div></div>
   </div>
-
   <div class="two-col" style="margin-bottom:12px">
+    <div class="card" style="margin-bottom:0"><div class="card-hd">Actividad 7 días</div><div class="bchart" id="casinoChart" style="height:100px"></div></div>
     <div class="card" style="margin-bottom:0">
-      <div class="card-title">📈 Actividad últimos 7 días</div>
-      <div class="bchart" id="casinoChart" style="height:100px"></div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      <div class="card-title">🏆 Top jugadores</div>
-      <div class="tabs" style="margin-bottom:12px">
-        <button class="tab active" onclick="casinoTraderTab('winners',this)">Ganadores</button>
-        <button class="tab" onclick="casinoTraderTab('losers',this)">Perdedores</button>
-      </div>
+      <div class="card-hd">Top jugadores</div>
+      <div class="tabs" style="margin-bottom:12px"><button class="tab active" onclick="casinoTT('winners',this)">Ganadores</button><button class="tab" onclick="casinoTT('losers',this)">Perdedores</button></div>
       <div id="casinoTopBox"></div>
     </div>
   </div>
-
   <div class="card">
-    <div class="card-title">📋 Historial de partidas</div>
+    <div class="card-hd">Historial de partidas</div>
     <div class="filters">
       <button class="fbtn active" onclick="filterCasino('all',this)">Todos</button>
       <button class="fbtn" onclick="filterCasino('ruleta',this)">Ruleta</button>
@@ -782,392 +334,186 @@ async function loadConfig(){
       <button class="fbtn" onclick="filterCasino('blackjack',this)">Blackjack</button>
       <button class="fbtn" onclick="filterCasino('crash',this)">Crash</button>
     </div>
-    <div class="tw">
-      <table>
-        <thead><tr><th>Usuario</th><th>Juego</th><th>Apuesta</th><th>Resultado</th><th>Ganancia</th><th>Fecha</th></tr></thead>
-        <tbody id="casinoTable"></tbody>
-      </table>
-    </div>
+    <div class="tw"><table><thead><tr><th>Usuario</th><th>Juego</th><th>Apuesta</th><th>Resultado</th><th>Ganancia</th><th>Fecha</th></tr></thead><tbody id="casinoTable"></tbody></table></div>
     <div class="pag" id="casinoPag"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════ -->
-<!-- ARMS SECTION -->
-<!-- ══════════════════════════════════════════════════════════ -->
 <div class="section" id="s-arms" style="display:none">
   <div class="ph"><div class="pt">Armas</div><div class="ps">Inventarios, precios y estadísticas</div></div>
-
   <div class="tabs">
-    <button class="tab active" onclick="armsTab('inventory',this)">Inventario global</button>
+    <button class="tab active" onclick="armsTab('inventory',this)">Inventario</button>
     <button class="tab" onclick="armsTab('prices',this)">Precios</button>
-    <button class="tab" onclick="armsTab('cases',this)">Cajas abiertas</button>
-    <button class="tab" onclick="armsTab('collectors',this)">Top coleccionistas</button>
+    <button class="tab" onclick="armsTab('cases',this)">Cajas</button>
+    <button class="tab" onclick="armsTab('collectors',this)">Coleccionistas</button>
   </div>
-
-  <div class="card" id="armsContent">
-    <div class="tw"><table><thead id="armsHead"></thead><tbody id="armsTable"></tbody></table></div>
-    <div class="pag" id="armsPag"></div>
-  </div>
+  <div class="card" id="armsContent"><div class="tw"><table><thead id="armsHead"></thead><tbody id="armsTable"></tbody></table></div><div class="pag" id="armsPag"></div></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════ -->
-<!-- MARKET SECTION -->
-<!-- ══════════════════════════════════════════════════════════ -->
 <div class="section" id="s-market" style="display:none">
-  <div class="ph"><div class="pt">Mercado</div><div class="ps">Listings, historial y precios en vivo</div></div>
-
+  <div class="ph"><div class="pt">Mercado</div><div class="ps">Listings, historial y precios</div></div>
   <div class="tabs">
     <button class="tab active" onclick="marketTab('listings',this)">En venta</button>
     <button class="tab" onclick="marketTab('history',this)">Historial</button>
-    <button class="tab" onclick="marketTab('chart',this)">Gráfica precios</button>
-    <button class="tab" onclick="marketTab('traders',this)">Top traders</button>
+    <button class="tab" onclick="marketTab('chart',this)">Gráfica</button>
+    <button class="tab" onclick="marketTab('traders',this)">Traders</button>
   </div>
-
-  <!-- Chart selector (solo visible en tab chart) -->
-  <div id="chartSelector" style="display:none;margin-bottom:12px">
-    <select id="chartItemSelect" onchange="loadChartData()" style="background:var(--s2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;font-size:12px;width:300px"></select>
+  <div id="chartSelector" style="display:none;margin-bottom:14px">
+    <select id="chartItemSelect" onchange="loadChartData()" style="background:rgba(255,255,255,0.04);backdrop-filter:blur(10px);border:1px solid var(--rim);color:var(--text);padding:8px 14px;border-radius:8px;font-size:11px;width:320px;font-family:'Instrument Sans',sans-serif;outline:none"></select>
   </div>
-
   <div class="card" id="marketContent">
     <div class="tw"><table><thead id="marketHead"></thead><tbody id="marketTable"></tbody></table></div>
-    <div id="marketChartArea" style="display:none">
-      <canvas id="priceChart" height="200"></canvas>
-    </div>
+    <div id="marketChartArea" style="display:none"><canvas id="priceChart" height="200"></canvas></div>
     <div class="pag" id="marketPag"></div>
   </div>
 </div>
 
+</main>
 <script>
-// ── CASINO ──────────────────────────────────────────────────────────────────
-const casinoState = { game:'all', page:1, topTab:'winners', data:null };
+const S={currentSection:'overview',invites:{page:1},giveaways:{status:'all',page:1},economy:{sort:'coins',page:1},loans:{status:'all',page:1},levels:{page:1},moderation:{tab:'warns',page:1},bans:{page:1},loaded:{}};
+const socket=io();
+let wsTmr;
+const wsEl=document.getElementById('wsS'),wsDot=document.getElementById('wsd'),wsTxt=document.getElementById('wst');
+function showWS(on,msg){wsDot.className='on'+(on?'':' off').replace('on off','off');if(on)wsDot.className='on';else wsDot.className='off';wsTxt.textContent=msg;wsEl.classList.add('show');clearTimeout(wsTmr);if(on)wsTmr=setTimeout(()=>wsEl.classList.remove('show'),2500);}
+socket.on('connect',()=>showWS(true,'en línea'));
+socket.on('disconnect',()=>showWS(false,'sin conexión'));
+socket.on('stats:update',d=>{if(S.currentSection==='overview')applyStats(d);});
+function applyStats(d){
+  document.getElementById('st-members').textContent=d.members.toLocaleString();
+  document.getElementById('st-online').textContent=d.online.toLocaleString();
+  document.getElementById('st-users').textContent=d.registeredUsers.toLocaleString();
+  document.getElementById('st-flagged').textContent=d.flaggedJoins;
+  document.getElementById('st-giveaways').textContent=d.activeGiveaways;
+  document.getElementById('st-loans').textContent=d.activeLoans;
+  document.getElementById('st-bets').textContent=d.casinoBets.toLocaleString();
+  document.getElementById('st-warns').textContent=d.totalWarns;
+}
+(async()=>{const me=await api('/api/me');if(!me){location.href='/login';return;}document.getElementById('sbName').textContent=me.username;document.getElementById('sbAvatar').src=me.avatar;loadOverview();})();
+async function api(url){try{const r=await fetch(url);if(r.status===401){location.href='/login';return null;}return r.json();}catch{return null;}}
+window.nav=function(name,btn){
+  document.querySelectorAll('.section').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const sec=document.getElementById('s-'+name);
+  if(sec){sec.classList.add('active');sec.style.display='block';}
+  if(btn)btn.classList.add('active');
+  S.currentSection=name;
+  const map={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket};
+  if(!S.loaded[name]&&map[name])map[name]();
+};
+const uc=(av,nm)=>{const img=av?`<img src="${av}" onerror="this.style.display='none'">`:`<div class="fa">${(nm||'?')[0].toUpperCase()}</div>`;return`<div class="uc">${img}<span>${nm||'—'}</span></div>`;};
+const rk=n=>{const m={1:'rk1',2:'rk2',3:'rk3'},e={1:'🥇',2:'🥈',3:'🥉'};return`<span class="rk ${m[n]||''}">${e[n]||'#'+n}</span>`;};
+function pag(id,page,pages,cb){const el=document.getElementById(id);if(pages<=1){el.innerHTML='';return;}el.innerHTML=`<button class="pg" onclick="(${cb.toString()})(${page-1})" ${page<=1?'disabled':''}>← anterior</button><span class="pi">${page} / ${pages}</span><button class="pg" onclick="(${cb.toString()})(${page+1})" ${page>=pages?'disabled':''}>siguiente →</button>`;}
+const empty=(msg='Sin datos')=>`<div class="empty"><div class="ei">—</div><div>${msg}</div></div>`;
+const coin=n=>`<span class="mono" style="color:var(--gold)">🪙 ${n.toLocaleString()}</span>`;
+const dt=d=>`<span class="mono">${new Date(d).toLocaleDateString('es-PE')}</span>`;
 
-async function loadCasino(page) {
-  if(page) casinoState.page=page;
-  const d = await api(`/api/casino?page=${casinoState.page}&game=${casinoState.game}`);
-  if(!d) return;
-  casinoState.data = d;
-
-  // Stats
-  document.getElementById('cs-bets').textContent    = (d.stats.totalBets||0).toLocaleString();
-  document.getElementById('cs-volume').textContent  = (d.stats.totalBetAmount||0).toLocaleString();
-  document.getElementById('cs-profit').textContent  = (d.stats.houseProfit||0).toLocaleString();
-  document.getElementById('cs-winrate').textContent = (d.stats.winRate||0)+'%';
-
-  // Gráfica actividad
-  const vals = Object.values(d.activity);
-  const maxV  = Math.max(...vals.map(v=>v.count),1);
-  document.getElementById('casinoChart').innerHTML = Object.entries(d.activity).map(([k,v])=>
-    `<div class="bwrap"><div class="bar" style="height:${Math.max(v.count/maxV*100,3)}%" title="${v.count} partidas"></div><div class="blabel">${k.slice(5)}</div></div>`
-  ).join('');
-
-  renderCasinoTop();
-  renderCasinoTable(d);
-  S.loaded.casino=true;
+async function loadOverview(){
+  const d=await api('/api/stats');if(!d)return;
+  applyStats(d);
+  document.getElementById('lastUp').textContent='actualizado '+new Date().toLocaleTimeString('es-PE');
+  const vals=Object.values(d.joinsByDay),max=Math.max(...vals,1);
+  document.getElementById('joinChart').innerHTML=Object.entries(d.joinsByDay).map(([k,v])=>`<div class="bwrap"><div class="bar" style="height:${Math.max(v/max*100,2)}%" title="${v} joins"></div><div class="blabel">${k}</div></div>`).join('');
+  const ps=d.casinoProfit>=0;
+  document.getElementById('summaryBox').innerHTML=`
+    <div class="ms"><span class="ms-label">Miembros registrados</span><span class="ms-val">${d.registeredUsers}</span></div>
+    <div class="ms"><span class="ms-label">Sorteos activos</span><span class="ms-val">${d.activeGiveaways}</span></div>
+    <div class="ms"><span class="ms-label">Préstamos activos</span><span class="ms-val">${d.activeLoans}</span></div>
+    <div class="ms"><span class="ms-label">Warns totales</span><span class="ms-val">${d.totalWarns}</span></div>
+    <div class="ms"><span class="ms-label">Apuestas casino</span><span class="ms-val">${d.casinoBets.toLocaleString()}</span></div>
+    <div class="ms"><span class="ms-label">Balance casa</span><span class="ms-val" style="color:var(--${ps?'rose':'em'})">${ps?'−':'+'} ${Math.abs(d.casinoProfit).toLocaleString()} 🪙</span></div>`;
+  S.loaded.overview=true;
 }
 
-function renderCasinoTop() {
-  const d   = casinoState.data;
-  const box = document.getElementById('casinoTopBox');
-  if(!d) return;
-  const list = casinoState.topTab === 'winners' ? d.topWinners : d.topLosers;
-  if(!list?.length){ box.innerHTML = empty('Sin datos'); return; }
-  box.innerHTML = list.map((u,i)=>`
-    <div class="ms">
-      <span class="ms-label">${['🥇','🥈','🥉','#4','#5'][i]} ${uc(u.avatar,u.username)}</span>
-      <span class="ms-val" style="color:${casinoState.topTab==='winners'?'var(--green)':'var(--red)'}">
-        ${casinoState.topTab==='winners' ? '+'+u.totalProfit.toLocaleString() : u.netProfit.toLocaleString()}
-      </span>
-    </div>`).join('');
+async function loadInvites(page){if(page)S.invites.page=page;const d=await api(`/api/invites?page=${S.invites.page}`);if(!d)return;document.getElementById('inviteTable').innerHTML=d.invites.length?d.invites.map(u=>`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td><strong style="color:var(--em)">${u.reales}</strong></td><td><span class="mono">${u.total}</span></td><td><span class="mono" style="color:var(--rose)">${u.left}</span></td><td><span class="mono" style="color:var(--amb)">${u.fake}</span></td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('invitePag',S.invites.page,d.pages,loadInvites);S.loaded.invites=true;}
+
+async function loadGiveaways(page){
+  if(page)S.giveaways.page=page;const d=await api(`/api/giveaways?status=${S.giveaways.status}&page=${S.giveaways.page}`);if(!d)return;
+  const el=document.getElementById('gwList');
+  if(!d.giveaways.length){el.innerHTML=empty('Sin sorteos');}
+  else el.innerHTML=`<div class="gc-list">${d.giveaways.map(g=>{const p=g.participants?.length||0,c=g.claimedBy?.length||0,w=g.winnerIds?.length||0,t=g.ended?'Finalizado':`Termina ${new Date(g.endsAt).toLocaleDateString('es-PE',{day:'numeric',month:'short'})}`;return`<div class="gc"><div class="gc-ic">◎</div><div class="gc-info"><div class="gc-prize">${g.prize}</div><div class="gc-meta">${p} participantes · ${g.winners} ganador(es) · ${t}${g.ended&&w?` · ${c}/${w} reclamados`:''}</div><div class="gc-meta" style="margin-top:3px;color:var(--text3)">por ${g.hostedByName}</div></div><span class="badge ${g.ended?'b-m':'b-g'}">${g.ended?'Finalizado':'Activo'}</span></div>`;}).join('')}</div>`;
+  pag('gwPag',S.giveaways.page,d.pages,loadGiveaways);S.loaded.giveaways=true;
+}
+function filterGw(s,b){document.querySelectorAll('#s-giveaways .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.giveaways.status=s;S.giveaways.page=1;loadGiveaways();}
+
+async function loadEconomy(page){if(page)S.economy.page=page;const d=await api(`/api/economy?sort=${S.economy.sort}&page=${S.economy.page}`);if(!d)return;const lv=S.economy.sort==='level';document.getElementById('ecol1').textContent=lv?'Nivel':'Monedas';document.getElementById('ecol2').textContent=lv?'XP':'Total ganado';document.getElementById('econTable').innerHTML=d.users.length?d.users.map(u=>`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td>${lv?`<span class="badge b-o">Nv. ${u.level}</span>`:coin(u.coins)}</td><td>${lv?`<span class="mono">${u.xp.toLocaleString()} XP</span>`:coin(u.totalEarned)}</td></tr>`).join(''):`<tr><td colspan="4">${empty()}</td></tr>`;pag('econPag',S.economy.page,d.pages,loadEconomy);S.loaded.economy=true;}
+function econTab(s,b){document.querySelectorAll('#s-economy .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.economy.sort=s;S.economy.page=1;S.loaded.economy=false;loadEconomy();}
+
+async function loadLoans(page){if(page)S.loans.page=page;const d=await api(`/api/loans?status=${S.loans.status}&page=${S.loans.page}`);if(!d)return;const sb=s=>({active:`<span class="badge b-a">Activo</span>`,paid:`<span class="badge b-g">Pagado</span>`,defaulted:`<span class="badge b-r">Impagado</span>`}[s]||`<span class="badge b-m">${s}</span>`);document.getElementById('loanTable').innerHTML=d.loans.length?d.loans.map(l=>`<tr><td>${uc(l.avatar,l.username)}</td><td>${coin(l.amount)}</td><td>${coin(l.debt||0)}</td><td><span class="mono">${(l.interestRate*100).toFixed(0)}%</span></td><td>${sb(l.status)}</td><td>${dt(l.createdAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('loanPag',S.loans.page,d.pages,loadLoans);S.loaded.loans=true;}
+function filterLoan(s,b){document.querySelectorAll('#s-loans .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.loans.status=s;S.loans.page=1;loadLoans();}
+
+async function loadLevels(page){
+  if(page)S.levels.page=page;const d=await api(`/api/levels?page=${S.levels.page}`);if(!d)return;
+  const de=document.getElementById('levelDist');
+  if(d.distribution?.length){const mx=Math.max(...d.distribution.map(b=>b.count),1);de.innerHTML=d.distribution.map(b=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--text2)">Nv. ${b._id}</span><span class="mono">${b.count}</span></div><div class="prog-wrap"><div class="prog-bar" style="width:${Math.round(b.count/mx*100)}%"></div></div></div>`).join('');}
+  else de.innerHTML=empty();
+  document.getElementById('levelInfo').innerHTML=`<div class="ms"><span class="ms-label">Total usuarios</span><span class="ms-val">${d.total}</span></div><div class="ms"><span class="ms-label">Página</span><span class="ms-val">${S.levels.page} / ${d.pages||1}</span></div>`;
+  document.getElementById('levelTable').innerHTML=d.users.length?d.users.map(u=>`<tr><td>${rk(u.rank)}</td><td>${uc(u.avatar,u.username)}</td><td><span class="badge b-o">Nv. ${u.level}</span></td><td><span class="mono">${u.xp.toLocaleString()} XP</span></td></tr>`).join(''):`<tr><td colspan="4">${empty()}</td></tr>`;
+  pag('levelPag',S.levels.page,d.pages,loadLevels);S.loaded.levels=true;
 }
 
-function casinoTraderTab(tab,btn) {
-  document.querySelectorAll('#s-casino .tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  casinoState.topTab=tab;
-  renderCasinoTop();
+async function loadModeration(page){
+  if(page)S.moderation.page=page;const{tab}=S.moderation;
+  document.getElementById('logNote').style.display=tab==='logs'?'':'none';
+  const d=await api(`/api/moderation?tab=${tab}&page=${S.moderation.page}`);if(!d)return;
+  const h=document.getElementById('modHead'),tb=document.getElementById('modTable');
+  if(tab==='warns'){h.innerHTML='<tr><th>Usuario</th><th>Razón</th><th>Moderador</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(w=>`<tr><td>${uc(w.avatar,w.username)}</td><td style="color:var(--ink);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.reason}</td><td><span class="badge b-s">${w.modName}</span></td><td>${dt(w.createdAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Sin warns')}</td></tr>`;}
+  else if(tab==='mutes'){h.innerHTML='<tr><th>Usuario</th><th>Razón</th><th>Estado</th></tr>';tb.innerHTML=d.items.length?d.items.map(m=>{const e=m.expiresAt&&new Date(m.expiresAt)<new Date();return`<tr><td>${uc(m.avatar,m.username)}</td><td style="color:var(--ink)">${m.reason}</td><td><span class="badge ${e?'b-m':'b-r'}">${m.expiresAt?(e?'Expirado':new Date(m.expiresAt).toLocaleDateString('es-PE')):'Permanente'}</span></td></tr>`;}).join(''):`<tr><td colspan="3">${empty('Sin mutes')}</td></tr>`;}
+  else if(tab==='logs'){h.innerHTML='<tr><th>Usuario</th><th>IP</th><th>País</th><th>Estado</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(l=>`<tr><td>${uc(l.avatar,l.username)}</td><td><span class="mono">${l.ip||'—'}</span></td><td>${l.countryCode&&l.countryCode!=='??'?l.countryCode+' ':''}<span style="color:var(--text2)">${l.country||'—'}</span></td><td><span class="badge ${l.flagged?'b-r':'b-g'}">${l.flagged?'Alerta':'OK'}</span></td><td>${dt(l.joinedAt)}</td></tr>`).join(''):`<tr><td colspan="5">${empty()}</td></tr>`;}
+  pag('modPag',S.moderation.page,d.pages,loadModeration);S.loaded.moderation=true;
+}
+function modTab(t,b){document.querySelectorAll('#s-moderation .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.moderation.tab=t;S.moderation.page=1;S.loaded.moderation=false;loadModeration();}
+
+async function loadBans(page){if(page)S.bans.page=page;const d=await api(`/api/bans?page=${S.bans.page}`);if(!d)return;document.getElementById('banTable').innerHTML=d.bans.length?d.bans.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink)">${b.reason}</td></tr>`).join(''):`<tr><td colspan="2">${empty()}</td></tr>`;pag('banPag',S.bans.page,d.pages,loadBans);S.loaded.bans=true;}
+
+async function loadConfig(){
+  const d=await api('/api/config');if(!d)return;
+  const lb={logs:'Logs general',modLogs:'Logs mod',welcome:'Bienvenida',levels:'Niveles',verification:'Verificación',tiktok:'TikTok',security:'Seguridad',invites:'Invitaciones'};
+  document.getElementById('cfgChannels').innerHTML=d.channels?`<div class="cfg-grid">${Object.entries(d.channels).filter(([k])=>!['_id','__v','guildId'].includes(k)).map(([k,v])=>`<div class="cfg-item"><div class="cfg-lbl">${lb[k]||k}</div><div class="cfg-val ${v?'':'cfg-null'}">${v?v.name||v:'—'}</div></div>`).join('')}</div>`:empty();
+  const r=d.rewards;
+  document.getElementById('cfgRewards').innerHTML=r?`<div class="ms"><span class="ms-label">Monedas iniciales</span><span class="ms-val">${coin(r.initialCoins||500)}</span></div><div class="ms"><span class="ms-label">Trivia fácil</span><span class="ms-val">${coin(r.trivia_easy||50)}</span></div><div class="ms"><span class="ms-label">Trivia media</span><span class="ms-val">${coin(r.trivia_medium||100)}</span></div><div class="ms"><span class="ms-label">Trivia difícil</span><span class="ms-val">${coin(r.trivia_hard||250)}</span></div><div class="ms"><span class="ms-label">Misiones</span><span class="ms-val">${coin(r.misiones_reward||300)}</span></div><div class="ms"><span class="ms-label">Pérdida máx/día</span><span class="ms-val">${coin(r.max_loss_per_day||5000)}</span></div><div class="ms"><span class="ms-label">Apuestas máx/hora</span><span class="ms-val"><span class="mono">${r.max_bets_per_hour||10}</span></span></div>`:empty();
+  S.loaded.config=true;
 }
 
-function renderCasinoTable(d) {
-  const tb = document.getElementById('casinoTable');
-  if(!d.logs.length){ tb.innerHTML=`<tr><td colspan="6">${empty('Sin partidas')}</td></tr>`; return; }
-  tb.innerHTML = d.logs.map(l=>{
-    const isWin = l.profit > 0;
-    return `<tr>
-      <td>${uc(l.avatar,l.username)}</td>
-      <td><span class="badge bg-blue">${l.game}</span></td>
-      <td><span class="mono">${l.bet.toLocaleString()}</span></td>
-      <td><span class="badge ${l.result==='win'||isWin?'bg-green':'bg-red'}">${l.result}</span></td>
-      <td style="color:${isWin?'var(--green)':'var(--red)'}"><strong>${isWin?'+':''}${l.profit.toLocaleString()}</strong></td>
-      <td><span class="mono">${new Date(l.timestamp).toLocaleDateString('es-PE')}</span></td>
-    </tr>`;
-  }).join('');
-  pag('casinoPag',casinoState.page,d.pages,loadCasino);
-}
+const casinoState={game:'all',page:1,topTab:'winners',data:null};
+async function loadCasino(page){if(page)casinoState.page=page;const d=await api(`/api/casino?page=${casinoState.page}&game=${casinoState.game}`);if(!d)return;casinoState.data=d;document.getElementById('cs-bets').textContent=(d.stats.totalBets||0).toLocaleString();document.getElementById('cs-volume').textContent=(d.stats.totalBetAmount||0).toLocaleString();document.getElementById('cs-profit').textContent=(d.stats.houseProfit||0).toLocaleString();document.getElementById('cs-winrate').textContent=(d.stats.winRate||0)+'%';const vals=Object.values(d.activity),mv=Math.max(...vals.map(v=>v.count),1);document.getElementById('casinoChart').innerHTML=Object.entries(d.activity).map(([k,v])=>`<div class="bwrap"><div class="bar" style="height:${Math.max(v.count/mv*100,2)}%" title="${v.count}"></div><div class="blabel">${k.slice(4)}</div></div>`).join('');renderCasinoTop();renderCasinoTable(d);S.loaded.casino=true;}
+function renderCasinoTop(){const d=casinoState.data,box=document.getElementById('casinoTopBox');if(!d)return;const list=casinoState.topTab==='winners'?d.topWinners:d.topLosers;if(!list?.length){box.innerHTML=empty();return;}box.innerHTML=list.map((u,i)=>`<div class="ms"><span class="ms-label">${['🥇','🥈','🥉','4','5'][i]||''} ${uc(u.avatar,u.username)}</span><span class="ms-val" style="color:var(--${casinoState.topTab==='winners'?'em':'rose'})">${casinoState.topTab==='winners'?'+':''} ${(casinoState.topTab==='winners'?u.totalProfit:u.netProfit).toLocaleString()}</span></div>`).join('');}
+function casinoTT(t,b){document.querySelectorAll('#s-casino .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');casinoState.topTab=t;renderCasinoTop();}
+function renderCasinoTable(d){const tb=document.getElementById('casinoTable');if(!d.logs.length){tb.innerHTML=`<tr><td colspan="6">${empty()}</td></tr>`;return;}tb.innerHTML=d.logs.map(l=>{const w=l.profit>0;return`<tr><td>${uc(l.avatar,l.username)}</td><td><span class="badge b-s">${l.game}</span></td><td><span class="mono">${l.bet.toLocaleString()}</span></td><td><span class="badge ${l.result==='win'||w?'b-g':'b-r'}">${l.result}</span></td><td style="color:var(--${w?'em':'rose'})"><strong>${w?'+':''}${l.profit.toLocaleString()}</strong></td><td>${dt(l.timestamp)}</td></tr>`;}).join('');pag('casinoPag',casinoState.page,d.pages,loadCasino);}
+function filterCasino(g,b){document.querySelectorAll('#s-casino .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');casinoState.game=g;casinoState.page=1;loadCasino();}
 
-function filterCasino(game,btn) {
-  document.querySelectorAll('#s-casino .fbtn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  casinoState.game=game; casinoState.page=1; loadCasino();
-}
-
-// ── ARMS ────────────────────────────────────────────────────────────────────
-const armsState = { tab:'inventory', page:1, rarity:'all' };
-
-async function loadArms(page) {
-  if(page) armsState.page=page;
-  const d = await api(`/api/arms?tab=${armsState.tab}&page=${armsState.page}&rarity=${armsState.rarity}`);
-  if(!d) return;
-
-  const head = document.getElementById('armsHead');
-  const tb   = document.getElementById('armsTable');
-  document.getElementById('armsPag').innerHTML = '';
-
-  const RARITY_COLORS = {consumer:'#9ea3b0',industrial:'#5e98d9',milspec:'#4b69ff',restricted:'#8847ff',classified:'#d32ce6',covert:'#eb4b4b',special:'#ffd700'};
-
-  if(armsState.tab === 'inventory') {
-    head.innerHTML = '<tr><th>Usuario</th><th>Arma</th><th>Rareza</th><th>Desgaste</th><th>Valor</th><th>Obtenido</th></tr>';
-    tb.innerHTML = d.items.length ? d.items.map(a=>`
-      <tr>
-        <td>${uc(a.avatar,a.username)}</td>
-        <td><strong>${a.name}</strong> | <span style="color:var(--muted2)">${a.skin}</span></td>
-        <td><span style="color:${RARITY_COLORS[a.rarity]||'#aaa'};font-size:11px;font-weight:600">${a.rarityName||a.rarity}</span></td>
-        <td><span class="mono">${a.wearTag}</span></td>
-        <td><span class="mono" style="color:var(--yellow)">${a.sellPrice.toLocaleString()}</span></td>
-        <td><span class="mono">${new Date(a.obtainedAt).toLocaleDateString('es-PE')}</span></td>
-      </tr>`).join('') : `<tr><td colspan="6">${empty('Sin armas')}</td></tr>`;
-    pag('armsPag',armsState.page,d.pages,loadArms);
-  }
-
-  if(armsState.tab === 'prices') {
-    head.innerHTML = '<tr><th>Arma</th><th>Rareza</th><th>Precio actual</th><th>24h %</th><th>Max 24h</th><th>Min 24h</th><th>Vol.</th></tr>';
-    tb.innerHTML = d.items.length ? d.items.map(p=>{
-      const pct = ((p.currentPrice - p.openPrice24h) / (p.openPrice24h||1) * 100);
-      const col = pct >= 0 ? 'var(--green)' : 'var(--red)';
-      return `<tr>
-        <td><strong>${p.name}</strong> | <span style="color:var(--muted2)">${p.skin}</span></td>
-        <td><span style="color:${RARITY_COLORS[p.rarity]||'#aaa'};font-size:11px;font-weight:600">${p.rarity}</span></td>
-        <td><strong>${p.currentPrice.toLocaleString()}</strong></td>
-        <td style="color:${col};font-weight:600">${pct>=0?'+':''}${pct.toFixed(2)}%</td>
-        <td class="mono" style="color:var(--green)">${p.high24h.toLocaleString()}</td>
-        <td class="mono" style="color:var(--red)">${p.low24h.toLocaleString()}</td>
-        <td class="mono">${p.volume24h||0}</td>
-      </tr>`;
-    }).join('') : `<tr><td colspan="7">${empty('Sin precios — usa /mercado setcanal para inicializar')}</td></tr>`;
-  }
-
-  if(armsState.tab === 'cases') {
-    head.innerHTML = '<tr><th>Usuario</th><th>Arma obtenida</th><th>Rareza</th><th>Caja</th><th>Fecha</th></tr>';
-    tb.innerHTML = d.recentOpens?.length ? d.recentOpens.map(a=>`
-      <tr>
-        <td>${uc(a.avatar,a.username)}</td>
-        <td><strong>${a.name}</strong> | <span style="color:var(--muted2)">${a.skin}</span></td>
-        <td><span style="color:${RARITY_COLORS[a.rarity]||'#aaa'};font-size:11px;font-weight:600">${a.rarityName||a.rarity}</span></td>
-        <td><span class="badge bg-blue">${a.caseId}</span></td>
-        <td><span class="mono">${new Date(a.obtainedAt).toLocaleDateString('es-PE')}</span></td>
-      </tr>`).join('') : `<tr><td colspan="5">${empty('Sin aperturas')}</td></tr>`;
-  }
-
-  if(armsState.tab === 'collectors') {
-    head.innerHTML = '<tr><th>#</th><th>Usuario</th><th>Total items</th><th>Valor total</th><th>★ Esp.</th><th>Covert</th><th>Classified</th></tr>';
-    tb.innerHTML = d.items?.length ? d.items.map(c=>`
-      <tr>
-        <td>${rankCell(c.rank)}</td>
-        <td>${uc(c.avatar,c.username)}</td>
-        <td><strong>${c.total}</strong></td>
-        <td><span class="mono" style="color:var(--yellow)">${c.totalValue.toLocaleString()}</span></td>
-        <td style="color:#ffd700;font-weight:600">${c.special}</td>
-        <td style="color:#eb4b4b;font-weight:600">${c.covert}</td>
-        <td style="color:#d32ce6;font-weight:600">${c.classified}</td>
-      </tr>`).join('') : `<tr><td colspan="7">${empty('Sin coleccionistas')}</td></tr>`;
-  }
-
+const armsState={tab:'inventory',page:1,rarity:'all'};
+const RC={consumer:'#9ea3b0',industrial:'#5e98d9',milspec:'#4b69ff',restricted:'#8847ff',classified:'#d32ce6',covert:'#eb4b4b',special:'#ffd700'};
+async function loadArms(page){
+  if(page)armsState.page=page;const d=await api(`/api/arms?tab=${armsState.tab}&page=${armsState.page}&rarity=${armsState.rarity}`);if(!d)return;
+  const h=document.getElementById('armsHead'),tb=document.getElementById('armsTable');document.getElementById('armsPag').innerHTML='';
+  const nm=(a)=>`<strong style="color:var(--text)">${a.name}</strong> <span style="color:var(--text3)">·</span> <span style="color:var(--text2)">${a.skin}</span>`;
+  const rar=(a)=>`<span style="color:${RC[a.rarity]||'#aaa'};font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase">${a.rarityName||a.rarity}</span>`;
+  if(armsState.tab==='inventory'){h.innerHTML='<tr><th>Usuario</th><th>Arma</th><th>Rareza</th><th>Desgaste</th><th>Valor</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(a=>`<tr><td>${uc(a.avatar,a.username)}</td><td>${nm(a)}</td><td>${rar(a)}</td><td><span class="mono">${a.wearTag}</span></td><td>${coin(a.sellPrice)}</td><td>${dt(a.obtainedAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('armsPag',armsState.page,d.pages,loadArms);}
+  else if(armsState.tab==='prices'){h.innerHTML='<tr><th>Arma</th><th>Rareza</th><th>Precio</th><th>24h %</th><th>Máx</th><th>Mín</th><th>Vol.</th></tr>';tb.innerHTML=d.items.length?d.items.map(p=>{const pct=((p.currentPrice-p.openPrice24h)/(p.openPrice24h||1)*100);return`<tr><td>${nm(p)}</td><td>${rar(p)}</td><td><strong>${p.currentPrice.toLocaleString()}</strong></td><td style="color:var(--${pct>=0?'em':'rose'});font-weight:600">${pct>=0?'+':''}${pct.toFixed(2)}%</td><td class="mono" style="color:var(--em)">${p.high24h.toLocaleString()}</td><td class="mono" style="color:var(--rose)">${p.low24h.toLocaleString()}</td><td class="mono">${p.volume24h||0}</td></tr>`;}).join(''):`<tr><td colspan="7">${empty()}</td></tr>`;}
+  else if(armsState.tab==='cases'){h.innerHTML='<tr><th>Usuario</th><th>Arma</th><th>Rareza</th><th>Caja</th><th>Fecha</th></tr>';tb.innerHTML=d.recentOpens?.length?d.recentOpens.map(a=>`<tr><td>${uc(a.avatar,a.username)}</td><td>${nm(a)}</td><td>${rar(a)}</td><td><span class="badge b-s">${a.caseId}</span></td><td>${dt(a.obtainedAt)}</td></tr>`).join(''):`<tr><td colspan="5">${empty()}</td></tr>`;}
+  else if(armsState.tab==='collectors'){h.innerHTML='<tr><th>#</th><th>Usuario</th><th>Items</th><th>Valor</th><th>★</th><th>Covert</th><th>Classified</th></tr>';tb.innerHTML=d.items?.length?d.items.map(c=>`<tr><td>${rk(c.rank)}</td><td>${uc(c.avatar,c.username)}</td><td><strong>${c.total}</strong></td><td>${coin(c.totalValue)}</td><td style="color:#ffd700;font-weight:700">${c.special}</td><td style="color:#eb4b4b;font-weight:700">${c.covert}</td><td style="color:#d32ce6;font-weight:700">${c.classified}</td></tr>`).join(''):`<tr><td colspan="7">${empty()}</td></tr>`;}
   S.loaded.arms=true;
 }
+function armsTab(t,b){document.querySelectorAll('#s-arms .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');armsState.tab=t;armsState.page=1;S.loaded.arms=false;loadArms();}
 
-function armsTab(tab,btn) {
-  document.querySelectorAll('#s-arms .tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  armsState.tab=tab; armsState.page=1; S.loaded.arms=false; loadArms();
-}
-
-// ── MARKET ──────────────────────────────────────────────────────────────────
-const marketState = { tab:'listings', page:1, chartItemId:null };
-
-async function loadMarket(page) {
-  if(page) marketState.page=page;
-
-  document.getElementById('chartSelector').style.display   = marketState.tab==='chart' ? '' : 'none';
-  document.getElementById('marketChartArea').style.display = marketState.tab==='chart' ? '' : 'none';
-  document.querySelector('#marketContent .tw').style.display = marketState.tab==='chart' ? 'none' : '';
-
-  const head = document.getElementById('marketHead');
-  const tb   = document.getElementById('marketTable');
-
-  const RARITY_COLORS = {consumer:'#9ea3b0',industrial:'#5e98d9',milspec:'#4b69ff',restricted:'#8847ff',classified:'#d32ce6',covert:'#eb4b4b',special:'#ffd700'};
-
-  if(marketState.tab === 'listings') {
-    const d = await api(`/api/market?tab=listings&page=${marketState.page}`);
-    if(!d) return;
-    head.innerHTML = '<tr><th>Arma</th><th>Rareza</th><th>Desgaste</th><th>Precio</th><th>Vendedor</th><th>Expira</th></tr>';
-    tb.innerHTML = d.items.length ? d.items.map(l=>{
-      const exp = Math.max(0,Math.floor((new Date(l.expiresAt)-Date.now())/(1000*60*60*24)));
-      return `<tr>
-        <td><strong>${l.name}</strong> | <span style="color:var(--muted2)">${l.skin}</span></td>
-        <td><span style="color:${RARITY_COLORS[l.rarity]||'#aaa'};font-size:11px;font-weight:600">${l.rarityName||l.rarity}</span></td>
-        <td><span class="mono">${l.wearTag}</span></td>
-        <td><strong style="color:var(--yellow)">${l.price.toLocaleString()}</strong></td>
-        <td>${uc(l.sellerAvatar,l.sellerName)}</td>
-        <td><span class="mono">${exp}d</span></td>
-      </tr>`;
-    }).join('') : `<tr><td colspan="6">${empty('Sin listings activos')}</td></tr>`;
-    pag('marketPag',marketState.page,d.pages,loadMarket);
-  }
-
-  if(marketState.tab === 'history') {
-    const d = await api(`/api/market?tab=history&page=${marketState.page}`);
-    if(!d) return;
-    head.innerHTML = '<tr><th>Arma</th><th>Rareza</th><th>Precio</th><th>Comprador</th><th>Vendedor</th><th>Fecha</th></tr>';
-    tb.innerHTML = d.items.length ? d.items.map(t=>`
-      <tr>
-        <td><strong>${t.name}</strong> | <span style="color:var(--muted2)">${t.skin}</span></td>
-        <td><span style="color:${RARITY_COLORS[t.rarity]||'#aaa'};font-size:11px;font-weight:600">${t.rarity}</span></td>
-        <td><strong style="color:var(--yellow)">${t.price.toLocaleString()}</strong></td>
-        <td>${uc(null,t.buyerName)}</td>
-        <td>${uc(null,t.sellerName)}</td>
-        <td><span class="mono">${new Date(t.timestamp).toLocaleDateString('es-PE')}</span></td>
-      </tr>`).join('') : `<tr><td colspan="6">${empty('Sin historial')}</td></tr>`;
-    pag('marketPag',marketState.page,d.pages,loadMarket);
-  }
-
-  if(marketState.tab === 'chart') {
-    const d = await api(`/api/market?tab=chart&itemId=${marketState.chartItemId||''}`);
-    if(!d) return;
-    // Poblar selector
-    const sel = document.getElementById('chartItemSelect');
-    if(d.topItems?.length && sel.options.length===0) {
-      d.topItems.forEach(it=>{
-        const opt = document.createElement('option');
-        opt.value = it.itemId;
-        opt.textContent = `${it.name} | ${it.skin}`;
-        sel.appendChild(opt);
-      });
-      if(!marketState.chartItemId && d.topItems[0]) {
-        marketState.chartItemId = d.topItems[0].itemId;
-        sel.value = marketState.chartItemId;
-      }
-    }
-    drawPriceChart(d.history, d.current);
-  }
-
-  if(marketState.tab === 'traders') {
-    const d = await api('/api/market?tab=traders');
-    if(!d) return;
-    head.innerHTML = '';
-    tb.innerHTML   = '';
-    // Render como dos columnas en el card
-    document.querySelector('#marketContent .tw').innerHTML = `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:8px">
-        <div>
-          <div class="card-title" style="margin-bottom:12px">Top Compradores (7d)</div>
-          ${d.topBuyers.map((b,i)=>`
-            <div class="ms">
-              <span class="ms-label">${['🥇','🥈','🥉','#4','#5','#6','#7','#8','#9','#10'][i]||'#'+(i+1)} ${uc(b.avatar,b.username)}</span>
-              <span class="ms-val" style="color:var(--green)">-${b.spent.toLocaleString()}</span>
-            </div>`).join('') || empty('Sin datos')}
-        </div>
-        <div>
-          <div class="card-title" style="margin-bottom:12px">Top Vendedores (7d)</div>
-          ${d.topSellers.map((s,i)=>`
-            <div class="ms">
-              <span class="ms-label">${['🥇','🥈','🥉','#4','#5','#6','#7','#8','#9','#10'][i]||'#'+(i+1)} ${uc(s.avatar,s.username)}</span>
-              <span class="ms-val" style="color:var(--yellow)">+${s.earned.toLocaleString()}</span>
-            </div>`).join('') || empty('Sin datos')}
-        </div>
-      </div>`;
-  }
-
+const marketState={tab:'listings',page:1,chartItemId:null};
+async function loadMarket(page){
+  if(page)marketState.page=page;
+  document.getElementById('chartSelector').style.display=marketState.tab==='chart'?'':'none';
+  document.getElementById('marketChartArea').style.display=marketState.tab==='chart'?'':'none';
+  document.querySelector('#marketContent .tw').style.display=marketState.tab==='chart'?'none':'';
+  const h=document.getElementById('marketHead'),tb=document.getElementById('marketTable');
+  const nm=(x)=>`<strong style="color:var(--text)">${x.name}</strong> <span style="color:var(--text3)">·</span> <span style="color:var(--text2)">${x.skin}</span>`;
+  const rar=(x)=>`<span style="color:${RC[x.rarity]||'#aaa'};font-size:10px;font-weight:600">${x.rarityName||x.rarity}</span>`;
+  if(marketState.tab==='listings'){const d=await api(`/api/market?tab=listings&page=${marketState.page}`);if(!d)return;h.innerHTML='<tr><th>Arma</th><th>Rareza</th><th>Desgaste</th><th>Precio</th><th>Vendedor</th><th>Expira</th></tr>';tb.innerHTML=d.items.length?d.items.map(l=>{const e=Math.max(0,Math.floor((new Date(l.expiresAt)-Date.now())/864e5));return`<tr><td>${nm(l)}</td><td>${rar(l)}</td><td><span class="mono">${l.wearTag}</span></td><td>${coin(l.price)}</td><td>${uc(l.sellerAvatar,l.sellerName)}</td><td><span class="badge b-m">${e}d</span></td></tr>`;}).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('marketPag',marketState.page,d.pages,loadMarket);}
+  else if(marketState.tab==='history'){const d=await api(`/api/market?tab=history&page=${marketState.page}`);if(!d)return;h.innerHTML='<tr><th>Arma</th><th>Rareza</th><th>Precio</th><th>Comprador</th><th>Vendedor</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(t=>`<tr><td>${nm(t)}</td><td>${rar(t)}</td><td>${coin(t.price)}</td><td>${uc(null,t.buyerName)}</td><td>${uc(null,t.sellerName)}</td><td>${dt(t.timestamp)}</td></tr>`).join(''):`<tr><td colspan="6">${empty()}</td></tr>`;pag('marketPag',marketState.page,d.pages,loadMarket);}
+  else if(marketState.tab==='chart'){const d=await api(`/api/market?tab=chart&itemId=${marketState.chartItemId||''}`);if(!d)return;const sel=document.getElementById('chartItemSelect');if(d.topItems?.length&&sel.options.length===0){d.topItems.forEach(it=>{const o=document.createElement('option');o.value=it.itemId;o.textContent=`${it.name} · ${it.skin}`;sel.appendChild(o);});if(!marketState.chartItemId&&d.topItems[0]){marketState.chartItemId=d.topItems[0].itemId;sel.value=marketState.chartItemId;}}drawPriceChart(d.history,d.current);}
+  else if(marketState.tab==='traders'){const d=await api('/api/market?tab=traders');if(!d)return;h.innerHTML='';tb.innerHTML='';document.querySelector('#marketContent .tw').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:4px"><div><div class="card-hd" style="margin-bottom:14px">Top Compradores — 7d</div>${d.topBuyers.map((b,i)=>`<div class="ms"><span class="ms-label">${['🥇','🥈','🥉','4','5','6','7','8','9','10'][i]} ${uc(b.avatar,b.username)}</span><span class="ms-val" style="color:var(--rose)">−${b.spent.toLocaleString()}</span></div>`).join('')||empty()}</div><div><div class="card-hd" style="margin-bottom:14px">Top Vendedores — 7d</div>${d.topSellers.map((s,i)=>`<div class="ms"><span class="ms-label">${['🥇','🥈','🥉','4','5','6','7','8','9','10'][i]} ${uc(s.avatar,s.username)}</span><span class="ms-val" style="color:var(--em)">+${s.earned.toLocaleString()}</span></div>`).join('')||empty()}</div></div>`;}
   S.loaded.market=true;
 }
-
-async function loadChartData() {
-  const sel = document.getElementById('chartItemSelect');
-  marketState.chartItemId = sel.value;
-  const d = await api(`/api/market?tab=chart&itemId=${marketState.chartItemId}`);
-  if(d) drawPriceChart(d.history, d.current);
-}
-
-function drawPriceChart(history, current) {
-  const canvas = document.getElementById('priceChart');
-  if(!canvas || !history?.length) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.parentElement.offsetWidth || 800;
-  canvas.width = W; canvas.height = 200;
-  ctx.clearRect(0,0,W,200);
-
-  const prices = history.map(h=>h.close);
-  const min = Math.min(...prices) * 0.98;
-  const max = Math.max(...prices) * 1.02;
-  const range = max - min || 1;
-  const toY = p => 180 - ((p-min)/range)*160;
-  const toX = i => 20 + (i/(prices.length-1||1))*(W-40);
-
-  // Área bajo curva
-  ctx.beginPath();
-  prices.forEach((p,i) => i===0 ? ctx.moveTo(toX(i),toY(p)) : ctx.lineTo(toX(i),toY(p)));
-  ctx.lineTo(toX(prices.length-1),180); ctx.lineTo(toX(0),180); ctx.closePath();
-  const grad = ctx.createLinearGradient(0,0,0,180);
-  const isUp = prices[prices.length-1] >= prices[0];
-  grad.addColorStop(0, isUp?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)');
-  grad.addColorStop(1,'transparent');
-  ctx.fillStyle = grad; ctx.fill();
-
-  // Línea
-  ctx.beginPath();
-  prices.forEach((p,i) => i===0 ? ctx.moveTo(toX(i),toY(p)) : ctx.lineTo(toX(i),toY(p)));
-  ctx.strokeStyle = isUp ? '#22c55e' : '#ef4444';
-  ctx.lineWidth = 2; ctx.stroke();
-
-  // Labels eje Y
-  ctx.font = '10px monospace'; ctx.fillStyle = '#555'; ctx.textAlign = 'right';
-  [min,max,(min+max)/2].forEach(v => ctx.fillText(Math.round(v).toLocaleString(), 16, toY(v)+4));
-}
-
-function marketTab(tab,btn) {
-  document.querySelectorAll('#s-market .tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  marketState.tab=tab; marketState.page=1; S.loaded.market=false; loadMarket();
-}
-
-// ── Registrar loaders en el nav ─────────────────────────────────────────────
-const _origNav = nav;
-// Extender nav para nuevas secciones
-window.nav = function(name, btn) {
-  document.querySelectorAll('.section').forEach(s=>{
-    s.classList.remove('active');
-    s.style.display = 'none';
-  });
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const sec = document.getElementById('s-'+name);
-  if(sec){ 
-    sec.classList.add('active'); 
-    sec.style.display='block'; 
-  }
-  if(btn) btn.classList.add('active');
-  S.currentSection = name;
-  if(name==='casino'    && !S.loaded.casino)    loadCasino();
-  if(name==='arms'      && !S.loaded.arms)      loadArms();
-  if(name==='market'    && !S.loaded.market)    loadMarket();
-  if(name==='overview'  && !S.loaded.overview)  loadOverview();
-  if(name==='invites'   && !S.loaded.invites)   loadInvites();
-  if(name==='giveaways' && !S.loaded.giveaways) loadGiveaways();
-  if(name==='economy'   && !S.loaded.economy)   loadEconomy();
-  if(name==='loans'     && !S.loaded.loans)     loadLoans();
-  if(name==='levels'    && !S.loaded.levels)    loadLevels();
-  if(name==='moderation'&& !S.loaded.moderation)loadModeration();
-  if(name==='bans'      && !S.loaded.bans)      loadBans();
-  if(name==='config'    && !S.loaded.config)    loadConfig();
-};
+async function loadChartData(){const sel=document.getElementById('chartItemSelect');marketState.chartItemId=sel.value;const d=await api(`/api/market?tab=chart&itemId=${marketState.chartItemId}`);if(d)drawPriceChart(d.history,d.current);}
+function drawPriceChart(history,current){const c=document.getElementById('priceChart');if(!c||!history?.length)return;const ctx=c.getContext('2d'),W=c.parentElement.offsetWidth||800;c.width=W;c.height=200;ctx.clearRect(0,0,W,200);const pr=history.map(h=>h.close),mn=Math.min(...pr)*.98,mx=Math.max(...pr)*1.02,rg=mx-mn||1;const ty=p=>180-((p-mn)/rg)*160,tx=i=>20+(i/(pr.length-1||1))*(W-40);ctx.beginPath();pr.forEach((p,i)=>i===0?ctx.moveTo(tx(i),ty(p)):ctx.lineTo(tx(i),ty(p)));ctx.lineTo(tx(pr.length-1),180);ctx.lineTo(tx(0),180);ctx.closePath();const up=pr[pr.length-1]>=pr[0],g=ctx.createLinearGradient(0,0,0,180);g.addColorStop(0,up?'rgba(62,207,142,0.15)':'rgba(240,98,146,0.12)');g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fill();ctx.beginPath();pr.forEach((p,i)=>i===0?ctx.moveTo(tx(i),ty(p)):ctx.lineTo(tx(i),ty(p)));ctx.strokeStyle=up?'#3ecf8e':'#f06292';ctx.lineWidth=1.5;ctx.lineJoin='round';ctx.stroke();ctx.font='9px "DM Mono",monospace';ctx.fillStyle='rgba(255,255,255,0.22)';ctx.textAlign='right';[mn,mx,(mn+mx)/2].forEach(v=>ctx.fillText(Math.round(v).toLocaleString(),16,ty(v)+4));}
+function marketTab(t,b){document.querySelectorAll('#s-market .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');marketState.tab=t;marketState.page=1;S.loaded.market=false;loadMarket();}
 </script>
 </body>
 </html>
