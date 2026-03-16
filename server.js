@@ -26,10 +26,6 @@ app.use(session({
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log('[DB] Conectado')).catch(console.error);
 
-// ══════════════════════════════════════════════════════════════════════════
-//  SCHEMAS — exactamente los mismos que usa el bot de Discord
-//  Las monedas se guardan en UserCoins, que es compartido con el bot
-// ══════════════════════════════════════════════════════════════════════════
 const { Schema, model } = mongoose;
 const Level           = model('Level',           new Schema({ userId: String, guildId: String, xp: { type: Number, default: 0 }, level: { type: Number, default: 0 }, lastMessage: Date, streak: { type: Number, default: 0 }, lastMessageDate: Date, dailyChallenges: { date: String, messages: Number, messagesCompleted: Boolean, vcMinutes: Number, vcCompleted: Boolean } }));
 const Warn            = model('Warn',            new Schema({ userId: String, guildId: String, moderator: String, reason: String, createdAt: { type: Date, default: Date.now } }));
@@ -40,10 +36,7 @@ const GiveawayConfig  = model('GiveawayConfig',  new Schema({ guildId: { type: S
 const AutoRole        = model('AutoRole',        new Schema({ guildId: String, panelId: { type: String, unique: true }, channelId: String, messageId: String, name: String, title: String, description: String, requireConfirm: { type: Boolean, default: true }, maxRoles: { type: Number, default: 0 }, roles: [{ roleId: String, emoji: String, label: String, description: String, order: Number, minLevel: { type: Number, default: 0 }, requiredRole: String }], createdAt: { type: Date, default: Date.now }, updatedAt: { type: Date, default: Date.now } }));
 const SecurityLog     = model('SecurityLog',     new Schema({ userId: String, guildId: String, ip: String, country: String, countryCode: String, action: String, flagged: Boolean, joinedAt: { type: Date, default: Date.now } }));
 const InviteTracker   = model('InviteTracker',   new Schema({ guildId: String, userId: String, code: String, uses: { type: Number, default: 0 }, total: { type: Number, default: 0 }, fake: { type: Number, default: 0 }, left: { type: Number, default: 0 } }));
-
-// ── UserCoins: compartido con el bot — modificar aquí afecta el balance real
 const UserCoins       = model('UserCoins',       new Schema({ userId: String, guildId: String, coins: { type: Number, default: 0 }, totalEarned: { type: Number, default: 0 }, lastDaily: Date, lastWork: Date, ownedBackgrounds: { type: [String], default: [] }, activeBgId: { type: String, default: null } }));
-
 const Loan            = model('Loan',            new Schema({ userId: String, guildId: String, amount: Number, debt: Number, interestRate: { type: Number, default: 0.01 }, status: { type: String, default: 'active' }, lastInterest: Date, createdAt: { type: Date, default: Date.now } }));
 const ChannelsConfig  = model('ChannelsConfig',  new Schema({ guildId: String, logs: String, modLogs: String, welcome: String, levels: String, verification: String, tiktok: String, security: String, invites: String }));
 const RewardsConfig   = model('RewardsConfig',   new Schema({ guildId: String, initialCoins: Number, trivia_easy: Number, trivia_medium: Number, trivia_hard: Number, misiones_reward: Number, shop_rol_custom: Number, shop_mention: Number, shop_vc_boost: Number, max_loss_per_day: Number, max_bets_per_hour: Number, logsChannelId: String }));
@@ -63,6 +56,8 @@ const ArmCurrentPrice = model('ArmCurrentPrice', new Schema({ guildId: String, i
 const ArmPrice        = model('ArmPrice',        new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, open: Number, high: Number, low: Number, close: Number, volume: Number, timestamp: { type: Date, default: Date.now } }));
 const MarketTx        = model('MarketTx',        new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, price: Number, sellerId: String, buyerId: String, timestamp: { type: Date, default: Date.now } }));
 const ShopPurchase    = mongoose.models.ShopPurchase || model('ShopPurchase', new Schema({ userId: String, guildId: String, itemId: String, itemName: String, price: Number, purchasedAt: { type: Date, default: Date.now } }));
+const BankAccount     = mongoose.models.BankAccount || model('BankAccount', new Schema({ userId: String, guildId: String, balance: { type: Number, default: 0 }, lastInterest: { type: Date, default: null }, history: [{ type: { type: String }, amount: Number, note: String, timestamp: { type: Date, default: Date.now } }] }));
+const CasinoBan       = mongoose.models.CasinoBan || model('CasinoBan', new Schema({ userId: String, guildId: String, reason: String, bannedBy: String, bannedAt: { type: Date, default: Date.now }, expiresAt: Date }));
 
 // ══════════════════════════════════════════════════════════════════════════
 //  CONFIG
@@ -71,56 +66,65 @@ const IP_LOG_ALLOWED = ['990868869449121852', '751153328326443109'];
 const GUILD_ID       = process.env.GUILD_ID;
 const ADMIN_ROLE_IDS = (process.env.ADMIN_ROLE_IDS || process.env.ADMIN_ROLE_ID || '').split(',').map(r => r.trim()).filter(Boolean);
 const userCache      = new Map();
+const SUSPICIOUS_WIN_THRESHOLD = 100000;
+
+// ══════════════════════════════════════════════════════════════════════════
+//  RATE LIMITING
+// ══════════════════════════════════════════════════════════════════════════
+const rateLimitStore = new Map();
+const RATE_LIMIT_WINDOW = 60000;
+const RATE_LIMIT_MAX = 20;
+
+function checkRateLimit(userId) {
+  const now = Date.now();
+  if (!rateLimitStore.has(userId)) { rateLimitStore.set(userId, { count: 1, windowStart: now }); return true; }
+  const state = rateLimitStore.get(userId);
+  if (now - state.windowStart > RATE_LIMIT_WINDOW) { rateLimitStore.set(userId, { count: 1, windowStart: now }); return true; }
+  if (state.count >= RATE_LIMIT_MAX) return false;
+  state.count++;
+  return true;
+}
+
+const casinoRateLimit = (req, res, next) => {
+  if (!req.session?.user) return next();
+  if (!checkRateLimit(req.session.user.id)) return res.status(429).json({ error: 'Demasiadas apuestas. Espera un momento.' });
+  next();
+};
+
+const checkCasinoBan = async (req, res, next) => {
+  if (!req.session?.user) return next();
+  const ban = await CasinoBan.findOne({ userId: req.session.user.id, guildId: GUILD_ID, $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }] }).lean();
+  if (ban) return res.status(403).json({ error: `Baneado del casino: ${ban.reason}` });
+  next();
+};
 
 // ══════════════════════════════════════════════════════════════════════════
 //  HELPERS DISCORD
 // ══════════════════════════════════════════════════════════════════════════
 function discordReq(endpoint, bearer, isBot) {
   return new Promise(resolve => {
-    const req = https.request({
-      hostname: 'discord.com', path: `/api/v10${endpoint}`, method: 'GET',
-      headers: { Authorization: isBot ? `Bot ${process.env.DISCORD_TOKEN}` : `Bearer ${bearer}` }
-    }, res => {
-      let b = '';
-      res.on('data', c => b += c);
-      res.on('end', () => { try { resolve(JSON.parse(b)); } catch { resolve(null); } });
+    const req = https.request({ hostname: 'discord.com', path: `/api/v10${endpoint}`, method: 'GET', headers: { Authorization: isBot ? `Bot ${process.env.DISCORD_TOKEN}` : `Bearer ${bearer}` } }, res => {
+      let b = ''; res.on('data', c => b += c); res.on('end', () => { try { resolve(JSON.parse(b)); } catch { resolve(null); } });
     });
-    req.on('error', () => resolve(null));
-    req.end();
+    req.on('error', () => resolve(null)); req.end();
   });
 }
 
 async function getUser(userId) {
   if (userCache.has(userId)) return userCache.get(userId);
   const u = await discordReq(`/users/${userId}`, null, true);
-  const data = {
-    username: u?.username || userId,
-    avatar: u?.avatar ? `https://cdn.discordapp.com/avatars/${userId}/${u.avatar}.png?size=32` : null
-  };
+  const data = { username: u?.username || userId, avatar: u?.avatar ? `https://cdn.discordapp.com/avatars/${userId}/${u.avatar}.png?size=32` : null };
   userCache.set(userId, data);
   return data;
 }
 
 function exchangeCode(code) {
   return new Promise(resolve => {
-    const params = new URLSearchParams({
-      client_id: process.env.DISCORD_CLIENT_ID,
-      client_secret: process.env.DISCORD_CLIENT_SECRET,
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: process.env.DISCORD_REDIRECT_URI
-    }).toString();
-    const req = https.request({
-      hostname: 'discord.com', path: '/api/v10/oauth2/token', method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(params) }
-    }, res => {
-      let b = '';
-      res.on('data', c => b += c);
-      res.on('end', () => { try { resolve(JSON.parse(b)); } catch { resolve(null); } });
+    const params = new URLSearchParams({ client_id: process.env.DISCORD_CLIENT_ID, client_secret: process.env.DISCORD_CLIENT_SECRET, grant_type: 'authorization_code', code, redirect_uri: process.env.DISCORD_REDIRECT_URI }).toString();
+    const req = https.request({ hostname: 'discord.com', path: '/api/v10/oauth2/token', method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(params) } }, res => {
+      let b = ''; res.on('data', c => b += c); res.on('end', () => { try { resolve(JSON.parse(b)); } catch { resolve(null); } });
     });
-    req.on('error', () => resolve(null));
-    req.write(params);
-    req.end();
+    req.on('error', () => resolve(null)); req.write(params); req.end();
   });
 }
 
@@ -144,16 +148,8 @@ app.get('/auth/callback', async (req, res) => {
     if (!user?.id) return res.redirect('/login?error=user_failed');
     const member = await discordReq(`/guilds/${GUILD_ID}/members/${user.id}`, null, true);
     const isAdmin = member?.roles ? member.roles.some(r => ADMIN_ROLE_IDS.includes(r)) : false;
-    req.session.user = {
-      id: user.id,
-      username: user.username,
-      avatar: user.avatar
-        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
-        : 'https://cdn.discordapp.com/embed/avatars/0.png',
-      isAdmin,
-    };
-    const from = req.session.casinoFrom;
-    req.session.casinoFrom = null;
+    req.session.user = { id: user.id, username: user.username, avatar: user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64` : 'https://cdn.discordapp.com/embed/avatars/0.png', isAdmin };
+    const from = req.session.casinoFrom; req.session.casinoFrom = null;
     if (from === 'casino') return res.redirect('/casino');
     if (!member?.roles) return res.redirect('/login?error=not_in_server');
     if (!isAdmin) return res.redirect('/login?error=no_permission');
@@ -165,8 +161,35 @@ app.get('/auth/logout', (req, res) => { req.session.destroy(); res.redirect('/lo
 app.get('/api/me', (req, res) => req.session?.user ? res.json(req.session.user) : res.status(401).json({ error: 'No autenticado' }));
 
 // ══════════════════════════════════════════════════════════════════════════
-//  STATS HELPER
+//  HELPERS
 // ══════════════════════════════════════════════════════════════════════════
+async function applyCoins(userId, delta, isWin = false) {
+  const update = { $inc: { coins: delta } };
+  if (isWin && delta > 0) update.$inc.totalEarned = delta;
+  const updated = await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, update, { new: true });
+  if (updated && global.io) {
+    global.io.emit('coins:update', { userId, coins: updated.coins });
+    global.io.emit('bot:coins:update', { userId, guildId: GUILD_ID, coins: updated.coins, delta });
+  }
+  return updated;
+}
+
+async function logAndAchieve(userId, game, bet, won, delta) {
+  await CasinoLog.create({ userId, guildId: GUILD_ID, game, bet, result: won ? 'win' : 'loss', profit: delta });
+  if (won) {
+    await Achievements.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { casino_wins: 1 }, $max: { max_bet: bet } }, { upsert: true });
+  }
+  // Alerta de ganancia sospechosa
+  if (delta > SUSPICIOUS_WIN_THRESHOLD && global.io) {
+    const u = await getUser(userId);
+    global.io.emit('admin:alert', { userId, username: u.username, game, amount: delta, ts: new Date() });
+  }
+  if (global.io) {
+    const u = await getUser(userId);
+    global.io.emit('casino:bet', { userId, username: u.username, game, bet, profit: delta });
+  }
+}
+
 async function getStats() {
   try {
     const [guild, totalUsers, activeGiveaways, activeLoans, flaggedJoins, recentLogs, casinoAgg, totalWarns] = await Promise.all([
@@ -180,68 +203,17 @@ async function getStats() {
       Warn.countDocuments({ guildId: GUILD_ID }),
     ]);
     const joinsByDay = {};
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(); d.setDate(d.getDate() - i);
-      joinsByDay[d.toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric' })] = 0;
-    }
-    recentLogs.forEach(l => {
-      const key = new Date(l.joinedAt).toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric' });
-      if (joinsByDay[key] !== undefined) joinsByDay[key]++;
-    });
-    return {
-      members: guild?.approximate_member_count || 0,
-      online: guild?.approximate_presence_count || 0,
-      registeredUsers: totalUsers, activeGiveaways, activeLoans, flaggedJoins, totalWarns,
-      joinsByDay, casinoBets: casinoAgg[0]?.bets || 0, casinoProfit: casinoAgg[0]?.profit || 0
-    };
+    for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); joinsByDay[d.toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric' })] = 0; }
+    recentLogs.forEach(l => { const key = new Date(l.joinedAt).toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric' }); if (joinsByDay[key] !== undefined) joinsByDay[key]++; });
+    return { members: guild?.approximate_member_count || 0, online: guild?.approximate_presence_count || 0, registeredUsers: totalUsers, activeGiveaways, activeLoans, flaggedJoins, totalWarns, joinsByDay, casinoBets: casinoAgg[0]?.bets || 0, casinoProfit: casinoAgg[0]?.profit || 0 };
   } catch (e) { console.error('[stats]', e); return null; }
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  HELPER: Actualizar monedas y notificar al bot via Socket + DB
-//  Esto garantiza que el bot de Discord vea el cambio inmediatamente
-// ══════════════════════════════════════════════════════════════════════════
-async function applyCoins(userId, delta, isWin = false) {
-  const update = { $inc: { coins: delta } };
-  if (isWin && delta > 0) update.$inc.totalEarned = delta;
-  const updated = await UserCoins.findOneAndUpdate(
-    { userId, guildId: GUILD_ID },
-    update,
-    { new: true }
-  );
-  if (updated && global.io) {
-    // Notifica al frontend del casino (actualiza saldo en tiempo real)
-    global.io.emit('coins:update', { userId, coins: updated.coins });
-    // Notifica al bot de Discord si está escuchando el mismo socket
-    global.io.emit('bot:coins:update', { userId, guildId: GUILD_ID, coins: updated.coins, delta });
-  }
-  return updated;
-}
-
-async function logAndAchieve(userId, game, bet, won, delta) {
-  await CasinoLog.create({ userId, guildId: GUILD_ID, game, bet, result: won ? 'win' : 'loss', profit: delta });
-  if (won) {
-    await Achievements.findOneAndUpdate(
-      { userId, guildId: GUILD_ID },
-      { $inc: { casino_wins: 1 }, $max: { max_bet: bet } },
-      { upsert: true }
-    );
-  }
-  // Emitir al feed en vivo del casino
-  if (global.io) {
-    const u = await getUser(userId);
-    global.io.emit('casino:bet', { userId, username: u.username, game, bet, profit: delta });
-  }
-}
 
 // ══════════════════════════════════════════════════════════════════════════
-//  APIS DEL DASHBOARD (requieren rol admin)
+//  DASHBOARD APIs
 // ══════════════════════════════════════════════════════════════════════════
-app.get('/api/stats', requireAuth, async (req, res) => {
-  const stats = await getStats();
-  if (!stats) return res.status(500).json({ error: 'Error' });
-  res.json(stats);
-});
+app.get('/api/stats', requireAuth, async (req, res) => { const stats = await getStats(); if (!stats) return res.status(500).json({ error: 'Error' }); res.json(stats); });
 
 app.get('/api/invites', requireAuth, async (req, res) => {
   try {
@@ -312,9 +284,7 @@ app.get('/api/levels', requireAuth, async (req, res) => {
 app.get('/api/moderation', requireAuth, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1, tab = req.query.tab || 'warns', limit = 15;
-    if (tab === 'logs' && !IP_LOG_ALLOWED.includes(req.session.user.id)) {
-      return res.status(403).json({ error: 'No tienes permiso para ver los logs de IP' });
-    }
+    if (tab === 'logs' && !IP_LOG_ALLOWED.includes(req.session.user.id)) return res.status(403).json({ error: 'No tienes permiso para ver los logs de IP' });
     let items = [], count = 0;
     if (tab === 'warns') {
       const agg = await Warn.find({ guildId: GUILD_ID }).sort({ createdAt: -1 }).skip((page-1)*limit).limit(limit).lean();
@@ -536,8 +506,44 @@ app.get('/api/backgrounds', requireAuth, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
+app.get('/api/admin/purchases', requireAuth, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page)||1, limit = 15;
+    const [agg, count] = await Promise.all([ShopPurchase.find({ guildId: GUILD_ID }).sort({ purchasedAt: -1 }).skip((page-1)*limit).limit(limit).lean(), ShopPurchase.countDocuments({ guildId: GUILD_ID })]);
+    const enriched = await Promise.all(agg.map(async p => { const u = await getUser(p.userId); return { ...p, username: u.username, avatar: u.avatar }; }));
+    res.json({ items: enriched, pages: Math.ceil(count / limit) });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+// ── Admin Casino Bans ──────────────────────────────────────────────────────
+app.get('/api/admin/casino-bans', requireAuth, async (req, res) => {
+  try {
+    const bans = await CasinoBan.find({ guildId: GUILD_ID }).sort({ bannedAt: -1 }).lean();
+    const enriched = await Promise.all(bans.map(async b => { const u = await getUser(b.userId), a = await getUser(b.bannedBy); return { ...b, username: u.username, avatar: u.avatar, bannedByName: a.username }; }));
+    res.json({ bans: enriched });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+app.post('/api/admin/casino-ban', requireAuth, async (req, res) => {
+  if (!req.session.user.isAdmin) return res.status(403).json({ error: 'Sin permiso' });
+  try {
+    const { userId, reason, hours } = req.body;
+    const expiresAt = hours ? new Date(Date.now() + hours * 3600000) : null;
+    await CasinoBan.findOneAndUpdate({ userId, guildId: GUILD_ID }, { userId, guildId: GUILD_ID, reason, bannedBy: req.session.user.id, bannedAt: new Date(), expiresAt }, { upsert: true });
+    if (global.io) global.io.emit('casino:ban', { userId });
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+app.delete('/api/admin/casino-ban/:userId', requireAuth, async (req, res) => {
+  if (!req.session.user.isAdmin) return res.status(403).json({ error: 'Sin permiso' });
+  try { await CasinoBan.deleteOne({ userId: req.params.userId, guildId: GUILD_ID }); res.json({ success: true }); }
+  catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+
 // ══════════════════════════════════════════════════════════════════════════
-//  APIs DEL CASINO PÚBLICO
+//  CASINO PUBLIC APIs
 // ══════════════════════════════════════════════════════════════════════════
 app.get('/api/casino/public/stats', async (req, res) => {
   try {
@@ -570,16 +576,16 @@ app.get('/api/casino/public/leaderboard', async (req, res) => {
     const tab = req.query.tab || 'coins'; let items = [];
     if (tab === 'coins') {
       const agg = await UserCoins.find({ guildId: GUILD_ID }).sort({ coins: -1 }).limit(20).lean();
-      items = await Promise.all(agg.map(async (u, i) => { const user = await getUser(u.userId); return { rank: i+1, username: user.username, avatar: user.avatar, coins: u.coins }; }));
+      items = await Promise.all(agg.map(async (u, i) => { const user = await getUser(u.userId); return { rank: i+1, userId: u.userId, username: user.username, avatar: user.avatar, coins: u.coins }; }));
     } else if (tab === 'level') {
       const agg = await Level.find({ guildId: GUILD_ID }).sort({ level: -1, xp: -1 }).limit(20).lean();
-      items = await Promise.all(agg.map(async (l, i) => { const user = await getUser(l.userId); return { rank: i+1, username: user.username, avatar: user.avatar, level: l.level, xp: l.xp }; }));
+      items = await Promise.all(agg.map(async (l, i) => { const user = await getUser(l.userId); return { rank: i+1, userId: l.userId, username: user.username, avatar: user.avatar, level: l.level, xp: l.xp }; }));
     } else if (tab === 'casino') {
       const agg = await CasinoLog.aggregate([{ $match: { guildId: GUILD_ID } }, { $group: { _id: '$userId', totalProfit: { $sum: '$profit' }, count: { $sum: 1 } } }, { $sort: { totalProfit: -1 } }, { $limit: 20 }]);
-      items = await Promise.all(agg.map(async (u, i) => { const user = await getUser(u._id); return { rank: i+1, username: user.username, avatar: user.avatar, totalProfit: u.totalProfit }; }));
+      items = await Promise.all(agg.map(async (u, i) => { const user = await getUser(u._id); return { rank: i+1, userId: u._id, username: user.username, avatar: user.avatar, totalProfit: u.totalProfit }; }));
     } else if (tab === 'arms') {
       const agg = await Arm.aggregate([{ $match: { guildId: GUILD_ID } }, { $group: { _id: '$userId', totalValue: { $sum: '$sellPrice' }, total: { $sum: 1 } } }, { $sort: { totalValue: -1 } }, { $limit: 20 }]);
-      items = await Promise.all(agg.map(async (u, i) => { const user = await getUser(u._id); return { rank: i+1, username: user.username, avatar: user.avatar, totalValue: u.totalValue, total: u.total }; }));
+      items = await Promise.all(agg.map(async (u, i) => { const user = await getUser(u._id); return { rank: i+1, userId: u._id, username: user.username, avatar: user.avatar, totalValue: u.totalValue, total: u.total }; }));
     }
     res.json({ items });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
@@ -606,25 +612,139 @@ app.get('/api/casino/me/full', async (req, res) => {
       Achievements.findOne({ userId, guildId: GUILD_ID }).lean(),
       Arm.find({ userId, guildId: GUILD_ID }).sort({ obtainedAt: -1 }).limit(30).lean(),
     ]);
-    res.json({
-      coins: coins?.coins || 0, totalEarned: coins?.totalEarned || 0,
-      activeBgId: coins?.activeBgId || null, ownedBackgrounds: coins?.ownedBackgrounds || [],
-      level: level?.level || 0, xp: level?.xp || 0, streak: level?.streak || 0,
-      casinoWins: ach?.casino_wins || 0, registered: !!coins, arms: arms || [],
-    });
+    res.json({ coins: coins?.coins || 0, totalEarned: coins?.totalEarned || 0, activeBgId: coins?.activeBgId || null, ownedBackgrounds: coins?.ownedBackgrounds || [], level: level?.level || 0, xp: level?.xp || 0, streak: level?.streak || 0, casinoWins: ach?.casino_wins || 0, registered: !!coins, arms: arms || [] });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  CASINO PLAY — juegos principales + NUEVOS (hilo, baccarat, plinko, videopoker)
-//  Las monedas se modifican en UserCoins (mismo modelo que el bot)
-//  El bot verá el cambio inmediatamente al consultar la DB
-// ══════════════════════════════════════════════════════════════════════════
+app.get('/api/casino/user/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const [user, coins, level, ach, arms] = await Promise.all([
+      getUser(userId),
+      UserCoins.findOne({ userId, guildId: GUILD_ID }).lean(),
+      Level.findOne({ userId, guildId: GUILD_ID }).lean(),
+      Achievements.findOne({ userId, guildId: GUILD_ID }).lean(),
+      Arm.find({ userId, guildId: GUILD_ID }).sort({ obtainedAt: -1 }).limit(6).lean(),
+    ]);
+    if (!coins) return res.status(404).json({ error: 'Usuario no registrado' });
+    res.json({ userId, username: user.username, avatar: user.avatar, coins: coins.coins, totalEarned: coins.totalEarned, level: level?.level || 0, xp: level?.xp || 0, streak: level?.streak || 0, casinoWins: ach?.casino_wins || 0, badges: ach?.badges?.length || 0, arms: arms || [] });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
 
-// Juegos manejados por handleExtendedPlay
+// ── Misiones diarias ───────────────────────────────────────────────────────
+app.get('/api/casino/daily-missions', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const now = new Date();
+    const week = Math.ceil(((now - new Date(now.getFullYear(), 0, 1)) / 86400000 + new Date(now.getFullYear(), 0, 1).getDay() + 1) / 7);
+    let progress = await MissionProgress.findOne({ userId, guildId: GUILD_ID, year: now.getFullYear(), week }).lean();
+    if (!progress) {
+      const missions = [
+        { id: 'bet_500', name: 'Apostador novato', target: 500, progress: 0, completed: false, reward: 150 },
+        { id: 'win_3', name: 'Racha ganadora', target: 3, progress: 0, completed: false, reward: 200 },
+        { id: 'play_slots', name: 'Fanático de slots', target: 5, progress: 0, completed: false, reward: 100 },
+        { id: 'bet_blackjack', name: 'Maestro del 21', target: 3, progress: 0, completed: false, reward: 250 },
+        { id: 'big_win', name: 'Gran victoria', target: 1000, progress: 0, completed: false, reward: 500 },
+      ];
+      return res.json({ missions, week, claimed: false, totalReward: missions.reduce((s, m) => s + m.reward, 0) });
+    }
+    res.json({ missions: progress.missions, week, claimed: progress.claimed, totalReward: (progress.missions || []).reduce((s, m) => s + (m.reward || 0), 0) });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+// ── Historial personal ────────────────────────────────────────────────────
+app.get('/api/casino/history', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id, filter = req.query.filter || 'all';
+    const query = { userId, guildId: GUILD_ID };
+    if (filter === 'win') query.result = 'win';
+    if (filter === 'loss') query.result = 'loss';
+    const logs = await CasinoLog.find(query).sort({ timestamp: -1 }).limit(50).lean();
+    res.json({ logs });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+app.get('/api/casino/my-stats', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const [logs, ach] = await Promise.all([CasinoLog.find({ userId, guildId: GUILD_ID }).sort({ timestamp: -1 }).limit(500).lean(), Achievements.findOne({ userId, guildId: GUILD_ID }).lean()]);
+    const totalWins = logs.filter(l => l.profit > 0).length;
+    const totalBet = logs.reduce((s, l) => s + (l.bet || 0), 0);
+    const netProfit = logs.reduce((s, l) => s + (l.profit || 0), 0);
+    const bestWin = Math.max(0, ...logs.map(l => l.profit || 0));
+    const maxBet = Math.max(0, ...logs.map(l => l.bet || 0));
+    const byGame = {};
+    logs.forEach(l => { if (!byGame[l.game]) byGame[l.game] = { plays: 0, wins: 0, net: 0 }; byGame[l.game].plays++; if (l.profit > 0) byGame[l.game].wins++; byGame[l.game].net += l.profit || 0; });
+    let currentStreak = 0;
+    const recent = logs.slice(0, 20);
+    if (recent.length) { const dir = recent[0].profit > 0 ? 1 : -1; for (const l of recent) { if ((l.profit > 0 ? 1 : -1) === dir) currentStreak++; else break; } if (dir < 0) currentStreak = 0; }
+    res.json({ totalWins, totalBet, netProfit, bestWin, maxBet, byGame, currentStreak, bestStreak: ach?.win_streak || 0 });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+// ── Banco ─────────────────────────────────────────────────────────────────
+app.get('/api/casino/bank/info', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    let bank = await BankAccount.findOne({ userId, guildId: GUILD_ID }).lean();
+    if (!bank) bank = { balance: 0, lastInterest: null };
+    res.json({ balance: bank.balance, lastInterest: bank.lastInterest });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+app.get('/api/casino/bank/history', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const bank = await BankAccount.findOne({ userId, guildId: GUILD_ID }).lean();
+    res.json({ history: (bank?.history || []).slice(-20).reverse() });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+app.post('/api/casino/bank', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id, { action, amount } = req.body;
+    if (!amount || amount < 1) return res.status(400).json({ error: 'Cantidad inválida' });
+    const wallet = await UserCoins.findOne({ userId, guildId: GUILD_ID });
+    if (!wallet) return res.status(403).json({ error: 'Usa /registrarse primero' });
+    let bank = await BankAccount.findOne({ userId, guildId: GUILD_ID });
+    if (!bank) bank = new BankAccount({ userId, guildId: GUILD_ID, balance: 0, history: [] });
+    if (bank.lastInterest) {
+      const hoursSince = (Date.now() - new Date(bank.lastInterest).getTime()) / 3600000;
+      if (hoursSince >= 24 && bank.balance > 0) {
+        const interest = Math.floor(bank.balance * 0.02);
+        bank.balance += interest; bank.lastInterest = new Date();
+        bank.history.push({ type: 'interest', amount: interest, note: 'Interés diario 2%' });
+        await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { totalEarned: interest } });
+      }
+    }
+    if (action === 'deposit') {
+      if (wallet.coins < amount) return res.status(400).json({ error: 'Saldo insuficiente en billetera' });
+      const updated = await applyCoins(userId, -amount, false);
+      bank.balance += amount; if (!bank.lastInterest) bank.lastInterest = new Date();
+      bank.history.push({ type: 'deposit', amount, note: 'Depósito de billetera' });
+      await bank.save(); res.json({ walletBalance: updated.coins, bankBalance: bank.balance });
+    } else if (action === 'withdraw') {
+      if (bank.balance < amount) return res.status(400).json({ error: 'Saldo insuficiente en banco' });
+      bank.balance -= amount; bank.history.push({ type: 'withdraw', amount: -amount, note: 'Retiro a billetera' });
+      await bank.save(); const updated = await applyCoins(userId, amount, false);
+      res.json({ walletBalance: updated.coins, bankBalance: bank.balance });
+    } else { res.status(400).json({ error: 'Acción inválida' }); }
+  } catch (e) { console.error('[bank]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+
+// ══════════════════════════════════════════════════════════════════════════
+//  CASINO PLAY — juegos
+// ══════════════════════════════════════════════════════════════════════════
 const EXT_GAMES = ['carreras', 'loteria', 'minas', 'hilo', 'baccarat', 'plinko', 'videopoker'];
 
-app.post('/api/casino/play', async (req, res) => {
+app.post('/api/casino/play', checkCasinoBan, casinoRateLimit, async (req, res) => {
   if (EXT_GAMES.includes(req.body?.game)) return handleExtendedPlay(req, res);
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -634,42 +754,35 @@ app.post('/api/casino/play', async (req, res) => {
     const userCoins = await UserCoins.findOne({ userId, guildId: GUILD_ID });
     if (!userCoins) return res.status(403).json({ error: 'Usa /registrarse en Discord primero' });
     if (userCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
-
     let won = false, winProfit = 0, number = null, slotsReels = null, multiplier = 1;
-
     if (game === 'ruleta') {
       number = Math.floor(Math.random() * 37);
-      const reds   = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+      const reds = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
       const blacks = new Set([2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35]);
       const checks = { rojo: reds.has(number), negro: blacks.has(number), par: number !== 0 && number % 2 === 0, impar: number !== 0 && number % 2 !== 0, bajo: number >= 1 && number <= 18, alto: number >= 19 && number <= 36, docena1: number >= 1 && number <= 12, docena2: number >= 13 && number <= 24, docena3: number >= 25 && number <= 36, verde: number === 0 };
-      const mults  = { rojo:2, negro:2, par:2, impar:2, bajo:2, alto:2, docena1:3, docena2:3, docena3:3, verde:35 };
+      const mults = { rojo:2, negro:2, par:2, impar:2, bajo:2, alto:2, docena1:3, docena2:3, docena3:3, verde:35 };
       won = checks[type] || false; multiplier = mults[type] || 2;
       winProfit = won ? bet * (multiplier - 1) : 0;
-
     } else if (game === 'slots') {
       const syms = ['🍒','7️⃣','💰','🎰','⭐','🔔'];
       const s1 = Math.floor(Math.random() * 6), s2 = Math.floor(Math.random() * 6), s3 = Math.floor(Math.random() * 6);
       slotsReels = [syms[s1], syms[s2], syms[s3]];
-      if (s1===s2 && s2===s3) { won=true; multiplier=10; }
-      else if (s1===s2 || s2===s3 || s1===s3) { won=true; multiplier=2; }
+      if (s1===s2 && s2===s3) { won=true; multiplier=10; } else if (s1===s2 || s2===s3 || s1===s3) { won=true; multiplier=2; }
       winProfit = won ? Math.floor(bet*(multiplier-1)) : 0;
-
     } else if (game === 'blackjack') {
       if (!['win','blackjack','push','lose','bust'].includes(result)) return res.status(400).json({ error: 'Resultado inválido' });
       won = ['win','blackjack','push'].includes(result);
       winProfit = result==='blackjack' ? Math.floor(bet*1.5) : result==='win' ? bet : 0;
       multiplier = result==='blackjack' ? 2.5 : 2;
     }
-
-    const delta   = won ? winProfit : -bet;
+    const delta = won ? winProfit : -bet;
     const updated = await applyCoins(userId, delta, won);
     await logAndAchieve(userId, game, bet, won, delta);
     res.json({ won, number, multiplier, reels: slotsReels, newBalance: updated.coins, profit: delta });
   } catch (e) { console.error('[casino/play]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-// ── CRASH ─────────────────────────────────────────────────────────────────
-app.post('/api/casino/crash/start', async (req, res) => {
+app.post('/api/casino/crash/start', checkCasinoBan, casinoRateLimit, async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id, { bet } = req.body;
@@ -677,8 +790,7 @@ app.post('/api/casino/crash/start', async (req, res) => {
     const userCoins = await UserCoins.findOne({ userId, guildId: GUILD_ID });
     if (!userCoins) return res.status(403).json({ error: 'Usa /registrarse en Discord primero' });
     if (userCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
-    const r = Math.random();
-    let crashAt;
+    const r = Math.random(); let crashAt;
     if      (r < 0.50) crashAt = 1 + Math.random() * 0.8;
     else if (r < 0.75) crashAt = 1.8 + Math.random() * 1.2;
     else if (r < 0.90) crashAt = 3 + Math.random() * 4;
@@ -699,14 +811,13 @@ app.post('/api/casino/crash/cashout', async (req, res) => {
     if (Date.now() - game.ts > 120000) return res.status(400).json({ error: 'Tiempo expirado' });
     req.session.crashGame = null;
     const winProfit = Math.floor(bet * mult) - bet;
-    const updated   = await applyCoins(userId, winProfit, true);
+    const updated = await applyCoins(userId, winProfit, true);
     await logAndAchieve(userId, 'crash', bet, true, winProfit);
     res.json({ won: true, newBalance: updated.coins, profit: winProfit });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ── SHOP BUY ──────────────────────────────────────────────────────────────
-app.post('/api/casino/buy', async (req, res) => {
+app.post('/api/casino/buy', checkCasinoBan, async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id, { itemId } = req.body;
@@ -720,23 +831,16 @@ app.post('/api/casino/buy', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  handleExtendedPlay — carreras, lotería, minas + NUEVOS JUEGOS
-//  Todos modifican UserCoins → el bot de Discord los verá en tiempo real
-// ══════════════════════════════════════════════════════════════════════════
+// ── Extended games helpers ─────────────────────────────────────────────────
 const HORSES_DATA = { A:{baseSpeed:.35,variance:.40}, B:{baseSpeed:.38,variance:.30}, C:{baseSpeed:.32,variance:.50}, D:{baseSpeed:.40,variance:.20}, E:{baseSpeed:.30,variance:.60} };
-
-// Helpers para juegos del servidor
 function bacCV(rank){ if(['J','Q','K','10'].includes(rank)) return 0; if(rank==='A') return 1; return parseInt(rank); }
 function bacTotal(hand){ return hand.reduce((s,c)=>s+bacCV(c.rank),0)%10; }
 function bacSimulate(){
-  const RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
-  const SUITS=['♠','♥','♦','♣'];
+  const RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'], SUITS=['♠','♥','♦','♣'];
   const deck=RANKS.flatMap(r=>SUITS.map(s=>({rank:r,suit:s}))).sort(()=>Math.random()-.5);
   let pi=0; const deal=()=>deck[pi++];
   let pH=[deal(),deal()], bH=[deal(),deal()];
-  const pT=bacTotal(pH), bT=bacTotal(bH);
-  let pD=false, bD=false;
+  const pT=bacTotal(pH), bT=bacTotal(bH); let pD=false, bD=false;
   if(pT<=5) pD=true;
   if(pD){ const c3=deal(); pH.push(c3); const pv3=bacCV(c3.rank); if(bT<=2)bD=true; else if(bT===3&&pv3!==8)bD=true; else if(bT===4&&[2,3,4,5,6,7].includes(pv3))bD=true; else if(bT===5&&[4,5,6,7].includes(pv3))bD=true; else if(bT===6&&[6,7].includes(pv3))bD=true; }
   else{ if(bT<=5)bD=true; }
@@ -744,116 +848,60 @@ function bacSimulate(){
   const pF=bacTotal(pH), bF=bacTotal(bH);
   return pF>bF?'player':bF>pF?'banker':'tie';
 }
-
 const PLINKO_MULTS_SRV = { low:[1.5,1.2,1.1,1.0,0.5,1.0,1.1,1.2,1.5], medium:[3.0,1.5,1.2,0.8,0.3,0.8,1.2,1.5,3.0], high:[100,9,4,2,0.2,2,4,9,100] };
-function plinkoSimulate(risk){
-  let col=0; for(let i=0;i<8;i++) col+=Math.random()<.5?1:0; col=Math.min(col,8);
-  return{ col, mult:(PLINKO_MULTS_SRV[risk]||PLINKO_MULTS_SRV.low)[col] };
-}
+function plinkoSimulate(risk){ let col=0; for(let i=0;i<8;i++) col+=Math.random()<.5?1:0; col=Math.min(col,8); return{ col, mult:(PLINKO_MULTS_SRV[risk]||PLINKO_MULTS_SRV.low)[col] }; }
 
 async function handleExtendedPlay(req, res) {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id;
+    if (!checkRateLimit(userId)) return res.status(429).json({ error: 'Demasiadas apuestas. Espera un momento.' });
+    const ban = await CasinoBan.findOne({ userId, guildId: GUILD_ID, $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }] }).lean();
+    if (ban) return res.status(403).json({ error: `Baneado del casino: ${ban.reason}` });
     const { game, bet, horse, winner, result, profit: clientProfit, myBet, risk } = req.body;
     if (!bet || bet < 1) return res.status(400).json({ error: 'Apuesta inválida' });
     const userCoins = await UserCoins.findOne({ userId, guildId: GUILD_ID });
     if (!userCoins) return res.status(403).json({ error: 'Usa /registrarse en Discord primero' });
     if (userCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
-
     let won = false, delta = -bet;
-
-    // ── Juegos originales ──────────────────────────────────────────────────
     if (game === 'carreras') {
-      const pos = Object.fromEntries(Object.keys(HORSES_DATA).map(k => [k, 0]));
-      let serverWinner = null;
-      for (let t = 0; t < 200 && !serverWinner; t++) {
-        for (const [id, h] of Object.entries(HORSES_DATA)) {
-          let adv = 0;
-          if (Math.random() < h.baseSpeed + (Math.random()-.5)*h.variance) adv = 1;
-          if (Math.random() < .05) adv++;
-          pos[id] = Math.min(20, pos[id] + adv);
-        }
-        const fin = Object.entries(pos).filter(([,v]) => v >= 20);
-        if (fin.length) serverWinner = fin[0][0];
-      }
+      const pos = Object.fromEntries(Object.keys(HORSES_DATA).map(k => [k, 0])); let serverWinner = null;
+      for (let t = 0; t < 200 && !serverWinner; t++) { for (const [id, h] of Object.entries(HORSES_DATA)) { let adv = 0; if (Math.random() < h.baseSpeed + (Math.random()-.5)*h.variance) adv = 1; if (Math.random() < .05) adv++; pos[id] = Math.min(20, pos[id] + adv); } const fin = Object.entries(pos).filter(([,v]) => v >= 20); if (fin.length) serverWinner = fin[0][0]; }
       if (!serverWinner) serverWinner = winner;
-      won = serverWinner === horse;
-      delta = won ? bet : -bet;
-
+      won = serverWinner === horse; delta = won ? bet : -bet;
     } else if (game === 'loteria') {
       const LOT = ['🍒','⭐','💎','🍀','🔔','🎯','🎰','💰','🌙'];
       const grid = Array.from({length:9}, () => LOT[Math.floor(Math.random()*LOT.length)]);
       const counts = {}; for (const s of grid) counts[s] = (counts[s]||0)+1;
       const max = Math.max(...Object.values(counts));
       const mult = max>=7?3.0:max>=5?2.0:max>=4?1.5:max>=3?1.0:0;
-      won = mult > 0;
-      delta = won ? Math.floor(bet * mult) - bet : -bet;
-
+      won = mult > 0; delta = won ? Math.floor(bet * mult) - bet : -bet;
     } else if (game === 'minas') {
-      if (result === 'cashout' && clientProfit > 0) {
-        won = true;
-        delta = Math.min(clientProfit, bet * 20); // techo anti-cheat: máx 20×
-      } else {
-        won = false; delta = -bet;
-      }
-
-    // ── NUEVOS JUEGOS ──────────────────────────────────────────────────────
-    // Hi-Lo: el cliente controla la lógica de cartas (son aleatorias en JS)
-    // El servidor valida que el profit no exceda un límite razonable
+      if (result === 'cashout' && clientProfit > 0) { won = true; delta = Math.min(clientProfit, bet * 20); } else { won = false; delta = -bet; }
     } else if (game === 'hilo') {
-      if (result === 'cashout' && clientProfit > 0) {
-        won = true;
-        delta = Math.min(clientProfit, bet * 500); // techo: máx 500× (racha de ~9)
-      } else {
-        won = false; delta = -bet;
-      }
-
-    // Baccarat: el servidor re-simula las cartas independientemente
-    // Garantiza que el resultado no se puede falsificar desde el cliente
+      if (result === 'cashout' && clientProfit > 0) { won = true; delta = Math.min(clientProfit, bet * 500); } else { won = false; delta = -bet; }
     } else if (game === 'baccarat') {
-      const serverOutcome = bacSimulate();
-      const betTarget = myBet || 'player';
+      const serverOutcome = bacSimulate(), betTarget = myBet || 'player';
       won = serverOutcome === betTarget;
       const multMap = { player: 2, banker: 1.95, tie: 9 };
-      const m = multMap[betTarget] || 2;
-      delta = won ? Math.floor(bet * (m - 1)) : -bet;
-
-    // Plinko: el servidor re-simula el camino de la bola
-    // El cliente solo ve la animación; el resultado real viene del servidor
+      delta = won ? Math.floor(bet * (multMap[betTarget] || 2 - 1)) : -bet;
     } else if (game === 'plinko') {
-      const riskLevel = risk || 'low';
-      const { mult: serverMult } = plinkoSimulate(riskLevel);
+      const { mult: serverMult } = plinkoSimulate(risk || 'low');
       const serverProfit = Math.floor(bet * serverMult) - bet;
-      won = serverProfit > 0;
-      delta = serverProfit;
-
-    // Video Poker: el servidor valida el profit contra el máximo posible (800×)
+      won = serverProfit > 0; delta = serverProfit;
     } else if (game === 'videopoker') {
-      if (result === 'win' && clientProfit > 0) {
-        won = true;
-        delta = Math.min(clientProfit, bet * 800); // techo: Royal Flush 800×
-      } else {
-        won = false; delta = -bet;
-      }
-
-    } else {
-      return res.status(400).json({ error: 'Juego no reconocido' });
-    }
-
-    // Aplicar cambio de monedas en DB (compartida con el bot)
+      if (result === 'win' && clientProfit > 0) { won = true; delta = Math.min(clientProfit, bet * 800); } else { won = false; delta = -bet; }
+    } else { return res.status(400).json({ error: 'Juego no reconocido' }); }
     const updated = await applyCoins(userId, delta, won);
     await logAndAchieve(userId, game, bet, won, delta);
     res.json({ won, profit: delta, newBalance: updated.coins });
   } catch (e) { console.error('[casino/extended]', e); res.status(500).json({ error: 'Error' }); }
 }
 
-// ── BATALLA ───────────────────────────────────────────────────────────────
-app.post('/api/casino/battle', async (req, res) => {
+app.post('/api/casino/battle', checkCasinoBan, async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
-    const userId = req.session.user.id;
-    const { bet, opponentId } = req.body;
+    const userId = req.session.user.id, { bet, opponentId } = req.body;
     if (!bet || bet < 100) return res.status(400).json({ error: 'Mínimo 100' });
     if (!opponentId || opponentId === userId) return res.status(400).json({ error: 'Rival inválido' });
     const [myCoins, opCoins] = await Promise.all([UserCoins.findOne({ userId, guildId: GUILD_ID }), UserCoins.findOne({ userId: opponentId, guildId: GUILD_ID })]);
@@ -875,34 +923,17 @@ app.post('/api/casino/battle', async (req, res) => {
         global.io.emit('coins:update', { userId: opponentId, coins: opCoins.coins });
         const u = await getUser(userId);
         global.io.emit('casino:bet', { userId, username: u.username, game: 'batalla', bet, profit: iWon?bet:-bet });
+        // Notificar al rival
+        global.io.emit('battle:challenge', { challengerId: userId, challengerName: u.username, opponentId, bet, myRoll, opponentRoll: opRoll, iWon });
       }
     }
     res.json({ won: iWon, tie, myRoll, opponentRoll: opRoll, newBalance: myCoins.coins });
   } catch (e) { console.error('[battle]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-// ── TRIVIA ────────────────────────────────────────────────────────────────
+// ── Trivia ─────────────────────────────────────────────────────────────────
 const TRIVIA_POOL = [
-  {q:'¿Cuántos continentes hay?',o:['5','6','7','8'],c:2,d:'easy'},
-  {q:'Capital de Francia',o:['Lyon','París','Roma','Berlín'],c:1,d:'easy'},
-  {q:'Planeta más grande del sistema solar',o:['Saturno','Neptuno','Júpiter','Urano'],c:2,d:'medium'},
-  {q:'¿Cuántos huesos tiene el cuerpo humano adulto?',o:['186','206','226','246'],c:1,d:'medium'},
-  {q:'¿Quién pintó La Mona Lisa?',o:['Van Gogh','Picasso','Da Vinci','Monet'],c:2,d:'hard'},
-  {q:'¿En qué año llegó el hombre a la Luna?',o:['1965','1967','1969','1971'],c:2,d:'medium'},
-  {q:'¿Cuál es el elemento más abundante en el universo?',o:['Oxígeno','Helio','Hidrógeno','Carbono'],c:2,d:'hard'},
-  {q:'¿Cuántos bytes tiene un kilobyte?',o:['100','512','1000','1024'],c:3,d:'medium'},
-  {q:'¿Quién escribió Don Quijote?',o:['Cervantes','Lope de Vega','Quevedo','Góngora'],c:0,d:'hard'},
-  {q:'¿Cuántos colores tiene el arcoíris?',o:['5','6','7','8'],c:2,d:'easy'},
-  {q:'Capital de Japón',o:['Osaka','Kioto','Tokio','Hiroshima'],c:2,d:'easy'},
-  {q:'Fórmula química del agua',o:['H2O','CO2','O2','H2O2'],c:0,d:'medium'},
-  {q:'¿Quién formuló la relatividad?',o:['Newton','Tesla','Einstein','Hawking'],c:2,d:'hard'},
-  {q:'¿Cuántos días tiene febrero en año normal?',o:['28','29','30','31'],c:0,d:'easy'},
-  {q:'Capital de Perú',o:['Cusco','Lima','Arequipa','Trujillo'],c:1,d:'easy'},
-  {q:'¿Cuántos lados tiene un hexágono?',o:['4','5','6','8'],c:2,d:'easy'},
-  {q:'¿En qué año se fundó Google?',o:['1996','1998','2000','2002'],c:1,d:'medium'},
-  {q:'Metal más abundante en la corteza terrestre',o:['Hierro','Aluminio','Cobre','Oro'],c:1,d:'hard'},
-  {q:'¿Quién escribió 1984?',o:['Orwell','Huxley','Bradbury','Wells'],c:0,d:'hard'},
-  {q:'Capital de Argentina',o:['Córdoba','Rosario','Buenos Aires','Mendoza'],c:2,d:'easy'},
+  {q:'¿Cuántos continentes hay?',o:['5','6','7','8'],c:2,d:'easy'},{q:'Capital de Francia',o:['Lyon','París','Roma','Berlín'],c:1,d:'easy'},{q:'Planeta más grande del sistema solar',o:['Saturno','Neptuno','Júpiter','Urano'],c:2,d:'medium'},{q:'¿Cuántos huesos tiene el cuerpo humano adulto?',o:['186','206','226','246'],c:1,d:'medium'},{q:'¿Quién pintó La Mona Lisa?',o:['Van Gogh','Picasso','Da Vinci','Monet'],c:2,d:'hard'},{q:'¿En qué año llegó el hombre a la Luna?',o:['1965','1967','1969','1971'],c:2,d:'medium'},{q:'¿Cuál es el elemento más abundante en el universo?',o:['Oxígeno','Helio','Hidrógeno','Carbono'],c:2,d:'hard'},{q:'¿Cuántos bytes tiene un kilobyte?',o:['100','512','1000','1024'],c:3,d:'medium'},{q:'¿Quién escribió Don Quijote?',o:['Cervantes','Lope de Vega','Quevedo','Góngora'],c:0,d:'hard'},{q:'¿Cuántos colores tiene el arcoíris?',o:['5','6','7','8'],c:2,d:'easy'},{q:'Capital de Japón',o:['Osaka','Kioto','Tokio','Hiroshima'],c:2,d:'easy'},{q:'Fórmula química del agua',o:['H2O','CO2','O2','H2O2'],c:0,d:'medium'},{q:'¿Quién formuló la relatividad?',o:['Newton','Tesla','Einstein','Hawking'],c:2,d:'hard'},{q:'¿Cuántos días tiene febrero en año normal?',o:['28','29','30','31'],c:0,d:'easy'},{q:'Capital de Perú',o:['Cusco','Lima','Arequipa','Trujillo'],c:1,d:'easy'},{q:'¿Cuántos lados tiene un hexágono?',o:['4','5','6','8'],c:2,d:'easy'},{q:'¿En qué año se fundó Google?',o:['1996','1998','2000','2002'],c:1,d:'medium'},{q:'Metal más abundante en la corteza terrestre',o:['Hierro','Aluminio','Cobre','Oro'],c:1,d:'hard'},{q:'¿Quién escribió 1984?',o:['Orwell','Huxley','Bradbury','Wells'],c:0,d:'hard'},{q:'Capital de Argentina',o:['Córdoba','Rosario','Buenos Aires','Mendoza'],c:2,d:'easy'},
 ];
 const TRIVIA_REWARDS = { easy: 10, medium: 20, hard: 35 };
 
@@ -914,10 +945,7 @@ app.get('/api/casino/trivia/questions', async (req, res) => {
     if (!coins) return res.status(403).json({ error: 'Usa /registrarse primero' });
     const pick = (d, n) => TRIVIA_POOL.filter(q => q.d === d).sort(() => Math.random()-.5).slice(0, n);
     const questions = [...pick('easy',2), ...pick('medium',2), ...pick('hard',2)].sort(() => Math.random()-.5).map(q => ({ q: q.q, o: q.o, d: q.d }));
-    req.session.triviaSession = {
-      questions: questions.map(qq => { const orig = TRIVIA_POOL.find(p => p.q === qq.q); return { ...qq, c: orig?.c ?? 0 }; }),
-      answered: [], ts: Date.now(),
-    };
+    req.session.triviaSession = { questions: questions.map(qq => { const orig = TRIVIA_POOL.find(p => p.q === qq.q); return { ...qq, c: orig?.c ?? 0 }; }), answered: [], ts: Date.now() };
     res.json({ questions });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
@@ -931,19 +959,15 @@ app.post('/api/casino/trivia/answer', async (req, res) => {
     ts.answered.push(idx);
     const q = ts.questions[idx], correct = answer === q.c, reward = correct ? TRIVIA_REWARDS[q.d] || 10 : 0;
     let newBalance = 0;
-    if (correct && reward > 0) {
-      const updated = await applyCoins(userId, reward, true);
-      newBalance = updated?.coins || 0;
-    } else {
-      const uc = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean();
-      newBalance = uc?.coins || 0;
-    }
+    if (correct && reward > 0) { const updated = await applyCoins(userId, reward, true); newBalance = updated?.coins || 0; }
+    else { const uc = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean(); newBalance = uc?.coins || 0; }
     await TriviaProgress.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { totalWins: correct?1:0, totalFails: correct?0:1 } }, { upsert: true });
     res.json({ correct, correctAnswer: q.c, reward, newBalance });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ── CAJAS ─────────────────────────────────────────────────────────────────
+
+// ── Cajas ─────────────────────────────────────────────────────────────────
 const CASES_CONFIG = {
   iniciacion:  { price: 800,   rarities: ['consumer','industrial','milspec'],   weights: [7992,1598,320], specialChance: 0 },
   clasificada: { price: 2000,  rarities: ['industrial','milspec','restricted'], weights: [1598,320,64],   specialChance: 0 },
@@ -961,8 +985,8 @@ const RARITY_ITEMS = {
   special:    [{id:'knife_karambit_doppler',name:'Karambit',skin:'Doppler Fase 2',bp:1200000},{id:'knife_butterfly_tiger',name:'Butterfly Knife',skin:'Tiger Tooth',bp:1000000},{id:'knife_m9_fade',name:'M9 Bayoneta',skin:'Fade',bp:950000},{id:'gloves_sport_pandeo',name:'Sport Gloves',skin:'Pandeo',bp:1500000},{id:'knife_bayonet_slaughter',name:'Bayoneta',skin:'Slaughter',bp:800000}],
 };
 const WEARS_DATA = [{name:'Factory New',tag:'FN',mult:1.0},{name:'Minimal Wear',tag:'MW',mult:.80},{name:'Field-Tested',tag:'FT',mult:.60},{name:'Well-Worn',tag:'WW',mult:.40},{name:'Battle-Scarred',tag:'BS',mult:.20}];
-const WEAR_W     = [10,24,33,24,9];
-const RARITY_META= {consumer:{color:0x9ea3b0,sellMult:.55},industrial:{color:0x5e98d9,sellMult:.55},milspec:{color:0x4b69ff,sellMult:.55},restricted:{color:0x8847ff,sellMult:.60},classified:{color:0xd32ce6,sellMult:.60},covert:{color:0xeb4b4b,sellMult:.65},special:{color:0xffd700,sellMult:.70}};
+const WEAR_W = [10,24,33,24,9];
+const RARITY_META = {consumer:{color:0x9ea3b0,sellMult:.55},industrial:{color:0x5e98d9,sellMult:.55},milspec:{color:0x4b69ff,sellMult:.55},restricted:{color:0x8847ff,sellMult:.60},classified:{color:0xd32ce6,sellMult:.60},covert:{color:0xeb4b4b,sellMult:.65},special:{color:0xffd700,sellMult:.70}};
 
 function rollCase(caseId) {
   const box = CASES_CONFIG[caseId]; if (!box) return null;
@@ -981,21 +1005,16 @@ function rollCase(caseId) {
   return { itemId: item.id, name: item.name, skin: item.skin, type: 'rifle', emoji: '🔫', rarity, rarityName: rarity, rarityColor: rm.color, wear: wear.name, wearTag: wear.tag, basePrice: item.bp, sellPrice: Math.floor(item.bp*wear.mult*rm.sellMult), caseId };
 }
 
-app.post('/api/casino/case/open', async (req, res) => {
+app.post('/api/casino/case/open', checkCasinoBan, async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id, { caseId } = req.body;
-    const box = CASES_CONFIG[caseId];
-    if (!box) return res.status(400).json({ error: 'Caja inválida' });
+    const box = CASES_CONFIG[caseId]; if (!box) return res.status(400).json({ error: 'Caja inválida' });
     const uc = await UserCoins.findOne({ userId, guildId: GUILD_ID });
     if (!uc) return res.status(403).json({ error: 'Usa /registrarse primero' });
     if (uc.coins < box.price) return res.status(400).json({ error: 'Saldo insuficiente' });
-    const drop = rollCase(caseId);
-    if (!drop) return res.status(500).json({ error: 'Error generando drop' });
-    await Promise.all([
-      applyCoins(userId, -box.price, false),
-      Arm.create({ userId, guildId: GUILD_ID, ...drop, obtainedAt: new Date() }),
-    ]);
+    const drop = rollCase(caseId); if (!drop) return res.status(500).json({ error: 'Error generando drop' });
+    await Promise.all([applyCoins(userId, -box.price, false), Arm.create({ userId, guildId: GUILD_ID, ...drop, obtainedAt: new Date() })]);
     const updated = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean();
     res.json({ drop, newBalance: updated.coins });
   } catch (e) { console.error('[case]', e); res.status(500).json({ error: 'Error' }); }
@@ -1003,13 +1022,11 @@ app.post('/api/casino/case/open', async (req, res) => {
 
 app.get('/api/casino/inventory', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
-  try {
-    const arms = await Arm.find({ userId: req.session.user.id, guildId: GUILD_ID }).sort({ obtainedAt: -1 }).lean();
-    res.json({ arms });
-  } catch (e) { res.status(500).json({ error: 'Error' }); }
+  try { const arms = await Arm.find({ userId: req.session.user.id, guildId: GUILD_ID }).sort({ obtainedAt: -1 }).lean(); res.json({ arms }); }
+  catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-app.post('/api/casino/market/buy', async (req, res) => {
+app.post('/api/casino/market/buy', checkCasinoBan, async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id, { listingId } = req.body;
@@ -1031,163 +1048,34 @@ app.post('/api/casino/market/buy', async (req, res) => {
   } catch (e) { console.error('[market/buy]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-app.get('/api/admin/purchases', requireAuth, async (req, res) => {
-  try {
-    const page = parseInt(req.query.page)||1, limit = 15;
-    const [agg, count] = await Promise.all([
-      ShopPurchase.find({ guildId: GUILD_ID }).sort({ purchasedAt: -1 }).skip((page-1)*limit).limit(limit).lean(),
-      ShopPurchase.countDocuments({ guildId: GUILD_ID }),
-    ]);
-    const enriched = await Promise.all(agg.map(async p => { const u = await getUser(p.userId); return { ...p, username: u.username, avatar: u.avatar }; }));
-    res.json({ items: enriched, pages: Math.ceil(count / limit) });
-  } catch (e) { res.status(500).json({ error: 'Error' }); }
+// ══════════════════════════════════════════════════════════════════════════
+//  SOCKET + CHAT EN VIVO
+// ══════════════════════════════════════════════════════════════════════════
+const chatHistory = [];
+const CHAT_RATE = new Map();
+
+io.on('connection', socket => {
+  console.log(`[WS] Conectado: ${socket.id}`);
+  socket.emit('chat:history', chatHistory.slice(-30));
+  socket.on('chat:message', async (data) => {
+    const { userId, text } = data;
+    if (!text || text.length > 200 || !userId) return;
+    const now = Date.now(); const last = CHAT_RATE.get(userId) || 0;
+    if (now - last < 1500) return;
+    CHAT_RATE.set(userId, now);
+    const user = await getUser(userId);
+    const msg = { id: Date.now(), userId, username: user.username, avatar: user.avatar, text: text.trim().slice(0, 200), ts: new Date().toISOString() };
+    chatHistory.push(msg); if (chatHistory.length > 50) chatHistory.shift();
+    io.emit('chat:message', msg);
+  });
+  socket.on('disconnect', () => console.log(`[WS] Desconectado: ${socket.id}`));
 });
 
-// ── BankAccount Schema ────────────────────────────────────────────────────
-const BankAccount = mongoose.models.BankAccount || model('BankAccount', new Schema({
-  userId:       String,
-  guildId:      String,
-  balance:      { type: Number, default: 0 },
-  lastInterest: { type: Date, default: null },
-  history:      [{ type: { type: String }, amount: Number, note: String, timestamp: { type: Date, default: Date.now } }],
-}));
+global.emitUpdate = (event, data) => io.emit(event, data);
 
-// ══════════════════════════════════════════════════════════════════════════
-//  HISTORIAL PERSONAL
-// ══════════════════════════════════════════════════════════════════════════
-app.get('/api/casino/history', async (req, res) => {
-  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
-  try {
-    const userId = req.session.user.id;
-    const filter = req.query.filter || 'all';
-    const query = { userId, guildId: GUILD_ID };
-    if (filter === 'win')  query.result = 'win';
-    if (filter === 'loss') query.result = 'loss';
-    const logs = await CasinoLog.find(query).sort({ timestamp: -1 }).limit(50).lean();
-    res.json({ logs });
-  } catch (e) { res.status(500).json({ error: 'Error' }); }
-});
+setInterval(async () => { const stats = await getStats(); if (stats) io.emit('stats:update', stats); }, 5000);
 
-// ══════════════════════════════════════════════════════════════════════════
-//  ESTADÍSTICAS PERSONALES
-// ══════════════════════════════════════════════════════════════════════════
-app.get('/api/casino/my-stats', async (req, res) => {
-  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
-  try {
-    const userId = req.session.user.id;
-    const [logs, ach] = await Promise.all([
-      CasinoLog.find({ userId, guildId: GUILD_ID }).sort({ timestamp: -1 }).limit(500).lean(),
-      Achievements.findOne({ userId, guildId: GUILD_ID }).lean(),
-    ]);
-
-    const totalWins  = logs.filter(l => l.profit > 0).length;
-    const totalBet   = logs.reduce((s, l) => s + (l.bet || 0), 0);
-    const netProfit  = logs.reduce((s, l) => s + (l.profit || 0), 0);
-    const bestWin    = Math.max(0, ...logs.map(l => l.profit || 0));
-    const maxBet     = Math.max(0, ...logs.map(l => l.bet || 0));
-
-    // Stats por juego
-    const byGame = {};
-    logs.forEach(l => {
-      if (!byGame[l.game]) byGame[l.game] = { plays: 0, wins: 0, net: 0 };
-      byGame[l.game].plays++;
-      if (l.profit > 0) byGame[l.game].wins++;
-      byGame[l.game].net += l.profit || 0;
-    });
-
-    // Racha actual (últimas partidas consecutivas ganadas/perdidas)
-    let currentStreak = 0;
-    const recent = logs.slice(0, 20);
-    if (recent.length) {
-      const dir = recent[0].profit > 0 ? 1 : -1;
-      for (const l of recent) {
-        if ((l.profit > 0 ? 1 : -1) === dir) currentStreak++;
-        else break;
-      }
-      if (dir < 0) currentStreak = 0; // solo contar rachas ganadoras
-    }
-
-    res.json({
-      totalWins, totalBet, netProfit, bestWin, maxBet, byGame,
-      currentStreak,
-      bestStreak: ach?.win_streak || 0,
-    });
-  } catch (e) { res.status(500).json({ error: 'Error' }); }
-});
-
-// ══════════════════════════════════════════════════════════════════════════
-//  BANCO — depositar, retirar, interés diario 2%
-// ══════════════════════════════════════════════════════════════════════════
-app.get('/api/casino/bank/info', async (req, res) => {
-  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
-  try {
-    const userId = req.session.user.id;
-    let bank = await BankAccount.findOne({ userId, guildId: GUILD_ID }).lean();
-    if (!bank) bank = { balance: 0, lastInterest: null };
-    res.json({ balance: bank.balance, lastInterest: bank.lastInterest });
-  } catch (e) { res.status(500).json({ error: 'Error' }); }
-});
-
-app.get('/api/casino/bank/history', async (req, res) => {
-  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
-  try {
-    const userId = req.session.user.id;
-    const bank = await BankAccount.findOne({ userId, guildId: GUILD_ID }).lean();
-    const history = (bank?.history || []).slice(-20).reverse();
-    res.json({ history });
-  } catch (e) { res.status(500).json({ error: 'Error' }); }
-});
-
-app.post('/api/casino/bank', async (req, res) => {
-  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
-  try {
-    const userId = req.session.user.id;
-    const { action, amount } = req.body;
-    if (!amount || amount < 1) return res.status(400).json({ error: 'Cantidad inválida' });
-
-    const wallet = await UserCoins.findOne({ userId, guildId: GUILD_ID });
-    if (!wallet) return res.status(403).json({ error: 'Usa /registrarse primero' });
-
-    let bank = await BankAccount.findOne({ userId, guildId: GUILD_ID });
-    if (!bank) bank = new BankAccount({ userId, guildId: GUILD_ID, balance: 0, history: [] });
-
-    // Aplicar interés diario si corresponde
-    if (bank.lastInterest) {
-      const hoursSince = (Date.now() - new Date(bank.lastInterest).getTime()) / 3600000;
-      if (hoursSince >= 24 && bank.balance > 0) {
-        const interest = Math.floor(bank.balance * 0.02);
-        bank.balance += interest;
-        bank.lastInterest = new Date();
-        bank.history.push({ type: 'interest', amount: interest, note: 'Interés diario 2%' });
-        // También sumar a totalEarned
-        await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { totalEarned: interest } });
-      }
-    }
-
-    if (action === 'deposit') {
-      if (wallet.coins < amount) return res.status(400).json({ error: 'Saldo insuficiente en billetera' });
-      const updated = await applyCoins(userId, -amount, false);
-      bank.balance += amount;
-      if (!bank.lastInterest) bank.lastInterest = new Date();
-      bank.history.push({ type: 'deposit', amount, note: `Depósito de billetera` });
-      await bank.save();
-      res.json({ walletBalance: updated.coins, bankBalance: bank.balance });
-
-    } else if (action === 'withdraw') {
-      if (bank.balance < amount) return res.status(400).json({ error: 'Saldo insuficiente en banco' });
-      bank.balance -= amount;
-      bank.history.push({ type: 'withdraw', amount: -amount, note: 'Retiro a billetera' });
-      await bank.save();
-      const updated = await applyCoins(userId, amount, false);
-      res.json({ walletBalance: updated.coins, bankBalance: bank.balance });
-
-    } else {
-      res.status(400).json({ error: 'Acción inválida' });
-    }
-  } catch (e) { console.error('[bank]', e); res.status(500).json({ error: 'Error' }); }
-});
-
-// ── Cron: aplicar interés a todos los bancos cada 24h ─────────────────────
+// ── Banco cron ─────────────────────────────────────────────────────────────
 setInterval(async () => {
   try {
     const banks = await BankAccount.find({ balance: { $gt: 0 } });
@@ -1196,35 +1084,17 @@ setInterval(async () => {
       const hrs = (Date.now() - new Date(bank.lastInterest).getTime()) / 3600000;
       if (hrs >= 24) {
         const interest = Math.floor(bank.balance * 0.02);
-        bank.balance += interest;
-        bank.lastInterest = new Date();
+        bank.balance += interest; bank.lastInterest = new Date();
         bank.history.push({ type: 'interest', amount: interest, note: 'Interés diario 2%' });
         await bank.save();
-        await UserCoins.findOneAndUpdate(
-          { userId: bank.userId, guildId: GUILD_ID },
-          { $inc: { coins: interest, totalEarned: interest } }
-        );
-        if (global.io) {
-          const wallet = await UserCoins.findOne({ userId: bank.userId, guildId: GUILD_ID }).lean();
-          if (wallet) global.io.emit('coins:update', { userId: bank.userId, coins: wallet.coins });
-        }
+        await UserCoins.findOneAndUpdate({ userId: bank.userId, guildId: GUILD_ID }, { $inc: { coins: interest, totalEarned: interest } });
+        if (global.io) { const wallet = await UserCoins.findOne({ userId: bank.userId, guildId: GUILD_ID }).lean(); if (wallet) global.io.emit('coins:update', { userId: bank.userId, coins: wallet.coins }); }
       }
     }
   } catch (e) { console.error('[bank interest cron]', e); }
-}, 3600000); // revisa cada hora
-io.on('connection', socket => {
-  console.log(`[WS] Conectado: ${socket.id}`);
-  socket.on('disconnect', () => console.log(`[WS] Desconectado: ${socket.id}`));
-});
+}, 3600000);
 
-global.emitUpdate = (event, data) => io.emit(event, data);
-
-setInterval(async () => {
-  const stats = await getStats();
-  if (stats) io.emit('stats:update', stats);
-}, 5000);
-
-// ── PÁGINAS ───────────────────────────────────────────────────────────────
+// ── Páginas ────────────────────────────────────────────────────────────────
 app.get('/login',     (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 app.get('/dashboard', (req, res) => { if (!req.session?.user) return res.redirect('/login'); res.sendFile(path.join(__dirname, 'public', 'dashboard.html')); });
 app.get('/casino',    (req, res) => res.sendFile(path.join(__dirname, 'public', 'casino.html')));

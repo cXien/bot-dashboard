@@ -151,6 +151,13 @@ tr:hover td{background:rgba(255,255,255,0.018)}
 #wsd.on{background:var(--em);box-shadow:0 0 6px var(--em)}
 #wsd.off{background:var(--rose)}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--rim2);border-radius:2px}
+.alert-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.alert-item:last-child{border-bottom:none}
+.ban-form{background:var(--dp1);border:1px solid var(--rim);border-radius:8px;padding:14px;margin-bottom:14px}
+.ban-inp{width:100%;background:var(--dp2);border:1px solid var(--rim);border-radius:6px;padding:8px 12px;color:var(--text);font-size:11.5px;font-family:'Instrument Sans',sans-serif;outline:none;margin-bottom:6px}
+.ban-inp:focus{border-color:var(--rim2)}
+.ban-btn{padding:7px 18px;border-radius:6px;background:rgba(240,98,146,.08);border:1px solid rgba(240,98,146,.2);color:var(--rose);font-size:11px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:.15s}
+.ban-btn:hover{background:rgba(240,98,146,.14)}
 </style>
 </head>
 <body>
@@ -484,6 +491,46 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </table></div><div class="pag" id="purchasesPag"></div></div>
 </div>
 
+<!-- Añadir en sidebar nav, sección "Economía avanzada" -->
+<button class="nav-btn" onclick="nav('casinobans',this)"><span class="nav-ic">⊗</span> Bans Casino</button>
+
+<!-- SECCIÓN BANS CASINO (añadir como hermana de otras secciones) -->
+<div class="section" id="s-casinobans" style="display:none">
+  <div class="ph"><div class="pt">Bans de Casino</div><div class="ps">Control de acceso al casino web</div></div>
+
+  <div class="card">
+    <div class="card-hd">Nueva ban</div>
+    <div class="ban-form">
+      <input class="ban-inp" id="banUserId" placeholder="ID de Discord del usuario (ej: 123456789012345678)">
+      <input class="ban-inp" id="banReason" placeholder="Razón del ban">
+      <input class="ban-inp" id="banHours" type="number" placeholder="Horas (vacío = permanente)" style="margin-bottom:10px">
+      <button class="ban-btn" onclick="banCasinoUser()">Banear del casino</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">Usuarios baneados</div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Usuario</th><th>Razón</th><th>Baneado por</th><th>Duración</th><th></th></tr></thead>
+        <tbody id="casinoBanTable"><tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text3)">Sin bans activos</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ALERTAS ADMIN (añadir en la sección de overview) -->
+<div class="two-col" style="margin-top:12px">
+  <div class="card" style="margin-bottom:0">
+    <div class="card-hd">Alertas recientes</div>
+    <div id="adminAlertsBox" style="color:var(--text3);font-size:11px;padding:14px 0;text-align:center;letter-spacing:.5px">Sin alertas</div>
+  </div>
+  <div class="card" style="margin-bottom:0">
+    <div class="card-hd">Estado extendido</div>
+    <div id="extStatsBox"></div>
+  </div>
+</div>
+
 </main>
 <script>
 // ── IDs autorizados para ver logs de IP ────────────────────────────────────
@@ -782,6 +829,134 @@ async function loadPurchases(page){
   document.getElementById('purchasesTable').innerHTML=d.items.length?d.items.map(p=>`<tr><td>${uc(p.avatar,p.username)}</td><td><strong style="color:var(--text)">${p.itemName||'—'}</strong></td><td>${coin(p.price)}</td><td>${dt(p.purchasedAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Sin compras registradas')}</td></tr>`;
   pag('purchasesPag',purchasesState.page,d.pages,'loadPurchases');S.loaded.purchases=true;
 }
+
+const origNav = window.nav;
+window.nav = function (name, btn) {
+  origNav(name, btn);
+  if (name === 'casinobans') loadCasinoBans();
+};
+
+const casinoBanState = { page: 1 };
+
+async function loadCasinoBans() {
+  try {
+    const d = await api('/api/admin/casino-bans');
+    const bans = d.bans || [];
+    const tbody = document.getElementById('casinoBanTable');
+    if (!tbody) return;
+
+    tbody.innerHTML = bans.length
+      ? bans.map(b => {
+          const exp = b.expiresAt
+            ? new Date(b.expiresAt) < new Date() ? '<span class="badge b-m">Expirado</span>' : `<span class="badge b-r">Hasta ${new Date(b.expiresAt).toLocaleDateString('es-PE')}</span>`
+            : '<span class="badge b-r">Permanente</span>';
+          return `<tr>
+            <td>${uc(b.avatar, b.username)}</td>
+            <td style="color:var(--ink);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.reason}</td>
+            <td><span class="mono">${b.bannedByName || '—'}</span></td>
+            <td>${exp}</td>
+            <td><button onclick="unbanCasino('${b.userId}')" style="padding:3px 10px;border-radius:5px;border:1px solid rgba(62,207,142,.3);background:rgba(62,207,142,.05);color:var(--em);font-size:10px;cursor:pointer;font-family:'Instrument Sans',sans-serif">Desbanear</button></td>
+          </tr>`;
+        }).join('')
+      : `<tr><td colspan="5">${empty('Sin bans activos')}</td></tr>`;
+  } catch (e) { console.error('[casinobans]', e); }
+}
+
+async function banCasinoUser() {
+  const userId = document.getElementById('banUserId').value.trim();
+  const reason = document.getElementById('banReason').value.trim();
+  const hours = parseInt(document.getElementById('banHours').value) || 0;
+  if (!userId || !reason) { alert('Rellena ID y razón'); return; }
+  try {
+    await fetch('/api/admin/casino-ban', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, reason, hours: hours || null })
+    });
+    document.getElementById('banUserId').value = '';
+    document.getElementById('banReason').value = '';
+    document.getElementById('banHours').value = '';
+    loadCasinoBans();
+    alert('Usuario baneado del casino');
+  } catch (e) { alert('Error al banear'); }
+}
+
+async function unbanCasino(userId) {
+  if (!confirm('¿Quitar ban de casino?')) return;
+  await fetch(`/api/admin/casino-ban/${userId}`, { method: 'DELETE' });
+  loadCasinoBans();
+}
+
+/* ── 2. ALERTAS EN TIEMPO REAL (admin) ───────────────────────────────── */
+let adminAlerts = [];
+
+function initAdminAlerts() {
+  const wsEl = document.getElementById('wsS');
+  const socket = io();
+
+  socket.on('admin:alert', (data) => {
+    adminAlerts.unshift({ ...data, seen: false, id: Date.now() });
+    if (adminAlerts.length > 20) adminAlerts.pop();
+    renderAdminAlerts();
+
+    // Mostrar notificación flotante
+    const notif = document.createElement('div');
+    notif.style.cssText = `
+      position:fixed;top:20px;right:20px;z-index:9999;
+      background:rgba(3,3,10,.95);border:1px solid rgba(255,202,40,.4);
+      border-radius:10px;padding:12px 16px;font-size:11px;
+      box-shadow:0 12px 40px rgba(0,0,0,.6);
+      animation:rv .3s ease;max-width:280px;
+      display:flex;align-items:flex-start;gap:10px;
+    `;
+    notif.innerHTML = `
+      <span style="font-size:18px;flex-shrink:0">⚠️</span>
+      <div>
+        <div style="font-weight:600;color:var(--amb);margin-bottom:3px;font-size:11px;letter-spacing:.5px">ALERTA SOSPECHOSA</div>
+        <div style="color:var(--text2);font-size:10px">Usuario ganó ${(data.amount || 0).toLocaleString()} en ${data.game}</div>
+      </div>
+    `;
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 7000);
+  });
+}
+
+function renderAdminAlerts() {
+  const el = document.getElementById('adminAlertsBox');
+  if (!el) return;
+  el.innerHTML = adminAlerts.length
+    ? adminAlerts.slice(0, 10).map(a => `
+        <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.035)">
+          <span style="color:var(--amb);font-size:12px">⚠</span>
+          <div style="flex:1">
+            <div style="font-size:11px;color:var(--text2)">Ganancia de <strong style="color:var(--amb)">${(a.amount||0).toLocaleString()}</strong> en ${a.game}</div>
+            <div style="font-size:9px;color:var(--text3);margin-top:2px">${new Date(a.ts).toLocaleTimeString('es-PE')}</div>
+          </div>
+        </div>
+      `).join('')
+    : '<div style="color:var(--text3);font-size:11px;padding:14px 0;text-align:center;letter-spacing:.5px">Sin alertas recientes</div>';
+}
+
+/* ── 3. ESTADÍSTICAS EXTENDIDAS DEL DASHBOARD ────────────────────────── */
+async function loadExtendedStats() {
+  // Rate limit overview
+  const el = document.getElementById('extStatsBox');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="ms"><span class="ms-label">Alertas hoy</span><span class="ms-val" style="color:var(--amb)">${adminAlerts.length}</span></div>
+    <div class="ms"><span class="ms-label">Bans casino activos</span><span class="ms-val" id="casinoBanCount">—</span></div>
+  `;
+}
+
+/* ── INIT ─────────────────────────────────────────────────────────────── */
+window.loadCasinoBans = loadCasinoBans;
+window.banCasinoUser = banCasinoUser;
+window.unbanCasino = unbanCasino;
+
+// Solo inicializar alertas admin si el usuario las puede ver
+setTimeout(() => {
+  if (window._myId) initAdminAlerts();
+}, 500);
 
 // ── Exponer todas las funciones globalmente para los handlers de pag() ─────
 window.loadOverview=loadOverview;window.loadInvites=loadInvites;window.loadGiveaways=loadGiveaways;
