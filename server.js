@@ -161,7 +161,12 @@ app.get('/auth/callback', async (req, res) => {
   } catch (e) { console.error('[AUTH]', e); res.redirect('/login?error=server_error'); }
 });
 
-app.get('/auth/logout', (req, res) => { req.session.destroy(); res.redirect('/login'); });
+app.get('/auth/logout', (req, res) => {
+  const from = req.query.from || req.headers.referer || '';
+  const isCasino = from.includes('casino') || from === 'casino';
+  req.session.destroy();
+  res.redirect(isCasino ? '/casino' : '/login');
+});
 app.get('/api/me', (req, res) => req.session?.user ? res.json(req.session.user) : res.status(401).json({ error: 'No autenticado' }));
 
 // ══════════════════════════════════════════════════════════════════════════
