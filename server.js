@@ -1043,9 +1043,175 @@ app.get('/api/admin/purchases', requireAuth, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
+// ── BankAccount Schema ────────────────────────────────────────────────────
+const BankAccount = mongoose.models.BankAccount || model('BankAccount', new Schema({
+  userId:       String,
+  guildId:      String,
+  balance:      { type: Number, default: 0 },
+  lastInterest: { type: Date, default: null },
+  history:      [{ type: { type: String }, amount: Number, note: String, timestamp: { type: Date, default: Date.now } }],
+}));
+
 // ══════════════════════════════════════════════════════════════════════════
-//  WEBSOCKET
+//  HISTORIAL PERSONAL
 // ══════════════════════════════════════════════════════════════════════════
+app.get('/api/casino/history', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const filter = req.query.filter || 'all';
+    const query = { userId, guildId: GUILD_ID };
+    if (filter === 'win')  query.result = 'win';
+    if (filter === 'loss') query.result = 'loss';
+    const logs = await CasinoLog.find(query).sort({ timestamp: -1 }).limit(50).lean();
+    res.json({ logs });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+//  ESTADÍSTICAS PERSONALES
+// ══════════════════════════════════════════════════════════════════════════
+app.get('/api/casino/my-stats', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const [logs, ach] = await Promise.all([
+      CasinoLog.find({ userId, guildId: GUILD_ID }).sort({ timestamp: -1 }).limit(500).lean(),
+      Achievements.findOne({ userId, guildId: GUILD_ID }).lean(),
+    ]);
+
+    const totalWins  = logs.filter(l => l.profit > 0).length;
+    const totalBet   = logs.reduce((s, l) => s + (l.bet || 0), 0);
+    const netProfit  = logs.reduce((s, l) => s + (l.profit || 0), 0);
+    const bestWin    = Math.max(0, ...logs.map(l => l.profit || 0));
+    const maxBet     = Math.max(0, ...logs.map(l => l.bet || 0));
+
+    // Stats por juego
+    const byGame = {};
+    logs.forEach(l => {
+      if (!byGame[l.game]) byGame[l.game] = { plays: 0, wins: 0, net: 0 };
+      byGame[l.game].plays++;
+      if (l.profit > 0) byGame[l.game].wins++;
+      byGame[l.game].net += l.profit || 0;
+    });
+
+    // Racha actual (últimas partidas consecutivas ganadas/perdidas)
+    let currentStreak = 0;
+    const recent = logs.slice(0, 20);
+    if (recent.length) {
+      const dir = recent[0].profit > 0 ? 1 : -1;
+      for (const l of recent) {
+        if ((l.profit > 0 ? 1 : -1) === dir) currentStreak++;
+        else break;
+      }
+      if (dir < 0) currentStreak = 0; // solo contar rachas ganadoras
+    }
+
+    res.json({
+      totalWins, totalBet, netProfit, bestWin, maxBet, byGame,
+      currentStreak,
+      bestStreak: ach?.win_streak || 0,
+    });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+//  BANCO — depositar, retirar, interés diario 2%
+// ══════════════════════════════════════════════════════════════════════════
+app.get('/api/casino/bank/info', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    let bank = await BankAccount.findOne({ userId, guildId: GUILD_ID }).lean();
+    if (!bank) bank = { balance: 0, lastInterest: null };
+    res.json({ balance: bank.balance, lastInterest: bank.lastInterest });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+app.get('/api/casino/bank/history', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const bank = await BankAccount.findOne({ userId, guildId: GUILD_ID }).lean();
+    const history = (bank?.history || []).slice(-20).reverse();
+    res.json({ history });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+app.post('/api/casino/bank', async (req, res) => {
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
+  try {
+    const userId = req.session.user.id;
+    const { action, amount } = req.body;
+    if (!amount || amount < 1) return res.status(400).json({ error: 'Cantidad inválida' });
+
+    const wallet = await UserCoins.findOne({ userId, guildId: GUILD_ID });
+    if (!wallet) return res.status(403).json({ error: 'Usa /registrarse primero' });
+
+    let bank = await BankAccount.findOne({ userId, guildId: GUILD_ID });
+    if (!bank) bank = new BankAccount({ userId, guildId: GUILD_ID, balance: 0, history: [] });
+
+    // Aplicar interés diario si corresponde
+    if (bank.lastInterest) {
+      const hoursSince = (Date.now() - new Date(bank.lastInterest).getTime()) / 3600000;
+      if (hoursSince >= 24 && bank.balance > 0) {
+        const interest = Math.floor(bank.balance * 0.02);
+        bank.balance += interest;
+        bank.lastInterest = new Date();
+        bank.history.push({ type: 'interest', amount: interest, note: 'Interés diario 2%' });
+        // También sumar a totalEarned
+        await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { totalEarned: interest } });
+      }
+    }
+
+    if (action === 'deposit') {
+      if (wallet.coins < amount) return res.status(400).json({ error: 'Saldo insuficiente en billetera' });
+      const updated = await applyCoins(userId, -amount, false);
+      bank.balance += amount;
+      if (!bank.lastInterest) bank.lastInterest = new Date();
+      bank.history.push({ type: 'deposit', amount, note: `Depósito de billetera` });
+      await bank.save();
+      res.json({ walletBalance: updated.coins, bankBalance: bank.balance });
+
+    } else if (action === 'withdraw') {
+      if (bank.balance < amount) return res.status(400).json({ error: 'Saldo insuficiente en banco' });
+      bank.balance -= amount;
+      bank.history.push({ type: 'withdraw', amount: -amount, note: 'Retiro a billetera' });
+      await bank.save();
+      const updated = await applyCoins(userId, amount, false);
+      res.json({ walletBalance: updated.coins, bankBalance: bank.balance });
+
+    } else {
+      res.status(400).json({ error: 'Acción inválida' });
+    }
+  } catch (e) { console.error('[bank]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+// ── Cron: aplicar interés a todos los bancos cada 24h ─────────────────────
+setInterval(async () => {
+  try {
+    const banks = await BankAccount.find({ balance: { $gt: 0 } });
+    for (const bank of banks) {
+      if (!bank.lastInterest) continue;
+      const hrs = (Date.now() - new Date(bank.lastInterest).getTime()) / 3600000;
+      if (hrs >= 24) {
+        const interest = Math.floor(bank.balance * 0.02);
+        bank.balance += interest;
+        bank.lastInterest = new Date();
+        bank.history.push({ type: 'interest', amount: interest, note: 'Interés diario 2%' });
+        await bank.save();
+        await UserCoins.findOneAndUpdate(
+          { userId: bank.userId, guildId: GUILD_ID },
+          { $inc: { coins: interest, totalEarned: interest } }
+        );
+        if (global.io) {
+          const wallet = await UserCoins.findOne({ userId: bank.userId, guildId: GUILD_ID }).lean();
+          if (wallet) global.io.emit('coins:update', { userId: bank.userId, coins: wallet.coins });
+        }
+      }
+    }
+  } catch (e) { console.error('[bank interest cron]', e); }
+}, 3600000); // revisa cada hora
 io.on('connection', socket => {
   console.log(`[WS] Conectado: ${socket.id}`);
   socket.on('disconnect', () => console.log(`[WS] Desconectado: ${socket.id}`));

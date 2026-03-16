@@ -759,6 +759,106 @@ tr:hover td{background:rgba(255,255,255,.018)}
   .sidebar{transform:translateX(-100%)}
   .main{margin-left:0}
 }
+
+/* ════════ SPOTIFY PLAYER ════════ */
+#spotifyPlayer{
+  position:fixed;bottom:22px;right:22px;z-index:300;
+  width:310px;
+  background:rgba(6,5,10,0.97);
+  backdrop-filter:blur(40px);
+  border:1px solid rgba(30,215,96,0.25);
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 24px 64px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.04);
+  transition:all .32s cubic-bezier(.4,0,.2,1);
+}
+#spotifyPlayer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#1ed760,transparent);opacity:.5}
+#spotifyPlayer.sp-hidden{display:none}
+.sp-hd{display:flex;align-items:center;gap:9px;padding:11px 14px 10px;border-bottom:1px solid rgba(255,255,255,.05)}
+.sp-hd-title{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#1ed760;flex:1}
+.sp-btn{width:22px;height:22px;border-radius:50%;background:none;border:none;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--tr);font-size:13px}
+.sp-btn:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.sp-body{padding:10px}
+.sp-input-wrap{display:flex;gap:6px;margin-bottom:8px}
+.sp-input{flex:1;background:var(--s2);border:1px solid var(--rim);border-radius:6px;padding:7px 10px;color:var(--text);font-size:11px;outline:none;font-family:'Barlow Condensed',sans-serif;letter-spacing:.3px}
+.sp-input:focus{border-color:rgba(30,215,96,.4)}
+.sp-load-btn{padding:7px 12px;border-radius:6px;background:rgba(30,215,96,.12);border:1px solid rgba(30,215,96,.3);color:#1ed760;font-size:10px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;transition:var(--tr)}
+.sp-load-btn:hover{background:rgba(30,215,96,.2)}
+.sp-frame-wrap{border-radius:8px;overflow:hidden;min-height:80px;display:flex;align-items:center;justify-content:center}
+.sp-frame-wrap iframe{display:block;border-radius:8px}
+.sp-placeholder{text-align:center;padding:16px;color:var(--text3);font-size:10px;letter-spacing:1px;text-transform:uppercase;line-height:1.8}
+.sp-placeholder span{color:#1ed760}
+.sp-presets{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.sp-preset-lbl{font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:2px}
+.sp-preset-row{display:flex;gap:4px;flex-wrap:wrap}
+.sp-preset-btn{padding:3px 9px;border-radius:4px;background:var(--s2);border:1px solid var(--rim);color:var(--text2);font-size:10px;font-weight:600;cursor:pointer;transition:var(--tr);font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px}
+.sp-preset-btn:hover{border-color:rgba(30,215,96,.3);color:#1ed760}
+#spToggle{
+  position:fixed;bottom:22px;right:22px;z-index:299;
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(30,215,96,.12);border:1px solid rgba(30,215,96,.3);
+  display:none;align-items:center;justify-content:center;
+  cursor:pointer;font-size:19px;
+  box-shadow:0 4px 20px rgba(30,215,96,.15);
+  transition:var(--tr);
+}
+#spToggle:hover{transform:scale(1.08);background:rgba(30,215,96,.2)}
+.sp-eq{display:flex;align-items:flex-end;gap:2px;height:14px}
+.sp-eq-bar{width:3px;border-radius:1px;background:#1ed760;min-height:2px}
+.sp-eq-bar.play{animation:spEq var(--d,.3s) ease-in-out infinite alternate}
+@keyframes spEq{from{height:2px}to{height:var(--h,12px)}}
+
+/* ════════ HISTORIAL + STATS ════════ */
+.hist-list{display:flex;flex-direction:column;gap:5px}
+.hist-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:8px;
+  background:var(--s1);border:1px solid var(--rim);
+  transition:var(--tr);font-size:12px;
+}
+.hist-item:hover{border-color:var(--rim2)}
+.hist-game{font-size:8.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:3px;flex-shrink:0;font-family:'Barlow Condensed',sans-serif}
+.hist-bet{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3);flex-shrink:0}
+.hist-result{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;flex-shrink:0;padding:2px 7px;border-radius:3px}
+.hist-result.win{background:rgba(62,207,142,.08);color:var(--em);border:1px solid rgba(62,207,142,.18)}
+.hist-result.lose{background:rgba(240,83,122,.08);color:var(--rose);border:1px solid rgba(240,83,122,.18)}
+.hist-profit{font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;margin-left:auto;flex-shrink:0}
+.hist-profit.pos{color:var(--em)}
+.hist-profit.neg{color:var(--rose)}
+.hist-time{font-size:9px;color:var(--text3);flex-shrink:0;font-family:'Share Tech Mono',monospace}
+.hist-empty{text-align:center;padding:36px;color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.stats-game-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:16px}
+.sg-card{background:var(--s1);border:1px solid var(--rim);border-radius:var(--r);padding:14px;transition:var(--tr)}
+.sg-card:hover{border-color:var(--rim2)}
+.sg-name{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sg-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.sg-lbl{font-size:10px;color:var(--text2)}
+.sg-val{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700}
+.sg-bar-wrap{height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:6px}
+.sg-bar{height:3px;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+
+/* ════════ BANCO ════════ */
+.bank-card{
+  background:linear-gradient(135deg,#0c0a14,#1a1530);
+  border:1px solid rgba(201,168,76,.25);border-radius:var(--r2);
+  padding:22px;margin-bottom:12px;position:relative;overflow:hidden;
+}
+.bank-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold2),var(--gold),var(--gold2),transparent);opacity:.6}
+.bank-balance{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;color:var(--gold2);letter-spacing:-1px;margin:8px 0 4px}
+.bank-interest{font-size:11px;color:var(--em);display:flex;align-items:center;gap:5px}
+.bank-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.bank-btn{padding:10px;border-radius:8px;border:1px solid var(--rim);background:var(--s2);color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:6px}
+.bank-btn:hover{border-color:var(--rim2);background:var(--s3)}
+.bank-btn.deposit{border-color:rgba(62,207,142,.25);color:var(--em)}
+.bank-btn.withdraw{border-color:rgba(240,83,122,.25);color:var(--rose)}
+.bank-history{background:var(--s1);border:1px solid var(--rim);border-radius:var(--r);overflow:hidden}
+.bank-hist-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.03);font-size:12px}
+.bank-hist-row:last-child{border-bottom:none}
+.bank-hist-type{font-size:8.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:3px;flex-shrink:0}
+.bank-hist-type.dep{background:rgba(62,207,142,.08);color:var(--em);border:1px solid rgba(62,207,142,.18)}
+.bank-hist-type.wit{background:rgba(240,83,122,.08);color:var(--rose);border:1px solid rgba(240,83,122,.18)}
+.bank-hist-type.int{background:rgba(201,168,76,.08);color:var(--gold);border:1px solid rgba(201,168,76,.18)}
+.bank-hist-amt{font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;margin-left:auto}
+.bank-hist-time{font-size:9px;color:var(--text3);font-family:'Share Tech Mono',monospace}
 </style>
 </head>
 <body>
@@ -821,7 +921,26 @@ tr:hover td{background:rgba(255,255,255,.018)}
     <div class="sb-item" id="sbInventory" data-page="inventory" onclick="navTo('inventory',this)" style="display:none">
       <span class="sb-ic">▣</span> Inventario
     </div>
-  </nav>
+    <div class="sb-item" id="sbHistory" data-page="history" onclick="navTo('history',this)" style="display:none">
+      <span class="sb-ic">◷</span> Historial
+    </div>
+    <div class="sb-item" id="sbStats" data-page="stats" onclick="navTo('stats',this)" style="display:none">
+      <span class="sb-ic">◈</span> Estadísticas
+    </div>
+    <div class="sb-item" id="sbBank" data-page="bank" onclick="navTo('bank',this)" style="display:none">
+      <span class="sb-ic">◇</span> Banco
+    </div>
+
+    <div class="sb-section-lbl">Música</div>
+    <div class="sb-item" data-page="music" onclick="spOpen();spExpand()">
+      <span class="sb-ic" style="color:#1ed760">♪</span> Bee Radio
+      <div class="sp-eq" id="sbSpEq" style="margin-left:auto">
+        <div class="sp-eq-bar" style="--d:.25s;--h:8px"></div>
+        <div class="sp-eq-bar" style="--d:.35s;--h:12px"></div>
+        <div class="sp-eq-bar" style="--d:.20s;--h:6px"></div>
+        <div class="sp-eq-bar" style="--d:.40s;--h:10px"></div>
+      </div>
+    </div>
 
   <div class="sb-foot">
     <div id="sbUserBox" style="display:none">
@@ -1006,7 +1125,77 @@ tr:hover td{background:rgba(255,255,255,.018)}
   </div>
 </div>
 
-<!-- ── PROFILE PAGE ── -->
+<!-- ── HISTORY PAGE ── -->
+<div class="page" id="pg-history">
+  <div class="page-hd">
+    <div class="page-title"><span class="page-title-accent"></span>Historial</div>
+    <div class="page-sub">Tus últimas 50 partidas</div>
+  </div>
+  <div style="max-width:700px">
+    <div class="tabs" style="margin-bottom:16px">
+      <button class="tab-btn active" onclick="histTab('all',this)">Todas</button>
+      <button class="tab-btn" onclick="histTab('win',this)">Victorias</button>
+      <button class="tab-btn" onclick="histTab('loss',this)">Derrotas</button>
+    </div>
+    <div id="histContent"><div class="hist-empty">Cargando...</div></div>
+  </div>
+</div>
+
+<!-- ── STATS PAGE ── -->
+<div class="page" id="pg-stats">
+  <div class="page-hd">
+    <div class="page-title"><span class="page-title-accent"></span>Estadísticas</div>
+    <div class="page-sub">Tu rendimiento por juego</div>
+  </div>
+  <div class="three-col" id="statsOverview" style="margin-bottom:20px"></div>
+  <div class="sec-hd"><span class="sec-hd-line">Por juego</span></div>
+  <div class="stats-game-grid" id="statsGameGrid"></div>
+  <div class="sec-hd"><span class="sec-hd-line">Racha actual</span></div>
+  <div class="panel" id="streakPanel" style="max-width:400px"></div>
+</div>
+
+<!-- ── BANK PAGE ── -->
+<div class="page" id="pg-bank">
+  <div class="page-hd">
+    <div class="page-title"><span class="page-title-accent"></span>Banco</div>
+    <div class="page-sub">Guarda monedas · Gana interés diario</div>
+  </div>
+  <div style="max-width:460px">
+    <div class="bank-card">
+      <div style="font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif">Saldo en banco</div>
+      <div class="bank-balance" id="bankBalance">0</div>
+      <div class="bank-interest">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/><polyline points="17,6 23,6 23,12"/></svg>
+        <span>+2% interés diario · próximo en <b id="bankNextInterest">—</b></span>
+      </div>
+      <div class="bank-actions">
+        <button class="bank-btn deposit" onclick="bankAction('deposit')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19,12 12,19 5,12"/></svg>
+          Depositar
+        </button>
+        <button class="bank-btn withdraw" onclick="bankAction('withdraw')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
+          Retirar
+        </button>
+      </div>
+    </div>
+    <div style="background:var(--s1);border:1px solid var(--rim);border-radius:var(--r);padding:14px;margin-bottom:12px" id="bankAmtBox" style="display:none">
+      <div class="flbl" id="bankAmtLbl">Cantidad a depositar</div>
+      <input class="finp" type="number" id="bankAmtInput" placeholder="0" min="1">
+      <div class="presets">
+        <button class="preset" onclick="sb('bankAmtInput',100)">100</button>
+        <button class="preset" onclick="sb('bankAmtInput',500)">500</button>
+        <button class="preset" onclick="sb('bankAmtInput',1000)">1K</button>
+        <button class="preset" onclick="sbMax('bankAmtInput')">MAX</button>
+      </div>
+      <button class="btn-primary" id="bankConfirmBtn" onclick="bankConfirm()">Confirmar</button>
+    </div>
+    <div class="sec-hd"><span class="sec-hd-line">Movimientos recientes</span></div>
+    <div class="bank-history" id="bankHistory">
+      <div style="padding:20px;text-align:center;color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase">Sin movimientos</div>
+    </div>
+  </div>
+</div>
 <div class="page" id="pg-profile">
   <div class="page-hd">
     <div class="page-title"><span class="page-title-accent"></span>Perfil</div>
@@ -2101,6 +2290,259 @@ try{
 document.querySelectorAll('.modal-overlay').forEach(m=>{
   m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
 });
+
+// ════════════════════════════════════════════════════
+//  SPOTIFY PLAYER
+// ════════════════════════════════════════════════════
+const SP = { presets: JSON.parse(localStorage.getItem('sp_presets')||'[]') };
+
+function spLoad(url){
+  let src = url || document.getElementById('spUrlInput').value.trim();
+  if(!src){ toast('Pega un link de Spotify','lose'); return; }
+  // Convertir a embed URL
+  src = src.split('?')[0];
+  if(!src.includes('/embed/')) src = src.replace('open.spotify.com/','open.spotify.com/embed/');
+  const wrap = document.getElementById('spFrameWrap');
+  wrap.innerHTML = `<iframe src="${src}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen allow="autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture" loading="lazy" style="border-radius:8px;display:block"></iframe>`;
+  // Animar eq
+  document.querySelectorAll('.sp-eq-bar').forEach(b=>b.classList.add('play'));
+  document.querySelectorAll('#sbSpEq .sp-eq-bar').forEach(b=>b.classList.add('play'));
+  // Guardar en favoritos
+  const origUrl = document.getElementById('spUrlInput').value.trim() || url;
+  if(origUrl && !SP.presets.includes(origUrl)){
+    SP.presets.unshift(origUrl);
+    if(SP.presets.length>5) SP.presets.pop();
+    localStorage.setItem('sp_presets', JSON.stringify(SP.presets));
+    spRenderPresets();
+  }
+}
+
+function spRenderPresets(){
+  const row = document.getElementById('spPresetRow');
+  if(!row) return;
+  if(!SP.presets.length){ row.innerHTML='<span style="font-size:10px;color:var(--text3)">Aún no hay favoritos</span>'; return; }
+  row.innerHTML = SP.presets.map((url,i)=>{
+    const label = url.includes('playlist') ? `Playlist ${i+1}` : url.includes('album') ? `Álbum ${i+1}` : `Track ${i+1}`;
+    return `<button class="sp-preset-btn" onclick="spLoad('${url}')">${label}</button>`;
+  }).join('');
+}
+
+function spCollapse(){ document.getElementById('spotifyPlayer').style.height='44px'; document.getElementById('spotifyPlayer').style.overflow='hidden'; }
+function spExpand(){ document.getElementById('spotifyPlayer').style.height=''; document.getElementById('spotifyPlayer').style.overflow=''; }
+function spClose(){ document.getElementById('spotifyPlayer').classList.add('sp-hidden'); document.getElementById('spToggle').style.display='flex'; document.querySelectorAll('.sp-eq-bar').forEach(b=>b.classList.remove('play')); document.querySelectorAll('#sbSpEq .sp-eq-bar').forEach(b=>b.classList.remove('play')); }
+function spOpen(){ document.getElementById('spotifyPlayer').classList.remove('sp-hidden'); document.getElementById('spToggle').style.display='none'; spExpand(); }
+
+// ════════════════════════════════════════════════════
+//  HISTORIAL PERSONAL
+// ════════════════════════════════════════════════════
+let histFilter = 'all';
+function histTab(filter, btn){
+  histFilter = filter;
+  document.querySelectorAll('#pg-history .tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  loadHistory();
+}
+
+async function loadHistory(){
+  if(!CS.user){ document.getElementById('histContent').innerHTML='<div class="hist-empty">Inicia sesión para ver tu historial</div>'; return; }
+  document.getElementById('histContent').innerHTML='<div class="hist-empty">Cargando...</div>';
+  try{
+    const d = await xfetch(`/api/casino/history?filter=${histFilter}`);
+    const items = d.logs || [];
+    if(!items.length){ document.getElementById('histContent').innerHTML='<div class="hist-empty">Sin partidas registradas</div>'; return; }
+    const GAME_COLORS={ruleta:'b-o',slots:'b-g',blackjack:'b-s',crash:'b-r',hilo:'b-b',baccarat:'b-o',plinko:'b-g',videopoker:'b-o',carreras:'b-b',loteria:'b-o',minas:'b-r',batalla:'b-s'};
+    document.getElementById('histContent').innerHTML=`<div class="hist-list">${items.map(l=>{
+      const won=l.profit>0;
+      const dt=new Date(l.timestamp);
+      const timeStr=dt.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})+' '+dt.toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit'});
+      return`<div class="hist-item">
+        <span class="hist-game badge ${GAME_COLORS[l.game]||'b-m'}">${l.game}</span>
+        <span class="hist-bet">Apuesta: ${(l.bet||0).toLocaleString()}</span>
+        <span class="hist-result ${won?'win':'lose'}">${won?'Victoria':'Derrota'}</span>
+        <span class="hist-profit ${won?'pos':'neg'}">${won?'+':''}${(l.profit||0).toLocaleString()}</span>
+        <span class="hist-time">${timeStr}</span>
+      </div>`;
+    }).join('')}</div>`;
+  }catch{ document.getElementById('histContent').innerHTML='<div class="hist-empty">Error al cargar</div>'; }
+}
+
+// ════════════════════════════════════════════════════
+//  ESTADÍSTICAS PERSONALES
+// ════════════════════════════════════════════════════
+async function loadStats(){
+  if(!CS.user){ return; }
+  try{
+    const d = await xfetch('/api/casino/my-stats');
+    // Overview cards
+    const ov = document.getElementById('statsOverview');
+    if(ov) ov.innerHTML=`
+      <div class="stat-card"><div class="stat-val" style="color:var(--em)">${(d.totalWins||0).toLocaleString()}</div><div class="stat-lbl">Victorias totales</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--gold)">${(d.totalBet||0).toLocaleString()}</div><div class="stat-lbl">Total apostado</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:${(d.netProfit||0)>=0?'var(--em)':'var(--rose)'}">${(d.netProfit||0)>=0?'+':''}${(d.netProfit||0).toLocaleString()}</div><div class="stat-lbl">Ganancia neta</div></div>`;
+    // Per-game grid
+    const gg = document.getElementById('statsGameGrid');
+    const GAME_COLORS={ruleta:'var(--gold)',slots:'var(--em)',blackjack:'var(--purple)',crash:'var(--rose)',hilo:'var(--sky)',baccarat:'var(--gold)',plinko:'var(--em)',videopoker:'var(--gold)',carreras:'var(--sky)',loteria:'var(--gold)',minas:'var(--rose)',batalla:'var(--purple)'};
+    if(gg && d.byGame) gg.innerHTML=Object.entries(d.byGame).map(([game,s])=>{
+      const wr=s.plays>0?Math.round(s.wins/s.plays*100):0;
+      const color=GAME_COLORS[game]||'var(--gold)';
+      return`<div class="sg-card">
+        <div class="sg-name"><span style="width:7px;height:7px;border-radius:50%;background:${color};display:inline-block"></span>${game}</div>
+        <div class="sg-row"><span class="sg-lbl">Partidas</span><span class="sg-val">${s.plays}</span></div>
+        <div class="sg-row"><span class="sg-lbl">Win rate</span><span class="sg-val" style="color:${wr>50?'var(--em)':'var(--rose)'}">${wr}%</span></div>
+        <div class="sg-row"><span class="sg-lbl">Neto</span><span class="sg-val" style="color:${s.net>=0?'var(--em)':'var(--rose)'}">${s.net>=0?'+':''}${s.net.toLocaleString()}</span></div>
+        <div class="sg-bar-wrap"><div class="sg-bar" style="width:${wr}%;background:${color}"></div></div>
+      </div>`;
+    }).join('')||'<div style="color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase">Sin partidas</div>';
+    // Streak
+    const sp = document.getElementById('streakPanel');
+    if(sp) sp.innerHTML=`
+      <div style="display:flex;gap:16px;align-items:center">
+        <div style="text-align:center"><div style="font-family:'Share Tech Mono',monospace;font-size:32px;color:var(--amber)">${d.currentStreak||0}🔥</div><div style="font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:4px">Racha actual</div></div>
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:var(--text2)">Mejor racha</span><span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--gold)">${d.bestStreak||0}</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:11px;color:var(--text2)">Apuesta máxima</span><span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--gold)">${(d.maxBet||0).toLocaleString()}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--text2)">Mejor ganancia</span><span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--em)">+${(d.bestWin||0).toLocaleString()}</span></div>
+        </div>
+      </div>
+      ${d.currentStreak>=3?`<div style="margin-top:12px;padding:8px 12px;background:rgba(232,147,32,.06);border:1px solid rgba(232,147,32,.2);border-radius:6px;font-size:11px;color:var(--amber);display:flex;align-items:center;gap:7px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+        ¡Racha de ${d.currentStreak}! Próxima apuesta tiene +${Math.min(d.currentStreak*2,20)}% de bonus
+      </div>`:''}`;
+  }catch(e){ console.error('[stats]',e); }
+}
+
+// ════════════════════════════════════════════════════
+//  BANCO
+// ════════════════════════════════════════════════════
+let bankMode = null;
+function bankAction(mode){
+  bankMode = mode;
+  const box = document.getElementById('bankAmtBox');
+  const lbl = document.getElementById('bankAmtLbl');
+  const inp = document.getElementById('bankAmtInput');
+  const btn = document.getElementById('bankConfirmBtn');
+  box.style.display = 'block';
+  lbl.textContent = mode === 'deposit' ? 'Cantidad a depositar' : 'Cantidad a retirar';
+  btn.textContent = mode === 'deposit' ? 'Depositar' : 'Retirar';
+  btn.style.background = mode === 'deposit' ? 'linear-gradient(135deg,#3ecf8e,#2aad74)' : 'linear-gradient(135deg,#f0537a,#c03060)';
+  inp.value = '';
+  inp.focus();
+}
+
+async function bankConfirm(){
+  if(!rAuth()) return;
+  const amt = parseInt(document.getElementById('bankAmtInput').value)||0;
+  if(amt < 1){ toast('Cantidad inválida','lose'); return; }
+  try{
+    const d = await xfetch('/api/casino/bank',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:bankMode,amount:amt})});
+    CS.coins = d.walletBalance; updCoins();
+    document.getElementById('bankBalance').textContent = (d.bankBalance||0).toLocaleString();
+    document.getElementById('bankAmtBox').style.display = 'none';
+    toast(bankMode==='deposit'?`+${amt.toLocaleString()} depositados`:`${amt.toLocaleString()} retirados`, bankMode==='deposit'?'win':'');
+    loadBankHistory();
+  }catch(e){ toast(e.message||'Error','lose'); }
+}
+
+async function loadBank(){
+  if(!CS.user) return;
+  try{
+    const d = await xfetch('/api/casino/bank/info');
+    document.getElementById('bankBalance').textContent = (d.balance||0).toLocaleString();
+    // Next interest countdown
+    if(d.lastInterest){
+      const next = new Date(d.lastInterest).getTime() + 86400000;
+      const diff = Math.max(0, next - Date.now());
+      const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000);
+      document.getElementById('bankNextInterest').textContent = `${h}h ${m}m`;
+    } else {
+      document.getElementById('bankNextInterest').textContent = 'mañana';
+    }
+    loadBankHistory();
+  }catch{}
+}
+
+async function loadBankHistory(){
+  try{
+    const d = await xfetch('/api/casino/bank/history');
+    const el = document.getElementById('bankHistory');
+    if(!d.history?.length){ el.innerHTML='<div style="padding:18px;text-align:center;color:var(--text3);font-size:11px;letter-spacing:1px;text-transform:uppercase">Sin movimientos</div>'; return; }
+    el.innerHTML = d.history.map(h=>{
+      const typeMap={deposit:{cls:'dep',lbl:'Depósito'},withdraw:{cls:'wit',lbl:'Retiro'},interest:{cls:'int',lbl:'Interés +2%'}};
+      const t=typeMap[h.type]||{cls:'dep',lbl:h.type};
+      const dt=new Date(h.timestamp).toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      return`<div class="bank-hist-row">
+        <span class="bank-hist-type ${t.cls}">${t.lbl}</span>
+        <span style="font-size:11px;color:var(--text2);flex:1">${h.note||''}</span>
+        <span class="bank-hist-amt" style="color:${h.amount>=0?'var(--em)':'var(--rose)'}">${h.amount>=0?'+':''}${(h.amount||0).toLocaleString()}</span>
+        <span class="bank-hist-time">${dt}</span>
+      </div>`;
+    }).join('');
+  }catch{}
+}
+
+// ════════════════════════════════════════════════════
+//  PATCH navTo — agregar nuevas páginas
+// ════════════════════════════════════════════════════
+const _origNavTo = navTo;
+navTo = function(name, el){
+  _origNavTo(name, el);
+  if(name==='history') loadHistory();
+  if(name==='stats')   loadStats();
+  if(name==='bank')    loadBank();
+};
+
+// ════════════════════════════════════════════════════
+//  INIT EXTRAS
+// ════════════════════════════════════════════════════
+(function initExtras(){
+  spRenderPresets();
+
+  // Mostrar items de sidebar al loguearse
+  const origInit = document.currentScript;
+  const checkUser = setInterval(()=>{
+    if(CS.user){
+      clearInterval(checkUser);
+      ['sbHistory','sbStats','sbBank'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.style.display='flex';
+      });
+    }
+  }, 200);
+})();
 </script>
+<!-- ════ SPOTIFY PLAYER ════ -->
+<div id="spotifyPlayer">
+  <div class="sp-hd">
+    <div class="sp-eq" id="spEqAnim">
+      <div class="sp-eq-bar" style="--d:.25s;--h:9px"></div>
+      <div class="sp-eq-bar" style="--d:.35s;--h:13px"></div>
+      <div class="sp-eq-bar" style="--d:.20s;--h:7px"></div>
+      <div class="sp-eq-bar" style="--d:.40s;--h:11px"></div>
+    </div>
+    <span class="sp-hd-title">Bee Radio</span>
+    <button class="sp-btn" onclick="spCollapse()" title="Minimizar" style="font-size:16px">−</button>
+    <button class="sp-btn" onclick="spClose()" title="Cerrar" style="color:var(--rose);font-size:16px">×</button>
+  </div>
+  <div class="sp-body">
+    <div class="sp-input-wrap">
+      <input class="sp-input" id="spUrlInput" placeholder="Link de Spotify (canción, álbum, playlist)..." type="text">
+      <button class="sp-load-btn" onclick="spLoad()">Cargar</button>
+    </div>
+    <div class="sp-frame-wrap" id="spFrameWrap">
+      <div class="sp-placeholder" id="spPlaceholder">
+        Pega un link de <span>Spotify</span> arriba<br>
+        Ej: open.spotify.com/playlist/...
+      </div>
+    </div>
+    <div class="sp-presets">
+      <div class="sp-preset-lbl">Favoritos guardados</div>
+      <div class="sp-preset-row" id="spPresetRow">
+        <span style="font-size:10px;color:var(--text3)">Aún no hay favoritos</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="spToggle" onclick="spOpen()">🎵</div>
+
 </body>
 </html>
