@@ -16,7 +16,6 @@ global.io = io;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use('/backgrounds', express.static(path.join(__dirname, 'public', 'backgrounds')));
 
 app.use(session({
@@ -27,50 +26,55 @@ app.use(session({
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log('[DB] Conectado')).catch(console.error);
 
-// ── Schemas ────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+//  SCHEMAS — exactamente los mismos que usa el bot de Discord
+//  Las monedas se guardan en UserCoins, que es compartido con el bot
+// ══════════════════════════════════════════════════════════════════════════
 const { Schema, model } = mongoose;
-const Level          = model('Level',          new Schema({ userId: String, guildId: String, xp: { type: Number, default: 0 }, level: { type: Number, default: 0 }, lastMessage: Date, streak: { type: Number, default: 0 }, lastMessageDate: Date, dailyChallenges: { date: String, messages: Number, messagesCompleted: Boolean, vcMinutes: Number, vcCompleted: Boolean } }));
-const Warn           = model('Warn',           new Schema({ userId: String, guildId: String, moderator: String, reason: String, createdAt: { type: Date, default: Date.now } }));
-const Mute           = model('Mute',           new Schema({ userId: String, guildId: String, expiresAt: Date, reason: String }));
-const Giveaway       = model('Giveaway',       new Schema({ guildId: String, channelId: String, messageId: String, prize: String, winners: Number, hostedBy: String, endsAt: Date, ended: Boolean, participants: [String], winnerIds: [String], requiredRole: String, minLevel: Number, minInvites: Number, claimDeadline: Date, claimedBy: [String] }));
+const Level           = model('Level',           new Schema({ userId: String, guildId: String, xp: { type: Number, default: 0 }, level: { type: Number, default: 0 }, lastMessage: Date, streak: { type: Number, default: 0 }, lastMessageDate: Date, dailyChallenges: { date: String, messages: Number, messagesCompleted: Boolean, vcMinutes: Number, vcCompleted: Boolean } }));
+const Warn            = model('Warn',            new Schema({ userId: String, guildId: String, moderator: String, reason: String, createdAt: { type: Date, default: Date.now } }));
+const Mute            = model('Mute',            new Schema({ userId: String, guildId: String, expiresAt: Date, reason: String }));
+const Giveaway        = model('Giveaway',        new Schema({ guildId: String, channelId: String, messageId: String, prize: String, winners: Number, hostedBy: String, endsAt: Date, ended: Boolean, participants: [String], winnerIds: [String], requiredRole: String, minLevel: Number, minInvites: Number, claimDeadline: Date, claimedBy: [String] }));
 const GiveawayBlacklist = model('GiveawayBlacklist', new Schema({ guildId: String, userId: String, reason: { type: String, default: 'Sin razón' }, addedBy: String, addedAt: { type: Date, default: Date.now } }));
-const GiveawayConfig = model('GiveawayConfig', new Schema({ guildId: { type: String, unique: true }, claimTimeout: { type: Number, default: 86400000 } }));
-const AutoRole       = model('AutoRole',       new Schema({ guildId: String, panelId: { type: String, unique: true }, channelId: String, messageId: String, name: String, title: String, description: String, requireConfirm: { type: Boolean, default: true }, maxRoles: { type: Number, default: 0 }, roles: [{ roleId: String, emoji: String, label: String, description: String, order: Number, minLevel: { type: Number, default: 0 }, requiredRole: String }], createdAt: { type: Date, default: Date.now }, updatedAt: { type: Date, default: Date.now } }));
-const SecurityLog    = model('SecurityLog',    new Schema({ userId: String, guildId: String, ip: String, country: String, countryCode: String, action: String, flagged: Boolean, joinedAt: { type: Date, default: Date.now } }));
-const InviteTracker  = model('InviteTracker',  new Schema({ guildId: String, userId: String, code: String, uses: { type: Number, default: 0 }, total: { type: Number, default: 0 }, fake: { type: Number, default: 0 }, left: { type: Number, default: 0 } }));
-const UserCoins      = model('UserCoins',      new Schema({ userId: String, guildId: String, coins: { type: Number, default: 0 }, totalEarned: { type: Number, default: 0 }, lastDaily: Date, lastWork: Date, ownedBackgrounds: { type: [String], default: [] }, activeBgId: { type: String, default: null } }));
-const Loan           = model('Loan',           new Schema({ userId: String, guildId: String, amount: Number, debt: Number, interestRate: { type: Number, default: 0.01 }, status: { type: String, default: 'active' }, lastInterest: Date, createdAt: { type: Date, default: Date.now } }));
-const ChannelsConfig = model('ChannelsConfig', new Schema({ guildId: String, logs: String, modLogs: String, welcome: String, levels: String, verification: String, tiktok: String, security: String, invites: String }));
-const RewardsConfig  = model('RewardsConfig',  new Schema({ guildId: String, initialCoins: Number, trivia_easy: Number, trivia_medium: Number, trivia_hard: Number, misiones_reward: Number, shop_rol_custom: Number, shop_mention: Number, shop_vc_boost: Number, max_loss_per_day: Number, max_bets_per_hour: Number, logsChannelId: String }));
-const GuildStyle     = model('GuildStyle',     new Schema({ guildId: { type: String, unique: true }, colors: { primary: Number, success: Number, warning: Number, danger: Number, info: Number, welcome: Number, giveaway: Number, level: Number }, footer: { text: String, iconUrl: String }, welcomeMessage: String, showTimestamp: { type: Boolean, default: true } }));
-const CasinoLog      = model('CasinoLog',      new Schema({ userId: String, guildId: String, game: String, bet: Number, result: String, profit: Number, timestamp: { type: Date, default: Date.now } }));
-const Achievements   = model('Achievements',   new Schema({ userId: String, guildId: String, badges: [{ id: String, name: String, unlockedAt: Date }], trivia_wins: { type: Number, default: 0 }, casino_wins: { type: Number, default: 0 }, win_streak: { type: Number, default: 0 }, max_bet: { type: Number, default: 0 }, createdAt: { type: Date, default: Date.now } }));
-const MissionProgress= model('MissionProgress',new Schema({ userId: String, guildId: String, week: Number, year: Number, missions: [{ id: String, name: String, target: Number, progress: { type: Number, default: 0 }, completed: { type: Boolean, default: false }, reward: { type: Number, default: 300 } }], claimed: { type: Boolean, default: false }, claimedAt: Date, createdAt: { type: Date, default: Date.now } }));
-const TriviaProgress = model('TriviaProgress', new Schema({ userId: String, guildId: String, totalWins: { type: Number, default: 0 }, totalFails: { type: Number, default: 0 }, streak: { type: Number, default: 0 }, triviaCount: { type: Number, default: 0 }, createdAt: { type: Date, default: Date.now } }));
-const Trade          = model('Trade',          new Schema({ guildId: String, fromUserId: String, toUserId: String, fromCoins: { type: Number, default: 0 }, toCoins: { type: Number, default: 0 }, status: { type: String, default: 'pending' }, expiresAt: Date, createdAt: { type: Date, default: Date.now } }));
-const ShopItem       = model('ShopItem',       new Schema({ guildId: String, itemId: String, name: String, description: String, price: Number, emoji: { type: String, default: '🛒' }, active: { type: Boolean, default: true }, createdBy: String, createdAt: { type: Date, default: Date.now } }));
-const XpBoost        = model('XpBoost',        new Schema({ userId: String, guildId: String, multiplier: Number, expiresAt: Date, grantedBy: String }));
-const GameHistory    = model('GameHistory',    new Schema({ guildId: String, game: String, result: mongoose.Schema.Types.Mixed, players: [{ userId: String, betType: String, amount: Number, won: Boolean, delta: Number }], endedAt: { type: Date, default: Date.now } }));
-const ServerBackground=model('ServerBackground',new Schema({ guildId: String, bgId: String, name: String, description: String, price: { type: Number, default: 0 }, filePath: String, isDefault: { type: Boolean, default: false }, createdBy: String, createdAt: { type: Date, default: Date.now } }));
-const Arm            = model('Arm',            new Schema({ userId: String, guildId: String, itemId: String, name: String, skin: String, type: String, emoji: String, rarity: String, rarityName: String, rarityEmoji: String, rarityColor: Number, wear: String, wearTag: String, basePrice: Number, sellPrice: Number, caseId: String, tradeId: String, obtainedAt: { type: Date, default: Date.now } }));
-const MarketListing  = model('MarketListing',  new Schema({ guildId: String, sellerId: String, armId: mongoose.Schema.Types.ObjectId, itemId: String, name: String, skin: String, type: String, rarity: String, rarityName: String, rarityColor: Number, wear: String, wearTag: String, basePrice: Number, price: Number, status: { type: String, default: 'active' }, buyerId: String, listedAt: { type: Date, default: Date.now }, expiresAt: Date, soldAt: Date }));
-const ArmCurrentPrice= model('ArmCurrentPrice',new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, rarityColor: Number, currentPrice: Number, openPrice24h: Number, high24h: Number, low24h: Number, volume24h: { type: Number, default: 0 }, lastUpdated: Date }));
-const ArmPrice       = model('ArmPrice',       new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, open: Number, high: Number, low: Number, close: Number, volume: Number, timestamp: { type: Date, default: Date.now } }));
-const MarketTx       = model('MarketTx',       new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, price: Number, sellerId: String, buyerId: String, timestamp: { type: Date, default: Date.now } }));
+const GiveawayConfig  = model('GiveawayConfig',  new Schema({ guildId: { type: String, unique: true }, claimTimeout: { type: Number, default: 86400000 } }));
+const AutoRole        = model('AutoRole',        new Schema({ guildId: String, panelId: { type: String, unique: true }, channelId: String, messageId: String, name: String, title: String, description: String, requireConfirm: { type: Boolean, default: true }, maxRoles: { type: Number, default: 0 }, roles: [{ roleId: String, emoji: String, label: String, description: String, order: Number, minLevel: { type: Number, default: 0 }, requiredRole: String }], createdAt: { type: Date, default: Date.now }, updatedAt: { type: Date, default: Date.now } }));
+const SecurityLog     = model('SecurityLog',     new Schema({ userId: String, guildId: String, ip: String, country: String, countryCode: String, action: String, flagged: Boolean, joinedAt: { type: Date, default: Date.now } }));
+const InviteTracker   = model('InviteTracker',   new Schema({ guildId: String, userId: String, code: String, uses: { type: Number, default: 0 }, total: { type: Number, default: 0 }, fake: { type: Number, default: 0 }, left: { type: Number, default: 0 } }));
 
-const ShopPurchase = mongoose.models.ShopPurchase || model('ShopPurchase', new Schema({
-  userId: String, guildId: String, itemId: String, itemName: String,
-  price: Number, purchasedAt: { type: Date, default: Date.now }
-}));
+// ── UserCoins: compartido con el bot — modificar aquí afecta el balance real
+const UserCoins       = model('UserCoins',       new Schema({ userId: String, guildId: String, coins: { type: Number, default: 0 }, totalEarned: { type: Number, default: 0 }, lastDaily: Date, lastWork: Date, ownedBackgrounds: { type: [String], default: [] }, activeBgId: { type: String, default: null } }));
 
-// ── IDs con acceso a logs de IP ────────────────────────────────────────────
-const IP_LOG_ALLOWED = ['990868869449121852', '754090767915548672'];
+const Loan            = model('Loan',            new Schema({ userId: String, guildId: String, amount: Number, debt: Number, interestRate: { type: Number, default: 0.01 }, status: { type: String, default: 'active' }, lastInterest: Date, createdAt: { type: Date, default: Date.now } }));
+const ChannelsConfig  = model('ChannelsConfig',  new Schema({ guildId: String, logs: String, modLogs: String, welcome: String, levels: String, verification: String, tiktok: String, security: String, invites: String }));
+const RewardsConfig   = model('RewardsConfig',   new Schema({ guildId: String, initialCoins: Number, trivia_easy: Number, trivia_medium: Number, trivia_hard: Number, misiones_reward: Number, shop_rol_custom: Number, shop_mention: Number, shop_vc_boost: Number, max_loss_per_day: Number, max_bets_per_hour: Number, logsChannelId: String }));
+const GuildStyle      = model('GuildStyle',      new Schema({ guildId: { type: String, unique: true }, colors: { primary: Number, success: Number, warning: Number, danger: Number, info: Number, welcome: Number, giveaway: Number, level: Number }, footer: { text: String, iconUrl: String }, welcomeMessage: String, showTimestamp: { type: Boolean, default: true } }));
+const CasinoLog       = model('CasinoLog',       new Schema({ userId: String, guildId: String, game: String, bet: Number, result: String, profit: Number, timestamp: { type: Date, default: Date.now } }));
+const Achievements    = model('Achievements',    new Schema({ userId: String, guildId: String, badges: [{ id: String, name: String, unlockedAt: Date }], trivia_wins: { type: Number, default: 0 }, casino_wins: { type: Number, default: 0 }, win_streak: { type: Number, default: 0 }, max_bet: { type: Number, default: 0 }, createdAt: { type: Date, default: Date.now } }));
+const MissionProgress = model('MissionProgress', new Schema({ userId: String, guildId: String, week: Number, year: Number, missions: [{ id: String, name: String, target: Number, progress: { type: Number, default: 0 }, completed: { type: Boolean, default: false }, reward: { type: Number, default: 300 } }], claimed: { type: Boolean, default: false }, claimedAt: Date, createdAt: { type: Date, default: Date.now } }));
+const TriviaProgress  = model('TriviaProgress',  new Schema({ userId: String, guildId: String, totalWins: { type: Number, default: 0 }, totalFails: { type: Number, default: 0 }, streak: { type: Number, default: 0 }, triviaCount: { type: Number, default: 0 }, createdAt: { type: Date, default: Date.now } }));
+const Trade           = model('Trade',           new Schema({ guildId: String, fromUserId: String, toUserId: String, fromCoins: { type: Number, default: 0 }, toCoins: { type: Number, default: 0 }, status: { type: String, default: 'pending' }, expiresAt: Date, createdAt: { type: Date, default: Date.now } }));
+const ShopItem        = model('ShopItem',        new Schema({ guildId: String, itemId: String, name: String, description: String, price: Number, emoji: { type: String, default: '🛒' }, active: { type: Boolean, default: true }, createdBy: String, createdAt: { type: Date, default: Date.now } }));
+const XpBoost         = model('XpBoost',         new Schema({ userId: String, guildId: String, multiplier: Number, expiresAt: Date, grantedBy: String }));
+const GameHistory     = model('GameHistory',     new Schema({ guildId: String, game: String, result: mongoose.Schema.Types.Mixed, players: [{ userId: String, betType: String, amount: Number, won: Boolean, delta: Number }], endedAt: { type: Date, default: Date.now } }));
+const ServerBackground= model('ServerBackground',new Schema({ guildId: String, bgId: String, name: String, description: String, price: { type: Number, default: 0 }, filePath: String, isDefault: { type: Boolean, default: false }, createdBy: String, createdAt: { type: Date, default: Date.now } }));
+const Arm             = model('Arm',             new Schema({ userId: String, guildId: String, itemId: String, name: String, skin: String, type: String, emoji: String, rarity: String, rarityName: String, rarityEmoji: String, rarityColor: Number, wear: String, wearTag: String, basePrice: Number, sellPrice: Number, caseId: String, tradeId: String, obtainedAt: { type: Date, default: Date.now } }));
+const MarketListing   = model('MarketListing',   new Schema({ guildId: String, sellerId: String, armId: mongoose.Schema.Types.ObjectId, itemId: String, name: String, skin: String, type: String, rarity: String, rarityName: String, rarityColor: Number, wear: String, wearTag: String, basePrice: Number, price: Number, status: { type: String, default: 'active' }, buyerId: String, listedAt: { type: Date, default: Date.now }, expiresAt: Date, soldAt: Date }));
+const ArmCurrentPrice = model('ArmCurrentPrice', new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, rarityColor: Number, currentPrice: Number, openPrice24h: Number, high24h: Number, low24h: Number, volume24h: { type: Number, default: 0 }, lastUpdated: Date }));
+const ArmPrice        = model('ArmPrice',        new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, open: Number, high: Number, low: Number, close: Number, volume: Number, timestamp: { type: Date, default: Date.now } }));
+const MarketTx        = model('MarketTx',        new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, price: Number, sellerId: String, buyerId: String, timestamp: { type: Date, default: Date.now } }));
+const ShopPurchase    = mongoose.models.ShopPurchase || model('ShopPurchase', new Schema({ userId: String, guildId: String, itemId: String, itemName: String, price: Number, purchasedAt: { type: Date, default: Date.now } }));
 
-// ── Discord helpers ────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════════════════════════════════
+const IP_LOG_ALLOWED = ['990868869449121852', '751153328326443109'];
 const GUILD_ID       = process.env.GUILD_ID;
 const ADMIN_ROLE_IDS = (process.env.ADMIN_ROLE_IDS || process.env.ADMIN_ROLE_ID || '').split(',').map(r => r.trim()).filter(Boolean);
 const userCache      = new Map();
 
+// ══════════════════════════════════════════════════════════════════════════
+//  HELPERS DISCORD
+// ══════════════════════════════════════════════════════════════════════════
 function discordReq(endpoint, bearer, isBot) {
   return new Promise(resolve => {
     const req = https.request({
@@ -89,15 +93,27 @@ function discordReq(endpoint, bearer, isBot) {
 async function getUser(userId) {
   if (userCache.has(userId)) return userCache.get(userId);
   const u = await discordReq(`/users/${userId}`, null, true);
-  const data = { username: u?.username || userId, avatar: u?.avatar ? `https://cdn.discordapp.com/avatars/${userId}/${u.avatar}.png?size=32` : null };
+  const data = {
+    username: u?.username || userId,
+    avatar: u?.avatar ? `https://cdn.discordapp.com/avatars/${userId}/${u.avatar}.png?size=32` : null
+  };
   userCache.set(userId, data);
   return data;
 }
 
 function exchangeCode(code) {
   return new Promise(resolve => {
-    const params = new URLSearchParams({ client_id: process.env.DISCORD_CLIENT_ID, client_secret: process.env.DISCORD_CLIENT_SECRET, grant_type: 'authorization_code', code, redirect_uri: process.env.DISCORD_REDIRECT_URI }).toString();
-    const req = https.request({ hostname: 'discord.com', path: '/api/v10/oauth2/token', method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(params) } }, res => {
+    const params = new URLSearchParams({
+      client_id: process.env.DISCORD_CLIENT_ID,
+      client_secret: process.env.DISCORD_CLIENT_SECRET,
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: process.env.DISCORD_REDIRECT_URI
+    }).toString();
+    const req = https.request({
+      hostname: 'discord.com', path: '/api/v10/oauth2/token', method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(params) }
+    }, res => {
       let b = '';
       res.on('data', c => b += c);
       res.on('end', () => { try { resolve(JSON.parse(b)); } catch { resolve(null); } });
@@ -110,7 +126,9 @@ function exchangeCode(code) {
 
 const requireAuth = (req, res, next) => req.session?.user ? next() : res.status(401).json({ error: 'No autenticado' });
 
-// ── Auth ───────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════════════════════════════
 app.get('/auth/discord', (req, res) => {
   if (req.query.from) req.session.casinoFrom = req.query.from;
   res.redirect(`https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.DISCORD_REDIRECT_URI)}&response_type=code&scope=identify`);
@@ -129,7 +147,9 @@ app.get('/auth/callback', async (req, res) => {
     req.session.user = {
       id: user.id,
       username: user.username,
-      avatar: user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64` : 'https://cdn.discordapp.com/embed/avatars/0.png',
+      avatar: user.avatar
+        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
+        : 'https://cdn.discordapp.com/embed/avatars/0.png',
       isAdmin,
     };
     const from = req.session.casinoFrom;
@@ -144,7 +164,9 @@ app.get('/auth/callback', async (req, res) => {
 app.get('/auth/logout', (req, res) => { req.session.destroy(); res.redirect('/login'); });
 app.get('/api/me', (req, res) => req.session?.user ? res.json(req.session.user) : res.status(401).json({ error: 'No autenticado' }));
 
-// ── Stats helper ───────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+//  STATS HELPER
+// ══════════════════════════════════════════════════════════════════════════
 async function getStats() {
   try {
     const [guild, totalUsers, activeGiveaways, activeLoans, flaggedJoins, recentLogs, casinoAgg, totalWarns] = await Promise.all([
@@ -166,14 +188,55 @@ async function getStats() {
       const key = new Date(l.joinedAt).toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric' });
       if (joinsByDay[key] !== undefined) joinsByDay[key]++;
     });
-    return { members: guild?.approximate_member_count || 0, online: guild?.approximate_presence_count || 0, registeredUsers: totalUsers, activeGiveaways, activeLoans, flaggedJoins, totalWarns, joinsByDay, casinoBets: casinoAgg[0]?.bets || 0, casinoProfit: casinoAgg[0]?.profit || 0 };
+    return {
+      members: guild?.approximate_member_count || 0,
+      online: guild?.approximate_presence_count || 0,
+      registeredUsers: totalUsers, activeGiveaways, activeLoans, flaggedJoins, totalWarns,
+      joinsByDay, casinoBets: casinoAgg[0]?.bets || 0, casinoProfit: casinoAgg[0]?.profit || 0
+    };
   } catch (e) { console.error('[stats]', e); return null; }
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-//  APIs DEL DASHBOARD (requieren rol de admin)
+//  HELPER: Actualizar monedas y notificar al bot via Socket + DB
+//  Esto garantiza que el bot de Discord vea el cambio inmediatamente
 // ══════════════════════════════════════════════════════════════════════════
+async function applyCoins(userId, delta, isWin = false) {
+  const update = { $inc: { coins: delta } };
+  if (isWin && delta > 0) update.$inc.totalEarned = delta;
+  const updated = await UserCoins.findOneAndUpdate(
+    { userId, guildId: GUILD_ID },
+    update,
+    { new: true }
+  );
+  if (updated && global.io) {
+    // Notifica al frontend del casino (actualiza saldo en tiempo real)
+    global.io.emit('coins:update', { userId, coins: updated.coins });
+    // Notifica al bot de Discord si está escuchando el mismo socket
+    global.io.emit('bot:coins:update', { userId, guildId: GUILD_ID, coins: updated.coins, delta });
+  }
+  return updated;
+}
 
+async function logAndAchieve(userId, game, bet, won, delta) {
+  await CasinoLog.create({ userId, guildId: GUILD_ID, game, bet, result: won ? 'win' : 'loss', profit: delta });
+  if (won) {
+    await Achievements.findOneAndUpdate(
+      { userId, guildId: GUILD_ID },
+      { $inc: { casino_wins: 1 }, $max: { max_bet: bet } },
+      { upsert: true }
+    );
+  }
+  // Emitir al feed en vivo del casino
+  if (global.io) {
+    const u = await getUser(userId);
+    global.io.emit('casino:bet', { userId, username: u.username, game, bet, profit: delta });
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  APIS DEL DASHBOARD (requieren rol admin)
+// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/stats', requireAuth, async (req, res) => {
   const stats = await getStats();
   if (!stats) return res.status(500).json({ error: 'Error' });
@@ -184,7 +247,7 @@ app.get('/api/invites', requireAuth, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1, limit = 15;
     const [agg, countAgg] = await Promise.all([
-      InviteTracker.aggregate([{ $match: { guildId: GUILD_ID } }, { $group: { _id: '$userId', reales: { $sum: '$uses' }, total: { $sum: '$total' }, fake: { $sum: '$fake' }, left: { $sum: '$left' } } }, { $sort: { reales: -1 } }, { $skip: (page - 1) * limit }, { $limit: limit }]),
+      InviteTracker.aggregate([{ $match: { guildId: GUILD_ID } }, { $group: { _id: '$userId', reales: { $sum: '$uses' }, total: { $sum: '$total' }, fake: { $sum: '$fake' }, left: { $sum: '$left' } } }, { $sort: { reales: -1 } }, { $skip: (page-1)*limit }, { $limit: limit }]),
       InviteTracker.aggregate([{ $match: { guildId: GUILD_ID } }, { $group: { _id: '$userId' } }, { $count: 'total' }]),
     ]);
     const enriched = await Promise.all(agg.map(async (inv, i) => { const u = await getUser(inv._id); return { rank: (page-1)*limit+i+1, userId: inv._id, username: u.username, avatar: u.avatar, reales: inv.reales, total: inv.total, fake: inv.fake, left: inv.left }; }));
@@ -249,13 +312,9 @@ app.get('/api/levels', requireAuth, async (req, res) => {
 app.get('/api/moderation', requireAuth, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1, tab = req.query.tab || 'warns', limit = 15;
-
-    // ── Restricción de logs de IP: solo IDs autorizados ────────────────────
     if (tab === 'logs' && !IP_LOG_ALLOWED.includes(req.session.user.id)) {
       return res.status(403).json({ error: 'No tienes permiso para ver los logs de IP' });
     }
-    // ──────────────────────────────────────────────────────────────────────
-
     let items = [], count = 0;
     if (tab === 'warns') {
       const agg = await Warn.find({ guildId: GUILD_ID }).sort({ createdAt: -1 }).skip((page-1)*limit).limit(limit).lean();
@@ -480,7 +539,6 @@ app.get('/api/backgrounds', requireAuth, async (req, res) => {
 // ══════════════════════════════════════════════════════════════════════════
 //  APIs DEL CASINO PÚBLICO
 // ══════════════════════════════════════════════════════════════════════════
-
 app.get('/api/casino/public/stats', async (req, res) => {
   try {
     const [totalBets, totalPlayers, volAgg, topWinners, topCoins] = await Promise.all([
@@ -496,10 +554,8 @@ app.get('/api/casino/public/stats', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-app.get('/api/casino/public/market', async (req, res) => {
-  try { res.json({ items: await ArmCurrentPrice.find({ guildId: GUILD_ID }).sort({ currentPrice: -1 }).limit(30).lean() }); }
-  catch (e) { res.status(500).json({ error: 'Error' }); }
-});
+app.get('/api/casino/public/market',    async (req, res) => { try { res.json({ items: await ArmCurrentPrice.find({ guildId: GUILD_ID }).sort({ currentPrice: -1 }).limit(30).lean() }); } catch (e) { res.status(500).json({ error: 'Error' }); } });
+app.get('/api/casino/public/shop',      async (req, res) => { try { res.json({ items: await ShopItem.find({ guildId: GUILD_ID, active: true }).sort({ price: 1 }).lean() }); } catch (e) { res.status(500).json({ error: 'Error' }); } });
 
 app.get('/api/casino/public/listings', async (req, res) => {
   try {
@@ -529,11 +585,6 @@ app.get('/api/casino/public/leaderboard', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-app.get('/api/casino/public/shop', async (req, res) => {
-  try { res.json({ items: await ShopItem.find({ guildId: GUILD_ID, active: true }).sort({ price: 1 }).lean() }); }
-  catch (e) { res.status(500).json({ error: 'Error' }); }
-});
-
 app.get('/api/casino/me', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -556,23 +607,25 @@ app.get('/api/casino/me/full', async (req, res) => {
       Arm.find({ userId, guildId: GUILD_ID }).sort({ obtainedAt: -1 }).limit(30).lean(),
     ]);
     res.json({
-      coins:        coins?.coins        || 0,
-      totalEarned:  coins?.totalEarned  || 0,
-      activeBgId:   coins?.activeBgId   || null,
-      ownedBackgrounds: coins?.ownedBackgrounds || [],
-      level:        level?.level        || 0,
-      xp:           level?.xp           || 0,
-      streak:       level?.streak       || 0,
-      casinoWins:   ach?.casino_wins    || 0,
-      registered:   !!coins,
-      arms:         arms                || [],
+      coins: coins?.coins || 0, totalEarned: coins?.totalEarned || 0,
+      activeBgId: coins?.activeBgId || null, ownedBackgrounds: coins?.ownedBackgrounds || [],
+      level: level?.level || 0, xp: level?.xp || 0, streak: level?.streak || 0,
+      casinoWins: ach?.casino_wins || 0, registered: !!coins, arms: arms || [],
     });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
+// ══════════════════════════════════════════════════════════════════════════
+//  CASINO PLAY — juegos principales + NUEVOS (hilo, baccarat, plinko, videopoker)
+//  Las monedas se modifican en UserCoins (mismo modelo que el bot)
+//  El bot verá el cambio inmediatamente al consultar la DB
+// ══════════════════════════════════════════════════════════════════════════
+
+// Juegos manejados por handleExtendedPlay
+const EXT_GAMES = ['carreras', 'loteria', 'minas', 'hilo', 'baccarat', 'plinko', 'videopoker'];
+
 app.post('/api/casino/play', async (req, res) => {
-  const extGames = ['carreras','loteria','minas'];
-  if (extGames.includes(req.body?.game)) return handleExtendedPlay(req, res);
+  if (EXT_GAMES.includes(req.body?.game)) return handleExtendedPlay(req, res);
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id;
@@ -581,15 +634,18 @@ app.post('/api/casino/play', async (req, res) => {
     const userCoins = await UserCoins.findOne({ userId, guildId: GUILD_ID });
     if (!userCoins) return res.status(403).json({ error: 'Usa /registrarse en Discord primero' });
     if (userCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
+
     let won = false, winProfit = 0, number = null, slotsReels = null, multiplier = 1;
+
     if (game === 'ruleta') {
       number = Math.floor(Math.random() * 37);
-      const reds = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+      const reds   = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
       const blacks = new Set([2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35]);
       const checks = { rojo: reds.has(number), negro: blacks.has(number), par: number !== 0 && number % 2 === 0, impar: number !== 0 && number % 2 !== 0, bajo: number >= 1 && number <= 18, alto: number >= 19 && number <= 36, docena1: number >= 1 && number <= 12, docena2: number >= 13 && number <= 24, docena3: number >= 25 && number <= 36, verde: number === 0 };
-      const mults = { rojo:2, negro:2, par:2, impar:2, bajo:2, alto:2, docena1:3, docena2:3, docena3:3, verde:35 };
+      const mults  = { rojo:2, negro:2, par:2, impar:2, bajo:2, alto:2, docena1:3, docena2:3, docena3:3, verde:35 };
       won = checks[type] || false; multiplier = mults[type] || 2;
       winProfit = won ? bet * (multiplier - 1) : 0;
+
     } else if (game === 'slots') {
       const syms = ['🍒','7️⃣','💰','🎰','⭐','🔔'];
       const s1 = Math.floor(Math.random() * 6), s2 = Math.floor(Math.random() * 6), s3 = Math.floor(Math.random() * 6);
@@ -597,21 +653,22 @@ app.post('/api/casino/play', async (req, res) => {
       if (s1===s2 && s2===s3) { won=true; multiplier=10; }
       else if (s1===s2 || s2===s3 || s1===s3) { won=true; multiplier=2; }
       winProfit = won ? Math.floor(bet*(multiplier-1)) : 0;
+
     } else if (game === 'blackjack') {
       if (!['win','blackjack','push','lose','bust'].includes(result)) return res.status(400).json({ error: 'Resultado inválido' });
       won = ['win','blackjack','push'].includes(result);
       winProfit = result==='blackjack' ? Math.floor(bet*1.5) : result==='win' ? bet : 0;
       multiplier = result==='blackjack' ? 2.5 : 2;
     }
-    const delta = won ? winProfit : -bet;
-    const updated = await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { coins: delta, ...(won&&winProfit>0?{totalEarned:winProfit}:{}) } }, { new: true });
-    await CasinoLog.create({ userId, guildId: GUILD_ID, game, bet, result: won?'win':'loss', profit: delta });
-    if (won) await Achievements.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { casino_wins: 1 }, $max: { max_bet: bet } }, { upsert: true });
-    if (global.io) global.io.emit('coins:update', { userId, coins: updated.coins });
+
+    const delta   = won ? winProfit : -bet;
+    const updated = await applyCoins(userId, delta, won);
+    await logAndAchieve(userId, game, bet, won, delta);
     res.json({ won, number, multiplier, reels: slotsReels, newBalance: updated.coins, profit: delta });
   } catch (e) { console.error('[casino/play]', e); res.status(500).json({ error: 'Error' }); }
 });
 
+// ── CRASH ─────────────────────────────────────────────────────────────────
 app.post('/api/casino/crash/start', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -622,7 +679,7 @@ app.post('/api/casino/crash/start', async (req, res) => {
     if (userCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
     const r = Math.random();
     let crashAt;
-    if (r < 0.50)      crashAt = 1 + Math.random() * 0.8;
+    if      (r < 0.50) crashAt = 1 + Math.random() * 0.8;
     else if (r < 0.75) crashAt = 1.8 + Math.random() * 1.2;
     else if (r < 0.90) crashAt = 3 + Math.random() * 4;
     else if (r < 0.97) crashAt = 7 + Math.random() * 8;
@@ -642,14 +699,13 @@ app.post('/api/casino/crash/cashout', async (req, res) => {
     if (Date.now() - game.ts > 120000) return res.status(400).json({ error: 'Tiempo expirado' });
     req.session.crashGame = null;
     const winProfit = Math.floor(bet * mult) - bet;
-    const updated = await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { coins: winProfit, totalEarned: winProfit } }, { new: true });
-    await CasinoLog.create({ userId, guildId: GUILD_ID, game: 'crash', bet, result: 'win', profit: winProfit });
-    await Achievements.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { casino_wins: 1 }, $max: { max_bet: bet } }, { upsert: true });
-    if (global.io) global.io.emit('coins:update', { userId, coins: updated.coins });
+    const updated   = await applyCoins(userId, winProfit, true);
+    await logAndAchieve(userId, 'crash', bet, true, winProfit);
     res.json({ won: true, newBalance: updated.coins, profit: winProfit });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
+// ── SHOP BUY ──────────────────────────────────────────────────────────────
 app.post('/api/casino/buy', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -658,40 +714,64 @@ app.post('/api/casino/buy', async (req, res) => {
     if (!item) return res.status(404).json({ error: 'Item no encontrado' });
     const userCoins = await UserCoins.findOne({ userId, guildId: GUILD_ID });
     if (!userCoins || userCoins.coins < item.price) return res.status(400).json({ error: 'Saldo insuficiente' });
-    const updated = await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { coins: -item.price } }, { new: true });
-    if (global.io) global.io.emit('coins:update', { userId, coins: updated.coins });
-    await ShopPurchase.create({ userId, guildId: GUILD_ID, itemId, itemName: item.name, price: item.price }).catch(()=>{});
+    const updated = await applyCoins(userId, -item.price, false);
+    await ShopPurchase.create({ userId, guildId: GUILD_ID, itemId, itemName: item.name, price: item.price }).catch(() => {});
     res.json({ success: true, newBalance: updated.coins });
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ── Carreras ───────────────────────────────────────────────────────────────
-const HORSES_DATA = {
-  A: { baseSpeed:0.35, variance:0.40 },
-  B: { baseSpeed:0.38, variance:0.30 },
-  C: { baseSpeed:0.32, variance:0.50 },
-  D: { baseSpeed:0.40, variance:0.20 },
-  E: { baseSpeed:0.30, variance:0.60 },
-};
+// ══════════════════════════════════════════════════════════════════════════
+//  handleExtendedPlay — carreras, lotería, minas + NUEVOS JUEGOS
+//  Todos modifican UserCoins → el bot de Discord los verá en tiempo real
+// ══════════════════════════════════════════════════════════════════════════
+const HORSES_DATA = { A:{baseSpeed:.35,variance:.40}, B:{baseSpeed:.38,variance:.30}, C:{baseSpeed:.32,variance:.50}, D:{baseSpeed:.40,variance:.20}, E:{baseSpeed:.30,variance:.60} };
+
+// Helpers para juegos del servidor
+function bacCV(rank){ if(['J','Q','K','10'].includes(rank)) return 0; if(rank==='A') return 1; return parseInt(rank); }
+function bacTotal(hand){ return hand.reduce((s,c)=>s+bacCV(c.rank),0)%10; }
+function bacSimulate(){
+  const RANKS=['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  const SUITS=['♠','♥','♦','♣'];
+  const deck=RANKS.flatMap(r=>SUITS.map(s=>({rank:r,suit:s}))).sort(()=>Math.random()-.5);
+  let pi=0; const deal=()=>deck[pi++];
+  let pH=[deal(),deal()], bH=[deal(),deal()];
+  const pT=bacTotal(pH), bT=bacTotal(bH);
+  let pD=false, bD=false;
+  if(pT<=5) pD=true;
+  if(pD){ const c3=deal(); pH.push(c3); const pv3=bacCV(c3.rank); if(bT<=2)bD=true; else if(bT===3&&pv3!==8)bD=true; else if(bT===4&&[2,3,4,5,6,7].includes(pv3))bD=true; else if(bT===5&&[4,5,6,7].includes(pv3))bD=true; else if(bT===6&&[6,7].includes(pv3))bD=true; }
+  else{ if(bT<=5)bD=true; }
+  if(bD) bH.push(deal());
+  const pF=bacTotal(pH), bF=bacTotal(bH);
+  return pF>bF?'player':bF>pF?'banker':'tie';
+}
+
+const PLINKO_MULTS_SRV = { low:[1.5,1.2,1.1,1.0,0.5,1.0,1.1,1.2,1.5], medium:[3.0,1.5,1.2,0.8,0.3,0.8,1.2,1.5,3.0], high:[100,9,4,2,0.2,2,4,9,100] };
+function plinkoSimulate(risk){
+  let col=0; for(let i=0;i<8;i++) col+=Math.random()<.5?1:0; col=Math.min(col,8);
+  return{ col, mult:(PLINKO_MULTS_SRV[risk]||PLINKO_MULTS_SRV.low)[col] };
+}
 
 async function handleExtendedPlay(req, res) {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id;
-    const { game, bet, horse, winner, result, profit: clientProfit } = req.body;
+    const { game, bet, horse, winner, result, profit: clientProfit, myBet, risk } = req.body;
     if (!bet || bet < 1) return res.status(400).json({ error: 'Apuesta inválida' });
     const userCoins = await UserCoins.findOne({ userId, guildId: GUILD_ID });
     if (!userCoins) return res.status(403).json({ error: 'Usa /registrarse en Discord primero' });
     if (userCoins.coins < bet) return res.status(400).json({ error: 'Saldo insuficiente' });
+
     let won = false, delta = -bet;
+
+    // ── Juegos originales ──────────────────────────────────────────────────
     if (game === 'carreras') {
       const pos = Object.fromEntries(Object.keys(HORSES_DATA).map(k => [k, 0]));
       let serverWinner = null;
       for (let t = 0; t < 200 && !serverWinner; t++) {
         for (const [id, h] of Object.entries(HORSES_DATA)) {
           let adv = 0;
-          if (Math.random() < h.baseSpeed + (Math.random()-0.5)*h.variance) adv = 1;
-          if (Math.random() < 0.05) adv++;
+          if (Math.random() < h.baseSpeed + (Math.random()-.5)*h.variance) adv = 1;
+          if (Math.random() < .05) adv++;
           pos[id] = Math.min(20, pos[id] + adv);
         }
         const fin = Object.entries(pos).filter(([,v]) => v >= 20);
@@ -700,32 +780,75 @@ async function handleExtendedPlay(req, res) {
       if (!serverWinner) serverWinner = winner;
       won = serverWinner === horse;
       delta = won ? bet : -bet;
+
     } else if (game === 'loteria') {
-      const LOT_SYMS = ['🍒','⭐','💎','🍀','🔔','🎯','🎰','💰','🌙'];
-      const grid = Array.from({length:9}, () => LOT_SYMS[Math.floor(Math.random()*LOT_SYMS.length)]);
+      const LOT = ['🍒','⭐','💎','🍀','🔔','🎯','🎰','💰','🌙'];
+      const grid = Array.from({length:9}, () => LOT[Math.floor(Math.random()*LOT.length)]);
       const counts = {}; for (const s of grid) counts[s] = (counts[s]||0)+1;
       const max = Math.max(...Object.values(counts));
-      const serverMult = max>=7?3.0 : max>=5?2.0 : max>=4?1.5 : max>=3?1.0 : 0;
-      won = serverMult > 0;
-      delta = won ? Math.floor(bet * serverMult) - bet : -bet;
+      const mult = max>=7?3.0:max>=5?2.0:max>=4?1.5:max>=3?1.0:0;
+      won = mult > 0;
+      delta = won ? Math.floor(bet * mult) - bet : -bet;
+
     } else if (game === 'minas') {
       if (result === 'cashout' && clientProfit > 0) {
-        won = true; delta = Math.min(clientProfit, bet * 20);
+        won = true;
+        delta = Math.min(clientProfit, bet * 20); // techo anti-cheat: máx 20×
       } else {
         won = false; delta = -bet;
       }
+
+    // ── NUEVOS JUEGOS ──────────────────────────────────────────────────────
+    // Hi-Lo: el cliente controla la lógica de cartas (son aleatorias en JS)
+    // El servidor valida que el profit no exceda un límite razonable
+    } else if (game === 'hilo') {
+      if (result === 'cashout' && clientProfit > 0) {
+        won = true;
+        delta = Math.min(clientProfit, bet * 500); // techo: máx 500× (racha de ~9)
+      } else {
+        won = false; delta = -bet;
+      }
+
+    // Baccarat: el servidor re-simula las cartas independientemente
+    // Garantiza que el resultado no se puede falsificar desde el cliente
+    } else if (game === 'baccarat') {
+      const serverOutcome = bacSimulate();
+      const betTarget = myBet || 'player';
+      won = serverOutcome === betTarget;
+      const multMap = { player: 2, banker: 1.95, tie: 9 };
+      const m = multMap[betTarget] || 2;
+      delta = won ? Math.floor(bet * (m - 1)) : -bet;
+
+    // Plinko: el servidor re-simula el camino de la bola
+    // El cliente solo ve la animación; el resultado real viene del servidor
+    } else if (game === 'plinko') {
+      const riskLevel = risk || 'low';
+      const { mult: serverMult } = plinkoSimulate(riskLevel);
+      const serverProfit = Math.floor(bet * serverMult) - bet;
+      won = serverProfit > 0;
+      delta = serverProfit;
+
+    // Video Poker: el servidor valida el profit contra el máximo posible (800×)
+    } else if (game === 'videopoker') {
+      if (result === 'win' && clientProfit > 0) {
+        won = true;
+        delta = Math.min(clientProfit, bet * 800); // techo: Royal Flush 800×
+      } else {
+        won = false; delta = -bet;
+      }
+
     } else {
       return res.status(400).json({ error: 'Juego no reconocido' });
     }
-    const updated = await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { coins: delta, ...(won&&delta>0?{totalEarned:delta}:{}) } }, { new: true });
-    await CasinoLog.create({ userId, guildId: GUILD_ID, game, bet, result: won?'win':'loss', profit: delta });
-    if (won) await Achievements.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc:{casino_wins:1}, $max:{max_bet:bet} }, { upsert:true });
-    if (global.io) global.io.emit('coins:update', { userId, coins: updated.coins });
+
+    // Aplicar cambio de monedas en DB (compartida con el bot)
+    const updated = await applyCoins(userId, delta, won);
+    await logAndAchieve(userId, game, bet, won, delta);
     res.json({ won, profit: delta, newBalance: updated.coins });
   } catch (e) { console.error('[casino/extended]', e); res.status(500).json({ error: 'Error' }); }
 }
 
-// ── Batalla ────────────────────────────────────────────────────────────────
+// ── BATALLA ───────────────────────────────────────────────────────────────
 app.post('/api/casino/battle', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -743,17 +866,22 @@ app.post('/api/casino/battle', async (req, res) => {
       winner.coins += bet; winner.totalEarned += bet; loser.coins -= bet;
       await Promise.all([winner.save(), loser.save()]);
       await Promise.all([
-        CasinoLog.create({ userId, guildId: GUILD_ID, game:'batalla', bet, result:iWon?'win':'loss', profit:iWon?bet:-bet }),
-        CasinoLog.create({ userId:opponentId, guildId: GUILD_ID, game:'batalla', bet, result:iWon?'loss':'win', profit:iWon?-bet:bet }),
+        CasinoLog.create({ userId, guildId: GUILD_ID, game: 'batalla', bet, result: iWon?'win':'loss', profit: iWon?bet:-bet }),
+        CasinoLog.create({ userId: opponentId, guildId: GUILD_ID, game: 'batalla', bet, result: iWon?'loss':'win', profit: iWon?-bet:bet }),
       ]);
-      if (iWon) await Achievements.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc:{casino_wins:1}, $max:{max_bet:bet} }, { upsert:true });
+      if (iWon) await Achievements.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { casino_wins: 1 }, $max: { max_bet: bet } }, { upsert: true });
+      if (global.io) {
+        global.io.emit('coins:update', { userId, coins: myCoins.coins });
+        global.io.emit('coins:update', { userId: opponentId, coins: opCoins.coins });
+        const u = await getUser(userId);
+        global.io.emit('casino:bet', { userId, username: u.username, game: 'batalla', bet, profit: iWon?bet:-bet });
+      }
     }
-    if (global.io) { global.io.emit('coins:update', { userId, coins: myCoins.coins }); global.io.emit('coins:update', { userId: opponentId, coins: opCoins.coins }); }
     res.json({ won: iWon, tie, myRoll, opponentRoll: opRoll, newBalance: myCoins.coins });
   } catch (e) { console.error('[battle]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-// ── Trivia ─────────────────────────────────────────────────────────────────
+// ── TRIVIA ────────────────────────────────────────────────────────────────
 const TRIVIA_POOL = [
   {q:'¿Cuántos continentes hay?',o:['5','6','7','8'],c:2,d:'easy'},
   {q:'Capital de Francia',o:['Lyon','París','Roma','Berlín'],c:1,d:'easy'},
@@ -776,7 +904,7 @@ const TRIVIA_POOL = [
   {q:'¿Quién escribió 1984?',o:['Orwell','Huxley','Bradbury','Wells'],c:0,d:'hard'},
   {q:'Capital de Argentina',o:['Córdoba','Rosario','Buenos Aires','Mendoza'],c:2,d:'easy'},
 ];
-const TRIVIA_REWARDS = { easy:10, medium:20, hard:35 };
+const TRIVIA_REWARDS = { easy: 10, medium: 20, hard: 35 };
 
 app.get('/api/casino/trivia/questions', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
@@ -784,141 +912,140 @@ app.get('/api/casino/trivia/questions', async (req, res) => {
     const userId = req.session.user.id;
     const coins = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean();
     if (!coins) return res.status(403).json({ error: 'Usa /registrarse primero' });
-    const pick = (d, n) => TRIVIA_POOL.filter(q=>q.d===d).sort(()=>Math.random()-.5).slice(0,n);
-    const questions = [...pick('easy',2),...pick('medium',2),...pick('hard',2)].sort(()=>Math.random()-.5).map(q => ({ q:q.q, o:q.o, d:q.d }));
+    const pick = (d, n) => TRIVIA_POOL.filter(q => q.d === d).sort(() => Math.random()-.5).slice(0, n);
+    const questions = [...pick('easy',2), ...pick('medium',2), ...pick('hard',2)].sort(() => Math.random()-.5).map(q => ({ q: q.q, o: q.o, d: q.d }));
     req.session.triviaSession = {
-      questions: questions.map(qq => { const orig = TRIVIA_POOL.find(p=>p.q===qq.q); return { ...qq, c: orig?.c ?? 0 }; }),
+      questions: questions.map(qq => { const orig = TRIVIA_POOL.find(p => p.q === qq.q); return { ...qq, c: orig?.c ?? 0 }; }),
       answered: [], ts: Date.now(),
     };
     res.json({ questions });
-  } catch(e) { res.status(500).json({ error:'Error' }); }
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
 app.post('/api/casino/trivia/answer', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id, { idx, answer } = req.body, ts = req.session.triviaSession;
-    if (!ts || Date.now()-ts.ts > 600000) return res.status(400).json({ error:'Sesión expirada' });
-    if (ts.answered.includes(idx)) return res.status(400).json({ error:'Ya respondida' });
+    if (!ts || Date.now()-ts.ts > 600000) return res.status(400).json({ error: 'Sesión expirada' });
+    if (ts.answered.includes(idx)) return res.status(400).json({ error: 'Ya respondida' });
     ts.answered.push(idx);
     const q = ts.questions[idx], correct = answer === q.c, reward = correct ? TRIVIA_REWARDS[q.d] || 10 : 0;
     let newBalance = 0;
     if (correct && reward > 0) {
-      const updated = await UserCoins.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { coins: reward, totalEarned: reward } }, { new: true });
+      const updated = await applyCoins(userId, reward, true);
       newBalance = updated?.coins || 0;
-      if (global.io) global.io.emit('coins:update', { userId, coins: newBalance });
     } else {
       const uc = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean();
       newBalance = uc?.coins || 0;
     }
     await TriviaProgress.findOneAndUpdate({ userId, guildId: GUILD_ID }, { $inc: { totalWins: correct?1:0, totalFails: correct?0:1 } }, { upsert: true });
     res.json({ correct, correctAnswer: q.c, reward, newBalance });
-  } catch(e) { res.status(500).json({ error:'Error' }); }
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ── Cajas ──────────────────────────────────────────────────────────────────
+// ── CAJAS ─────────────────────────────────────────────────────────────────
 const CASES_CONFIG = {
-  iniciacion: { price:800,   rarities:['consumer','industrial','milspec'],    weights:[7992,1598,320], specialChance:0  },
-  clasificada:{ price:2000,  rarities:['industrial','milspec','restricted'],  weights:[1598,320,64],   specialChance:0  },
-  elite:      { price:5000,  rarities:['milspec','restricted','classified'],  weights:[320,64,13],     specialChance:1  },
-  dorada:     { price:12000, rarities:['restricted','classified','covert'],   weights:[64,13,3],       specialChance:3  },
-  contrabando:{ price:25000, rarities:['classified','covert','special'],      weights:[13,3,1],        specialChance:8  },
+  iniciacion:  { price: 800,   rarities: ['consumer','industrial','milspec'],   weights: [7992,1598,320], specialChance: 0 },
+  clasificada: { price: 2000,  rarities: ['industrial','milspec','restricted'], weights: [1598,320,64],   specialChance: 0 },
+  elite:       { price: 5000,  rarities: ['milspec','restricted','classified'], weights: [320,64,13],     specialChance: 1 },
+  dorada:      { price: 12000, rarities: ['restricted','classified','covert'],  weights: [64,13,3],       specialChance: 3 },
+  contrabando: { price: 25000, rarities: ['classified','covert','special'],     weights: [13,3,1],        specialChance: 8 },
 };
 const RARITY_ITEMS = {
-  consumer:  [{id:'p250_sand_dune',name:'P250',skin:'Sand Dune',bp:500},{id:'glock_sand_dune',name:'Glock-18',skin:'Sand Dune',bp:450},{id:'famas_doomkitty',name:'FAMAS',skin:'Doomkitty',bp:800},{id:'aug_storm',name:'AUG',skin:'Storm',bp:680},{id:'m249_system_lock',name:'M249',skin:'System Lock',bp:490}],
-  industrial:[{id:'ak47_blue_laminate',name:'AK-47',skin:'Blue Laminate',bp:2200},{id:'ak47_jungle_spray',name:'AK-47',skin:'Jungle Spray',bp:2500},{id:'awp_safari_mesh',name:'AWP',skin:'Safari Mesh',bp:3800},{id:'deagle_midnight_storm',name:'Desert Eagle',skin:'Midnight Storm',bp:2400},{id:'bizon_osiris',name:'PP-Bizon',skin:'Osiris',bp:1600}],
-  milspec:   [{id:'ak47_neon_rider',name:'AK-47',skin:'Neon Rider',bp:10000},{id:'deagle_printstream',name:'Desert Eagle',skin:'Printstream',bp:13000},{id:'awp_chromatic',name:'AWP',skin:'Chromatic Aberration',bp:14000},{id:'m4a1_flashback',name:'M4A1-S',skin:'Flashback',bp:12000},{id:'five7_hyper_beast',name:'Five-SeveN',skin:'Hyper Beast',bp:9500}],
-  restricted:[{id:'ak47_wasteland',name:'AK-47',skin:'Wasteland Rebel',bp:35000},{id:'awp_pit_viper',name:'AWP',skin:'Pit Viper',bp:50000},{id:'m4a1_nightmare',name:'M4A1-S',skin:'Nightmare',bp:45000},{id:'deagle_golden_koi',name:'Desert Eagle',skin:'Golden Koi',bp:32000},{id:'usp_neo_noir',name:'USP-S',skin:'Neo-Noir',bp:38000}],
-  classified:[{id:'ak47_wild_lotus',name:'AK-47',skin:'Wild Lotus',bp:150000},{id:'m4a4_howl',name:'M4A4',skin:'Howl',bp:180000},{id:'awp_medusa',name:'AWP',skin:'Medusa',bp:170000},{id:'deagle_blaze',name:'Desert Eagle',skin:'Blaze',bp:130000},{id:'usp_kill_confirmed',name:'USP-S',skin:'Kill Confirmed',bp:140000}],
-  covert:    [{id:'ak47_fire_serpent',name:'AK-47',skin:'Fire Serpent',bp:550000},{id:'awp_dragon_lore',name:'AWP',skin:'Dragon Lore',bp:600000},{id:'awp_gungnir',name:'AWP',skin:'Gungnir',bp:520000},{id:'m4a4_poseidon',name:'M4A4',skin:'Poseidon',bp:420000},{id:'ak47_case_hardened',name:'AK-47',skin:'Case Hardened',bp:350000}],
-  special:   [{id:'knife_karambit_doppler',name:'Karambit',skin:'Doppler Fase 2',bp:1200000},{id:'knife_butterfly_tiger',name:'Butterfly Knife',skin:'Tiger Tooth',bp:1000000},{id:'knife_m9_fade',name:'M9 Bayoneta',skin:'Fade',bp:950000},{id:'gloves_sport_pandeo',name:'Sport Gloves',skin:'Pandeo',bp:1500000},{id:'knife_bayonet_slaughter',name:'Bayoneta',skin:'Slaughter',bp:800000}],
+  consumer:   [{id:'p250_sand_dune',name:'P250',skin:'Sand Dune',bp:500},{id:'glock_sand_dune',name:'Glock-18',skin:'Sand Dune',bp:450},{id:'famas_doomkitty',name:'FAMAS',skin:'Doomkitty',bp:800},{id:'aug_storm',name:'AUG',skin:'Storm',bp:680},{id:'m249_system_lock',name:'M249',skin:'System Lock',bp:490}],
+  industrial: [{id:'ak47_blue_laminate',name:'AK-47',skin:'Blue Laminate',bp:2200},{id:'ak47_jungle_spray',name:'AK-47',skin:'Jungle Spray',bp:2500},{id:'awp_safari_mesh',name:'AWP',skin:'Safari Mesh',bp:3800},{id:'deagle_midnight_storm',name:'Desert Eagle',skin:'Midnight Storm',bp:2400},{id:'bizon_osiris',name:'PP-Bizon',skin:'Osiris',bp:1600}],
+  milspec:    [{id:'ak47_neon_rider',name:'AK-47',skin:'Neon Rider',bp:10000},{id:'deagle_printstream',name:'Desert Eagle',skin:'Printstream',bp:13000},{id:'awp_chromatic',name:'AWP',skin:'Chromatic Aberration',bp:14000},{id:'m4a1_flashback',name:'M4A1-S',skin:'Flashback',bp:12000},{id:'five7_hyper_beast',name:'Five-SeveN',skin:'Hyper Beast',bp:9500}],
+  restricted: [{id:'ak47_wasteland',name:'AK-47',skin:'Wasteland Rebel',bp:35000},{id:'awp_pit_viper',name:'AWP',skin:'Pit Viper',bp:50000},{id:'m4a1_nightmare',name:'M4A1-S',skin:'Nightmare',bp:45000},{id:'deagle_golden_koi',name:'Desert Eagle',skin:'Golden Koi',bp:32000},{id:'usp_neo_noir',name:'USP-S',skin:'Neo-Noir',bp:38000}],
+  classified: [{id:'ak47_wild_lotus',name:'AK-47',skin:'Wild Lotus',bp:150000},{id:'m4a4_howl',name:'M4A4',skin:'Howl',bp:180000},{id:'awp_medusa',name:'AWP',skin:'Medusa',bp:170000},{id:'deagle_blaze',name:'Desert Eagle',skin:'Blaze',bp:130000},{id:'usp_kill_confirmed',name:'USP-S',skin:'Kill Confirmed',bp:140000}],
+  covert:     [{id:'ak47_fire_serpent',name:'AK-47',skin:'Fire Serpent',bp:550000},{id:'awp_dragon_lore',name:'AWP',skin:'Dragon Lore',bp:600000},{id:'awp_gungnir',name:'AWP',skin:'Gungnir',bp:520000},{id:'m4a4_poseidon',name:'M4A4',skin:'Poseidon',bp:420000},{id:'ak47_case_hardened',name:'AK-47',skin:'Case Hardened',bp:350000}],
+  special:    [{id:'knife_karambit_doppler',name:'Karambit',skin:'Doppler Fase 2',bp:1200000},{id:'knife_butterfly_tiger',name:'Butterfly Knife',skin:'Tiger Tooth',bp:1000000},{id:'knife_m9_fade',name:'M9 Bayoneta',skin:'Fade',bp:950000},{id:'gloves_sport_pandeo',name:'Sport Gloves',skin:'Pandeo',bp:1500000},{id:'knife_bayonet_slaughter',name:'Bayoneta',skin:'Slaughter',bp:800000}],
 };
-const WEARS_DATA  = [{name:'Factory New',tag:'FN',mult:1.0},{name:'Minimal Wear',tag:'MW',mult:0.80},{name:'Field-Tested',tag:'FT',mult:0.60},{name:'Well-Worn',tag:'WW',mult:0.40},{name:'Battle-Scarred',tag:'BS',mult:0.20}];
-const WEAR_W      = [10,24,33,24,9];
-const RARITY_META = {consumer:{color:0x9ea3b0,sellMult:0.55},industrial:{color:0x5e98d9,sellMult:0.55},milspec:{color:0x4b69ff,sellMult:0.55},restricted:{color:0x8847ff,sellMult:0.60},classified:{color:0xd32ce6,sellMult:0.60},covert:{color:0xeb4b4b,sellMult:0.65},special:{color:0xffd700,sellMult:0.70}};
+const WEARS_DATA = [{name:'Factory New',tag:'FN',mult:1.0},{name:'Minimal Wear',tag:'MW',mult:.80},{name:'Field-Tested',tag:'FT',mult:.60},{name:'Well-Worn',tag:'WW',mult:.40},{name:'Battle-Scarred',tag:'BS',mult:.20}];
+const WEAR_W     = [10,24,33,24,9];
+const RARITY_META= {consumer:{color:0x9ea3b0,sellMult:.55},industrial:{color:0x5e98d9,sellMult:.55},milspec:{color:0x4b69ff,sellMult:.55},restricted:{color:0x8847ff,sellMult:.60},classified:{color:0xd32ce6,sellMult:.60},covert:{color:0xeb4b4b,sellMult:.65},special:{color:0xffd700,sellMult:.70}};
 
 function rollCase(caseId) {
-  const box = CASES_CONFIG[caseId]; if(!box) return null;
+  const box = CASES_CONFIG[caseId]; if (!box) return null;
   let rarity;
   const sr = Math.random()*100;
-  if (sr < box.specialChance) { rarity='special'; }
+  if (sr < box.specialChance) { rarity = 'special'; }
   else {
-    const tw = box.weights.reduce((a,b)=>a+b,0); let r=Math.random()*tw;
+    const tw = box.weights.reduce((a,b)=>a+b,0); let r = Math.random()*tw;
     rarity = box.rarities[box.rarities.length-1];
-    for(let i=0;i<box.rarities.length;i++){ r-=box.weights[i]; if(r<=0){rarity=box.rarities[i];break;} }
+    for (let i = 0; i < box.rarities.length; i++) { r -= box.weights[i]; if (r <= 0) { rarity = box.rarities[i]; break; } }
   }
   const pool = RARITY_ITEMS[rarity], item = pool[Math.floor(Math.random()*pool.length)];
-  const tw2 = WEAR_W.reduce((a,b)=>a+b,0); let wr=Math.random()*tw2, wi=WEAR_W.length-1;
-  for(let i=0;i<WEAR_W.length;i++){wr-=WEAR_W[i];if(wr<=0){wi=i;break;}}
+  const tw2 = WEAR_W.reduce((a,b)=>a+b,0); let wr = Math.random()*tw2, wi = WEAR_W.length-1;
+  for (let i = 0; i < WEAR_W.length; i++) { wr -= WEAR_W[i]; if (wr <= 0) { wi = i; break; } }
   const wear = WEARS_DATA[wi], rm = RARITY_META[rarity];
-  return { itemId:item.id, name:item.name, skin:item.skin, type:'rifle', emoji:'🔫', rarity, rarityName:rarity, rarityColor:rm.color, wear:wear.name, wearTag:wear.tag, basePrice:item.bp, sellPrice:Math.floor(item.bp*wear.mult*rm.sellMult), caseId };
+  return { itemId: item.id, name: item.name, skin: item.skin, type: 'rifle', emoji: '🔫', rarity, rarityName: rarity, rarityColor: rm.color, wear: wear.name, wearTag: wear.tag, basePrice: item.bp, sellPrice: Math.floor(item.bp*wear.mult*rm.sellMult), caseId };
 }
 
 app.post('/api/casino/case/open', async (req, res) => {
-  if (!req.session?.user) return res.status(401).json({ error:'No autenticado' });
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id, { caseId } = req.body;
     const box = CASES_CONFIG[caseId];
-    if (!box) return res.status(400).json({ error:'Caja inválida' });
-    const uc = await UserCoins.findOne({ userId, guildId:GUILD_ID });
-    if (!uc) return res.status(403).json({ error:'Usa /registrarse primero' });
-    if (uc.coins < box.price) return res.status(400).json({ error:'Saldo insuficiente' });
+    if (!box) return res.status(400).json({ error: 'Caja inválida' });
+    const uc = await UserCoins.findOne({ userId, guildId: GUILD_ID });
+    if (!uc) return res.status(403).json({ error: 'Usa /registrarse primero' });
+    if (uc.coins < box.price) return res.status(400).json({ error: 'Saldo insuficiente' });
     const drop = rollCase(caseId);
-    if (!drop) return res.status(500).json({ error:'Error generando drop' });
+    if (!drop) return res.status(500).json({ error: 'Error generando drop' });
     await Promise.all([
-      UserCoins.findOneAndUpdate({userId,guildId:GUILD_ID},{$inc:{coins:-box.price}},{new:true}),
-      Arm.create({userId,guildId:GUILD_ID,...drop,obtainedAt:new Date()}),
+      applyCoins(userId, -box.price, false),
+      Arm.create({ userId, guildId: GUILD_ID, ...drop, obtainedAt: new Date() }),
     ]);
-    const updated = await UserCoins.findOne({userId,guildId:GUILD_ID}).lean();
-    if (global.io) global.io.emit('coins:update',{userId,coins:updated.coins});
-    res.json({ drop, newBalance:updated.coins });
-  } catch(e){ console.error('[case]',e); res.status(500).json({error:'Error'}); }
+    const updated = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean();
+    res.json({ drop, newBalance: updated.coins });
+  } catch (e) { console.error('[case]', e); res.status(500).json({ error: 'Error' }); }
 });
 
 app.get('/api/casino/inventory', async (req, res) => {
-  if (!req.session?.user) return res.status(401).json({ error:'No autenticado' });
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
-    const userId = req.session.user.id;
-    const arms = await Arm.find({userId,guildId:GUILD_ID}).sort({obtainedAt:-1}).lean();
+    const arms = await Arm.find({ userId: req.session.user.id, guildId: GUILD_ID }).sort({ obtainedAt: -1 }).lean();
     res.json({ arms });
-  } catch(e){ res.status(500).json({error:'Error'}); }
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
 app.post('/api/casino/market/buy', async (req, res) => {
-  if (!req.session?.user) return res.status(401).json({ error:'No autenticado' });
+  if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
     const userId = req.session.user.id, { listingId } = req.body;
-    const listing = await MarketListing.findOne({_id:listingId,guildId:GUILD_ID,status:'active'});
-    if (!listing) return res.status(404).json({ error:'Listing no encontrado o ya vendido' });
-    if (listing.sellerId === userId) return res.status(400).json({ error:'No puedes comprarte a ti mismo' });
-    const uc = await UserCoins.findOne({userId,guildId:GUILD_ID});
-    if (!uc || uc.coins < listing.price) return res.status(400).json({ error:'Saldo insuficiente' });
+    const listing = await MarketListing.findOne({ _id: listingId, guildId: GUILD_ID, status: 'active' });
+    if (!listing) return res.status(404).json({ error: 'Listing no encontrado o ya vendido' });
+    if (listing.sellerId === userId) return res.status(400).json({ error: 'No puedes comprarte a ti mismo' });
+    const uc = await UserCoins.findOne({ userId, guildId: GUILD_ID });
+    if (!uc || uc.coins < listing.price) return res.status(400).json({ error: 'Saldo insuficiente' });
     await Promise.all([
-      UserCoins.findOneAndUpdate({userId,guildId:GUILD_ID},{$inc:{coins:-listing.price}}),
-      UserCoins.findOneAndUpdate({userId:listing.sellerId,guildId:GUILD_ID},{$inc:{coins:listing.price,totalEarned:listing.price}}),
-      MarketListing.findByIdAndUpdate(listingId,{status:'sold',buyerId:userId,soldAt:new Date()}),
-      Arm.findOneAndUpdate({_id:listing.armId},{userId,tradeId:null}),
-      MarketTx.create({guildId:GUILD_ID,itemId:listing.itemId,name:listing.name,skin:listing.skin,rarity:listing.rarity,price:listing.price,sellerId:listing.sellerId,buyerId:userId}),
+      applyCoins(userId, -listing.price, false),
+      UserCoins.findOneAndUpdate({ userId: listing.sellerId, guildId: GUILD_ID }, { $inc: { coins: listing.price, totalEarned: listing.price } }),
+      MarketListing.findByIdAndUpdate(listingId, { status: 'sold', buyerId: userId, soldAt: new Date() }),
+      Arm.findOneAndUpdate({ _id: listing.armId }, { userId, tradeId: null }),
+      MarketTx.create({ guildId: GUILD_ID, itemId: listing.itemId, name: listing.name, skin: listing.skin, rarity: listing.rarity, price: listing.price, sellerId: listing.sellerId, buyerId: userId }),
     ]);
-    const updated = await UserCoins.findOne({userId,guildId:GUILD_ID}).lean();
-    if (global.io) { global.io.emit('coins:update',{userId,coins:updated.coins}); global.io.emit('market:update',{}); }
-    res.json({ success:true, newBalance:updated.coins });
-  } catch(e){ console.error('[market/buy]',e); res.status(500).json({error:'Error'}); }
+    const updated = await UserCoins.findOne({ userId, guildId: GUILD_ID }).lean();
+    if (global.io) global.io.emit('market:update', {});
+    res.json({ success: true, newBalance: updated.coins });
+  } catch (e) { console.error('[market/buy]', e); res.status(500).json({ error: 'Error' }); }
 });
 
 app.get('/api/admin/purchases', requireAuth, async (req, res) => {
   try {
-    const page = parseInt(req.query.page)||1, limit=15;
+    const page = parseInt(req.query.page)||1, limit = 15;
     const [agg, count] = await Promise.all([
-      ShopPurchase.find({guildId:GUILD_ID}).sort({purchasedAt:-1}).skip((page-1)*limit).limit(limit).lean(),
-      ShopPurchase.countDocuments({guildId:GUILD_ID}),
+      ShopPurchase.find({ guildId: GUILD_ID }).sort({ purchasedAt: -1 }).skip((page-1)*limit).limit(limit).lean(),
+      ShopPurchase.countDocuments({ guildId: GUILD_ID }),
     ]);
-    const enriched = await Promise.all(agg.map(async p => { const u = await getUser(p.userId); return {...p, username:u.username, avatar:u.avatar}; }));
-    res.json({ items:enriched, pages:Math.ceil(count/limit) });
-  } catch(e){ res.status(500).json({error:'Error'}); }
+    const enriched = await Promise.all(agg.map(async p => { const u = await getUser(p.userId); return { ...p, username: u.username, avatar: u.avatar }; }));
+    res.json({ items: enriched, pages: Math.ceil(count / limit) });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ── WebSocket ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+//  WEBSOCKET
+// ══════════════════════════════════════════════════════════════════════════
 io.on('connection', socket => {
   console.log(`[WS] Conectado: ${socket.id}`);
   socket.on('disconnect', () => console.log(`[WS] Desconectado: ${socket.id}`));
@@ -931,7 +1058,7 @@ setInterval(async () => {
   if (stats) io.emit('stats:update', stats);
 }, 5000);
 
-// ── Páginas ────────────────────────────────────────────────────────────────
+// ── PÁGINAS ───────────────────────────────────────────────────────────────
 app.get('/login',     (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 app.get('/dashboard', (req, res) => { if (!req.session?.user) return res.redirect('/login'); res.sendFile(path.join(__dirname, 'public', 'dashboard.html')); });
 app.get('/casino',    (req, res) => res.sendFile(path.join(__dirname, 'public', 'casino.html')));
