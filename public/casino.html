@@ -756,8 +756,126 @@ tr:hover td{background:rgba(255,255,255,.018)}
 
 @media(max-width:900px){
   :root{--sidebar:0px}
-  .sidebar{transform:translateX(-100%)}
+  .sidebar{transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+  .sidebar.open{transform:translateX(0)}
   .main{margin-left:0}
+}
+
+/* ════════ MOBILE OVERLAY ════════ */
+#sbOverlay{
+  display:none;position:fixed;inset:0;z-index:49;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+}
+@media(max-width:900px){
+  #sbOverlay.show{display:block}
+}
+
+/* ════════ HAMBURGER BTN ════════ */
+#hambBtn{
+  display:none;position:fixed;top:14px;left:14px;z-index:200;
+  width:40px;height:40px;border-radius:10px;
+  background:rgba(6,5,10,.9);backdrop-filter:blur(12px);
+  border:1px solid var(--rim2);cursor:pointer;
+  flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  box-shadow:0 4px 16px rgba(0,0,0,.4);
+}
+#hambBtn span{display:block;width:18px;height:2px;background:var(--gold);border-radius:2px;transition:var(--tr)}
+#hambBtn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+#hambBtn.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+#hambBtn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+@media(max-width:900px){#hambBtn{display:flex}}
+
+/* ════════ BOTTOM NAV (mobile) ════════ */
+#mobileNav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:rgba(6,5,10,.97);backdrop-filter:blur(24px);
+  border-top:1px solid var(--rim2);
+  padding:6px 0 max(6px,env(safe-area-inset-bottom));
+}
+@media(max-width:900px){#mobileNav{display:flex}}
+.mn-items{display:flex;align-items:stretch;width:100%}
+.mn-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:6px 4px;cursor:pointer;
+  color:var(--text3);font-size:9px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;
+  transition:var(--tr);border:none;background:none;position:relative;
+}
+.mn-item.active{color:var(--gold)}
+.mn-item.active::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--gold);border-radius:0 0 2px 2px;box-shadow:0 0 8px rgba(201,168,76,.5)}
+.mn-ic{font-size:18px;line-height:1}
+.mn-badge{
+  position:absolute;top:4px;right:calc(50% - 14px);
+  width:8px;height:8px;border-radius:50%;background:var(--rose);
+  border:1.5px solid var(--bg);display:none;
+}
+.mn-badge.show{display:block}
+
+/* ════════ MOBILE PAGE ADJUSTMENTS ════════ */
+@media(max-width:900px){
+  html,body{overflow:auto}
+  body{flex-direction:column}
+  .main{height:auto;min-height:100dvh;overflow:visible;padding-bottom:80px}
+  .page{padding:70px 14px 90px;min-height:auto}
+  .page-title{font-size:22px}
+  .hero-banner{padding:20px 18px;margin-bottom:16px}
+  .hero-h1{font-size:clamp(28px,7vw,48px)}
+  .hero-bee-bg{width:90px;height:90px;right:16px}
+  .hero-stats{flex-wrap:wrap}
+  .hs{padding:8px 14px}
+  .games-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  .two-col{grid-template-columns:1fr}
+  .three-col{grid-template-columns:1fr 1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .modal{max-width:100%;margin:8px;border-radius:12px}
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal-overlay .modal{border-radius:16px 16px 0 0;max-height:85dvh;width:100%;margin:0}
+  .mbody{padding:12px}
+  .slots-row{gap:4px}
+  .slot{width:64px;height:70px;font-size:28px}
+  .vp-hand{gap:3px}
+  .vp-card{width:42px;height:60px;font-size:12px}
+  .bj-hand{gap:3px}
+  .card{width:34px;height:50px;font-size:10.5px}
+  .hilo-card{width:48px;height:68px}
+  .hilo-stage{gap:10px;padding:14px 10px}
+  #raceCanvas{height:160px}
+  .mines-grid{gap:4px}
+  .mine-cell{height:42px;font-size:13px}
+  table{font-size:11px}
+  th,td{padding:6px 8px}
+  .cases-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  .inv-grid{grid-template-columns:repeat(2,1fr)}
+  .crash-display{height:140px}
+  .crash-mult{font-size:40px}
+  .plinko-wrap canvas{height:200px!important}
+  #spotifyPlayer{width:calc(100vw - 32px);right:16px;bottom:76px}
+  #spToggle{bottom:76px}
+  .notif-pop{max-width:calc(100vw - 32px)}
+  #notifStack{right:8px;left:8px;top:8px}
+  .chat-msgs{height:160px}
+  .trivia-opts{grid-template-columns:1fr}
+  .tournament-banner{padding:14px}
+  .t-prizes{gap:4px}
+  .t-prize{padding:7px 4px}
+  .bank-card{padding:16px}
+  .bank-balance{font-size:28px}
+  .stat-card{padding:12px 10px}
+  .stat-val{font-size:18px}
+  .sec-hd{margin:14px 0 8px}
+  .pp-box{border-radius:16px 16px 0 0}
+  .pp-modal{align-items:flex-end;padding:0}
+}
+
+@media(max-width:480px){
+  .games-grid{grid-template-columns:1fr 1fr}
+  .three-col{grid-template-columns:1fr}
+  .gc-img-wrap{height:100px}
+  .hero-h1{font-size:26px}
+  .vp-card{width:36px;height:52px;font-size:11px}
+  .hilo-acts{flex-wrap:wrap}
+  .hilo-btn{min-width:80px}
+  .bac-opt-row{grid-template-columns:1fr}
 }
 
 /* ════════ TEMA CLARO ════════ */
@@ -970,6 +1088,14 @@ body.light body::before{opacity:.04}
 <div class="amb amb-c"></div>
 <div id="toast"></div>
 
+<!-- ── MOBILE HAMBURGER ── -->
+<button id="hambBtn" onclick="toggleSidebar()" aria-label="Menú">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- ── SIDEBAR OVERLAY (mobile) ── -->
+<div id="sbOverlay" onclick="closeSidebar()"></div>
+
 <!-- Admin float -->
 <div id="adminFloat" style="display:none;position:fixed;bottom:20px;right:20px;z-index:500">
   <a href="/dashboard" style="display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:6px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);color:var(--gold);font-weight:700;font-size:10.5px;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif">
@@ -979,13 +1105,14 @@ body.light body::before{opacity:.04}
 </div>
 
 <!-- ══════════════════ SIDEBAR ══════════════════ -->
-<aside class="sidebar">
-  <div class="sb-logo" onclick="navTo('home')">
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo" onclick="navTo('home');closeSidebar()">
     <img src="/favicon.svg" alt="Bee" class="sb-logo-bee">
     <div>
       <div class="sb-logo-text">Bee</div>
       <div class="sb-logo-sub">Casino</div>
     </div>
+    <button onclick="event.stopPropagation();closeSidebar()" style="margin-left:auto;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:4px;display:none" id="sbCloseBtn">×</button>
   </div>
 
   <nav class="sb-nav">
@@ -2528,25 +2655,64 @@ try{
 <!-- ══ PERFIL PÚBLICO MODAL ══ -->
 <div class="pp-modal" id="ppModal">
   <div class="pp-box">
-    <div class="pp-hd" style="display:flex;align-items:center;gap:12px">
-      <img id="ppAvatar" src="" style="width:50px;height:50px;border-radius:7px;border:2px solid rgba(201,168,76,.4)" onerror="this.style.display='none'">
-      <div style="flex:1">
-        <div id="ppUsername" style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:.5px"></div>
-        <div id="ppLevel" style="font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-top:2px"></div>
+    <div class="pp-hd" id="ppHd" style="padding:20px;position:relative;overflow:hidden;border-radius:16px 16px 0 0">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#0d0a14,#1a1030)"></div>
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold2),var(--gold),var(--gold2),transparent);opacity:.7"></div>
+      <div style="position:relative;z-index:1;display:flex;align-items:center;gap:14px">
+        <div style="position:relative">
+          <img id="ppAvatar" src="" style="width:60px;height:60px;border-radius:9px;border:2px solid rgba(201,168,76,.5);display:block;object-fit:cover" onerror="this.style.display='none'">
+          <div id="ppLevelBadge" style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:1px;padding:1px 6px;border-radius:3px;white-space:nowrap"></div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div id="ppUsername" style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+          <div id="ppXpBar" style="margin-top:8px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+              <span style="font-size:8.5px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase">XP</span>
+              <span id="ppXpTxt" style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,255,255,.4)"></span>
+            </div>
+            <div style="height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden">
+              <div id="ppXpFill" style="height:4px;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .6s ease"></div>
+            </div>
+          </div>
+        </div>
+        <button onclick="document.getElementById('ppModal').classList.remove('open')" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:22px;padding:4px;align-self:flex-start;line-height:1">×</button>
       </div>
-      <button onclick="document.getElementById('ppModal').classList.remove('open')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:20px;padding:4px">×</button>
     </div>
     <div style="padding:16px">
-      <div class="three-col" style="margin-bottom:12px" id="ppStats"></div>
-      <div class="sec-hd"><span class="sec-hd-line">Armas top</span></div>
-      <div id="ppArms" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
-      <div style="display:flex;gap:8px">
-        <button class="btn-primary" style="flex:1" onclick="addFriendFromProfile()">+ Agregar amigo</button>
-        <button style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--rim);background:none;color:var(--text2);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase" onclick="document.getElementById('ppModal').classList.remove('open')">Cerrar</button>
-      </div>
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px" id="ppStats"></div>
+      <!-- Casino stats -->
+      <div style="background:var(--s2);border:1px solid var(--rim);border-radius:8px;padding:12px;margin-bottom:12px" id="ppCasinoStats"></div>
+      <!-- Top arms -->
+      <div class="sec-hd" style="margin-top:0"><span class="sec-hd-line">Armas top</span></div>
+      <div id="ppArms" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px"></div>
+      <!-- Actions -->
+      <div id="ppActions" style="display:flex;gap:8px"></div>
     </div>
   </div>
 </div>
+
+<!-- ══ MOBILE BOTTOM NAV ══ -->
+<nav id="mobileNav">
+  <div class="mn-items">
+    <button class="mn-item active" id="mn-home" onclick="navTo('home');mnActive('home')">
+      <span class="mn-ic">◈</span><span>Juegos</span>
+    </button>
+    <button class="mn-item" id="mn-ranking" onclick="navTo('ranking');mnActive('ranking')">
+      <span class="mn-ic">△</span><span>Ranking</span>
+    </button>
+    <button class="mn-item" id="mn-live" onclick="navTo('live');mnActive('live')">
+      <span class="mn-ic">●</span><span>En vivo</span>
+    </button>
+    <button class="mn-item" id="mn-missions" onclick="navTo('missions');mnActive('missions')" style="display:none">
+      <span class="mn-ic">✦</span><span>Misiones</span>
+      <span class="mn-badge" id="mn-missions-badge"></span>
+    </button>
+    <button class="mn-item" id="mn-menu" onclick="toggleSidebar()">
+      <span class="mn-ic">☰</span><span>Menú</span>
+    </button>
+  </div>
+</nav>
 
 <!-- ══ SPOTIFY PLAYER ══ -->
 <div id="spotifyPlayer">
@@ -2578,6 +2744,56 @@ try{
 <div id="spToggle" onclick="spOpen()">🎵</div>
 
 <script>
+
+// ════════════════════════════════════════════════
+//  MOBILE SIDEBAR
+// ════════════════════════════════════════════════
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('sbOverlay');
+  const hb=document.getElementById('hambBtn');
+  const cl=document.getElementById('sbCloseBtn');
+  const isOpen=sb.classList.contains('open');
+  if(isOpen){ closeSidebar(); }
+  else{
+    sb.classList.add('open');ov.classList.add('show');hb.classList.add('open');
+    if(cl)cl.style.display='block';
+  }
+}
+function closeSidebar(){
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('sbOverlay');
+  const hb=document.getElementById('hambBtn');
+  const cl=document.getElementById('sbCloseBtn');
+  sb.classList.remove('open');ov.classList.remove('show');hb.classList.remove('open');
+  if(cl)cl.style.display='none';
+}
+// Show close btn on mobile
+function checkMobile(){
+  const cl=document.getElementById('sbCloseBtn');
+  if(cl)cl.style.display=window.innerWidth<=900?'block':'none';
+  // Sidebar always visible on desktop
+  if(window.innerWidth>900){
+    const sb=document.getElementById('sidebar');
+    if(sb)sb.classList.remove('open');
+    const ov=document.getElementById('sbOverlay');
+    if(ov)ov.classList.remove('show');
+  }
+}
+window.addEventListener('resize',checkMobile);
+checkMobile();
+
+// ════════════════════════════════════════════════
+//  MOBILE BOTTOM NAV
+// ════════════════════════════════════════════════
+function mnActive(page){
+  document.querySelectorAll('.mn-item').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('mn-'+page);
+  if(el)el.classList.add('active');
+}
+
+// Patch navTo to also close sidebar on mobile and update bottom nav
+const _navToMobile = typeof navTo !== 'undefined' ? navTo : null;
 
 // ════════════════════════════════════════════════
 //  TEMA CLARO / OSCURO
@@ -2989,30 +3205,78 @@ async function respondFriend(id,action){
 }
 
 // ════════════════════════════════════════════════
-//  PERFIL PÚBLICO DE JUGADOR
+//  PERFIL PÚBLICO — visible para todos los usuarios
 // ════════════════════════════════════════════════
 async function openPlayerProfile(userId){
+  if(!userId)return;
   ppCurrentUserId=userId;
-  const modal=document.getElementById('ppModal');modal.classList.add('open');
+  const modal=document.getElementById('ppModal');
+  modal.classList.add('open');
+  const RC={consumer:'#9ea3b0',industrial:'#5e98d9',milspec:'#4b69ff',restricted:'#8847ff',classified:'#d32ce6',covert:'#eb4b4b',special:'#ffd700'};
+  // Reset con skeleton
+  document.getElementById('ppAvatar').src='';
   document.getElementById('ppUsername').textContent='Cargando...';
-  document.getElementById('ppLevel').textContent='';
-  document.getElementById('ppStats').innerHTML='';
+  document.getElementById('ppLevelBadge').textContent='';
+  document.getElementById('ppXpTxt').textContent='';
+  document.getElementById('ppXpFill').style.width='0%';
+  document.getElementById('ppStats').innerHTML=`<div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--text3);font-size:10px;letter-spacing:2px;text-transform:uppercase">Cargando perfil...</div>`;
+  document.getElementById('ppCasinoStats').innerHTML='';
   document.getElementById('ppArms').innerHTML='';
+  document.getElementById('ppActions').innerHTML='';
   try{
     const d=await xfetch(`/api/casino/player/${userId}`);
-    document.getElementById('ppAvatar').src=d.avatar||'';
+    // Avatar & name
+    if(d.avatar){document.getElementById('ppAvatar').src=d.avatar;document.getElementById('ppAvatar').style.display='block';}
+    else document.getElementById('ppAvatar').style.display='none';
     document.getElementById('ppUsername').textContent=d.username||'—';
-    document.getElementById('ppLevel').textContent=`Nivel ${d.level||0} · ${(d.xp||0).toLocaleString()} XP`;
+    document.getElementById('ppLevelBadge').textContent=`LVL ${d.level||0}`;
+    // XP
+    const xpNeeded=5*(d.level||0)*100+500;
+    const xpPct=Math.min(100,Math.round((d.xp||0)/xpNeeded*100));
+    document.getElementById('ppXpTxt').textContent=`${(d.xp||0).toLocaleString()} / ${xpNeeded.toLocaleString()}`;
+    setTimeout(()=>document.getElementById('ppXpFill').style.width=xpPct+'%',100);
+    // Stats
     document.getElementById('ppStats').innerHTML=`
-      <div style="background:var(--s2);border:1px solid var(--rim);border-radius:7px;padding:10px;text-align:center"><div style="font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--em)">${d.casinoWins||0}</div><div style="font-size:8.5px;color:var(--text3);margin-top:2px;letter-spacing:2px;text-transform:uppercase">Victorias</div></div>
-      <div style="background:var(--s2);border:1px solid var(--rim);border-radius:7px;padding:10px;text-align:center"><div style="font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--gold)">${d.winRate||0}%</div><div style="font-size:8.5px;color:var(--text3);margin-top:2px;letter-spacing:2px;text-transform:uppercase">Win rate</div></div>
-      <div style="background:var(--s2);border:1px solid var(--rim);border-radius:7px;padding:10px;text-align:center"><div style="font-family:'Share Tech Mono',monospace;font-size:18px;color:${(d.netProfit||0)>=0?'var(--em)':'var(--rose)'}">${(d.netProfit||0)>=0?'+':''}${(d.netProfit||0).toLocaleString()}</div><div style="font-size:8.5px;color:var(--text3);margin-top:2px;letter-spacing:2px;text-transform:uppercase">Neto</div></div>`;
-    const RC={consumer:'#9ea3b0',industrial:'#5e98d9',milspec:'#4b69ff',restricted:'#8847ff',classified:'#d32ce6',covert:'#eb4b4b',special:'#ffd700'};
-    document.getElementById('ppArms').innerHTML=(d.topArms||[]).map(a=>{const c=RC[a.rarity]||'#aaa';return`<div style="background:var(--s2);border:1px solid ${c}30;border-radius:6px;padding:6px;text-align:center;width:70px;border-top:2px solid ${c}55"><img src="/assets/arms/${a.itemId}.png" style="width:48px;height:32px;object-fit:contain;display:block;margin:0 auto 3px" onerror="this.style.display='none'"><div style="font-size:8px;font-weight:700;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</div></div>`;}).join('')||'<div style="color:var(--text3);font-size:10px;letter-spacing:1px;text-transform:uppercase">Sin armas</div>';
-  }catch{document.getElementById('ppUsername').textContent='Error al cargar';}
+      <div style="background:var(--s2);border:1px solid var(--rim);border-radius:7px;padding:10px;text-align:center">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--gold2)">${(d.coins||0).toLocaleString()}</div>
+        <div style="font-size:8px;color:var(--text3);margin-top:2px;letter-spacing:2px;text-transform:uppercase">Monedas</div>
+      </div>
+      <div style="background:var(--s2);border:1px solid var(--rim);border-radius:7px;padding:10px;text-align:center">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--em)">${d.casinoWins||0}</div>
+        <div style="font-size:8px;color:var(--text3);margin-top:2px;letter-spacing:2px;text-transform:uppercase">Victorias</div>
+      </div>
+      <div style="background:var(--s2);border:1px solid var(--rim);border-radius:7px;padding:10px;text-align:center">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--gold)">${(d.topArms||[]).length}</div>
+        <div style="font-size:8px;color:var(--text3);margin-top:2px;letter-spacing:2px;text-transform:uppercase">Armas</div>
+      </div>`;
+    // Casino detail
+    document.getElementById('ppCasinoStats').innerHTML=`
+      <div style="font-size:9px;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;font-weight:700;margin-bottom:10px">Casino</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><div style="font-size:9px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px">Partidas</div><div style="font-family:'Share Tech Mono',monospace;font-size:13px">${d.totalBets||0}</div></div>
+        <div><div style="font-size:9px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px">Win rate</div><div style="font-family:'Share Tech Mono',monospace;font-size:13px;color:${(d.winRate||0)>50?'var(--em)':'var(--rose)'}">${d.winRate||0}%</div></div>
+        <div style="grid-column:1/-1"><div style="font-size:9px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px">Ganancia neta</div><div style="font-family:'Share Tech Mono',monospace;font-size:14px;color:${(d.netProfit||0)>=0?'var(--em)':'var(--rose)'};margin-bottom:5px">${(d.netProfit||0)>=0?'+':''}${(d.netProfit||0).toLocaleString()}</div><div style="height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="height:3px;width:${d.winRate||0}%;border-radius:2px;background:${(d.winRate||0)>50?'var(--em)':'var(--rose)'}"></div></div></div>
+      </div>`;
+    // Arms
+    document.getElementById('ppArms').innerHTML=(d.topArms||[]).length?
+      (d.topArms||[]).map(a=>{const c=RC[a.rarity]||'#aaa';return`<div title="${a.name} | ${a.skin}" style="background:var(--s2);border:1px solid ${c}30;border-radius:7px;padding:7px;text-align:center;width:68px;border-top:2px solid ${c}70;flex-shrink:0"><img src="/assets/arms/${a.itemId}.png" style="width:46px;height:30px;object-fit:contain;display:block;margin:0 auto 4px" onerror="this.style.display='none'"><div style="font-size:7.5px;font-weight:700;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.name}</div><div style="font-size:7px;color:${c};margin-top:1px">${a.wearTag||''}</div></div>`;}).join('')
+      :'<div style="color:var(--text3);font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:6px 0">Sin armas aún</div>';
+    // Actions
+    const actDiv=document.getElementById('ppActions');
+    if(CS.user&&CS.user.id!==userId){
+      actDiv.innerHTML=`<button class="btn-primary" style="flex:1" onclick="addFriendFromProfile()">+ Agregar amigo</button><button style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--rim);background:none;color:var(--text2);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase" onclick="document.getElementById('ppModal').classList.remove('open')">Cerrar</button>`;
+    }else if(CS.user&&CS.user.id===userId){
+      actDiv.innerHTML=`<button style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.06);color:var(--gold);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase" onclick="navTo('profile');document.getElementById('ppModal').classList.remove('open')">Ver mi perfil completo</button>`;
+    }else{
+      actDiv.innerHTML=`<button style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--rim);background:none;color:var(--text2);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase" onclick="document.getElementById('ppModal').classList.remove('open')">Cerrar</button>`;
+    }
+  }catch(e){
+    document.getElementById('ppUsername').textContent='Error al cargar';
+    document.getElementById('ppStats').innerHTML='<div style="grid-column:1/-1;padding:16px;text-align:center;color:var(--rose);font-size:10.5px">No se pudo cargar el perfil</div>';
+  }
 }
 function addFriendFromProfile(){
-  if(!ppCurrentUserId)return;
+  if(!ppCurrentUserId||!CS.user){toast('Inicia sesión para agregar amigos','lose');return;}
   xfetch('/api/casino/friends/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({toUserId:ppCurrentUserId})})
     .then(()=>toast('Solicitud enviada','win')).catch(e=>toast(e.message||'Error','lose'));
 }
@@ -3037,6 +3301,11 @@ renderLead=function(items,container,vk,vl){
 const _origNavTo=navTo;
 navTo=function(name,el){
   _origNavTo(name,el);
+  // Cerrar sidebar en mobile
+  if(window.innerWidth<=900)closeSidebar();
+  // Actualizar bottom nav
+  const mnMap={home:'home',ranking:'ranking',live:'live',missions:'missions'};
+  if(mnMap[name])mnActive(mnMap[name]);
   if(name==='history')loadHistory();
   if(name==='stats')loadStats();
   if(name==='bank')loadBank();
@@ -3073,7 +3342,24 @@ try{
 // ════════════════════════════════════════════════
 (function initExtras(){
   spRenderPresets();
-  document.getElementById('ppModal').addEventListener('click',e=>{if(e.target===document.getElementById('ppModal'))document.getElementById('ppModal').classList.remove('open');});
+  // Show close btn on mobile
+  const cl=document.getElementById('sbCloseBtn');
+  if(cl&&window.innerWidth<=900)cl.style.display='block';
+  document.getElementById('ppModal').addEventListener('click',e=>{
+    if(e.target===document.getElementById('ppModal'))document.getElementById('ppModal').classList.remove('open');
+  });
+  // Show missions badge if logged in
+  setInterval(async()=>{
+    if(!CS.user)return;
+    try{
+      const d=await xfetch('/api/casino/missions/daily');
+      const unclaimed=(d.missions||[]).filter(m=>m.completed&&!m.claimed).length;
+      const b=document.getElementById('mn-missions-badge');
+      if(b)b.classList.toggle('show',unclaimed>0);
+      const mnm=document.getElementById('mn-missions');
+      if(mnm)mnm.style.display='flex';
+    }catch{}
+  },30000);
 })();
 
 </script>
