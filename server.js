@@ -1174,7 +1174,22 @@ app.get('/api/casino/my-stats', async (req, res) => {
     });
     let currentStreak = 0;
     for (const l of logs.slice(0, 20)) { if (l.profit > 0) currentStreak++; else break; }
-    res.json({ totalWins, totalBet, netProfit, bestWin, maxBet, byGame, currentStreak, bestStreak: ach?.win_streak || 0 });
+
+    // Daily data — last 30 days
+    const now = new Date();
+    const dailyData = [];
+    for (let i = 29; i >= 0; i--) {
+      const day = new Date(now); day.setDate(day.getDate() - i);
+      const dayStr = day.toDateString();
+      const dayLogs = logs.filter(l => new Date(l.timestamp).toDateString() === dayStr);
+      dailyData.push({ day: 29-i, profit: dayLogs.reduce((s,l) => s+(l.profit||0), 0), bets: dayLogs.length });
+    }
+
+    // Hourly heatmap — all time
+    const hourlyData = Array(24).fill(0);
+    logs.forEach(l => { const h = new Date(l.timestamp).getHours(); hourlyData[h]++; });
+
+    res.json({ totalWins, totalBet, netProfit, bestWin, maxBet, byGame, currentStreak, bestStreak: ach?.win_streak || 0, dailyData, hourlyData });
   } catch { res.status(500).json({ error: 'Error' }); }
 });
 
@@ -1528,8 +1543,53 @@ setInterval(async () => {
 }, 3600000);
 
 // ══════════════════════════════════════════════════════════════════════════
-//  WEBSOCKET
+//  DISCORD BOT — link /casino al perfil web
 // ══════════════════════════════════════════════════════════════════════════
+const casinoTokens = new Map(); // token -> { userId, expires }
+
+app.post('/api/casino/generate-link', async (req, res) => {
+  // Solo el bot puede llamar esto (via API key interna)
+  const { userId, apiKey } = req.body;
+  if (apiKey !== process.env.BOT_API_KEY) return res.status(401).json({ error: 'No autorizado' });
+  const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  casinoTokens.set(token, { userId, expires: Date.now() + 300000 }); // 5 min
+  const url = `${process.env.CASINO_URL || 'https://tu-dominio.railway.app'}/casino.html?user=${userId}&token=${token}`;
+  res.json({ url });
+});
+
+// Limpiar tokens expirados cada 10 min
+setInterval(() => {
+  const now = Date.now();
+  casinoTokens.forEach((v, k) => { if (v.expires < now) casinoTokens.delete(k); });
+}, 600000);
+
+// Notificación Discord cuando alguien gana jackpot (llamado desde checkSuspiciousWin)
+async function notifyDiscordJackpot(userId, profit, game) {
+  try {
+    if (!process.env.DISCORD_WEBHOOK_URL) return;
+    const u = await getUser(userId);
+    await fetch(process.env.DISCORD_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        embeds: [{
+          title: '🎉 ¡JACKPOT EN BEE CASINO!',
+          description: `**${u.username}** ganó **${profit.toLocaleString()} monedas** en **${game}**`,
+          color: 0xC9A84C,
+          timestamp: new Date().toISOString(),
+          footer: { text: 'Bee Casino' }
+        }]
+      })
+    });
+  } catch (e) { console.error('[discord webhook]', e); }
+}
+
+// Patch checkSuspiciousWin to also notify Discord
+const _origCheckSuspicious = checkSuspiciousWin;
+checkSuspiciousWin = async function(userId, profit, game) {
+  await _origCheckSuspicious(userId, profit, game);
+  if (profit >= 10000) await notifyDiscordJackpot(userId, profit, game);
+};
 io.on('connection', socket => {
   console.log(`[WS] Conectado: ${socket.id}`);
   socket.on('disconnect', () => console.log(`[WS] Desconectado: ${socket.id}`));

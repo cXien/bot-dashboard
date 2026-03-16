@@ -39,12 +39,17 @@
   --tr:all .18s cubic-bezier(.4,0,.2,1);
 }
 
-html,body{height:100%;overflow:hidden}
+html,body{height:100%}
+html{overflow-x:hidden}
 body{
+  overflow-x:hidden;overflow-y:hidden;
   background:var(--bg);color:var(--text);
   font-family:'Barlow Condensed',sans-serif;
   font-size:14px;line-height:1.4;
   display:flex;
+}
+@media(max-width:900px){
+  body{overflow-y:auto;height:auto;min-height:100%}
 }
 
 /* ── Hex grid background ── */
@@ -63,12 +68,14 @@ body::before{
 /* ════════ SIDEBAR ════════ */
 .sidebar{
   width:var(--sidebar);min-height:100vh;
-  position:fixed;top:0;bottom:0;left:0;z-index:50;
+  position:fixed;top:0;bottom:0;left:0;z-index:150;
   display:flex;flex-direction:column;
-  background:rgba(6,5,10,0.9);
+  background:rgba(6,5,10,0.97);
   backdrop-filter:blur(40px);
   border-right:1px solid var(--rim);
   flex-shrink:0;
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  will-change:transform;
 }
 .sidebar::before{
   content:'';position:absolute;top:0;right:0;bottom:0;width:1px;
@@ -178,6 +185,9 @@ body::before{
   position:relative;z-index:1;
   scrollbar-width:thin;
   scrollbar-color:var(--rim2) transparent;
+}
+@media(max-width:900px){
+  .main{height:auto;min-height:100dvh;overflow:visible;margin-left:0;padding-bottom:72px}
 }
 .main::-webkit-scrollbar{width:4px}
 .main::-webkit-scrollbar-thumb{background:var(--rim2);border-radius:2px}
@@ -756,125 +766,145 @@ tr:hover td{background:rgba(255,255,255,.018)}
 
 @media(max-width:900px){
   :root{--sidebar:0px}
-  .sidebar{transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
-  .sidebar.open{transform:translateX(0)}
-  .main{margin-left:0}
+  .sidebar{transform:translateX(-100%);width:260px}
+  .sidebar.sb-open{transform:translateX(0)}
 }
 
 /* ════════ MOBILE OVERLAY ════════ */
 #sbOverlay{
-  display:none;position:fixed;inset:0;z-index:49;
-  background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+  display:none;position:fixed;inset:0;z-index:140;
+  background:rgba(0,0,0,.6);
+  -webkit-tap-highlight-color:transparent;
 }
-@media(max-width:900px){
-  #sbOverlay.show{display:block}
-}
+#sbOverlay.sb-show{display:block}
 
 /* ════════ HAMBURGER BTN ════════ */
 #hambBtn{
-  display:none;position:fixed;top:14px;left:14px;z-index:200;
-  width:40px;height:40px;border-radius:10px;
-  background:rgba(6,5,10,.9);backdrop-filter:blur(12px);
+  display:none;position:fixed;top:12px;left:12px;z-index:160;
+  width:38px;height:38px;border-radius:9px;
+  background:rgba(6,5,10,.95);
   border:1px solid var(--rim2);cursor:pointer;
   flex-direction:column;align-items:center;justify-content:center;gap:5px;
-  box-shadow:0 4px 16px rgba(0,0,0,.4);
+  box-shadow:0 2px 12px rgba(0,0,0,.5);
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
 }
-#hambBtn span{display:block;width:18px;height:2px;background:var(--gold);border-radius:2px;transition:var(--tr)}
-#hambBtn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-#hambBtn.open span:nth-child(2){opacity:0;transform:scaleX(0)}
-#hambBtn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+#hambBtn span{display:block;width:16px;height:1.5px;background:var(--gold);border-radius:2px;transition:transform .2s,opacity .2s}
+#hambBtn.hb-open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+#hambBtn.hb-open span:nth-child(2){opacity:0}
+#hambBtn.hb-open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
 @media(max-width:900px){#hambBtn{display:flex}}
 
-/* ════════ BOTTOM NAV (mobile) ════════ */
+/* ════════ BOTTOM NAV ════════ */
 #mobileNav{
-  display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;
-  background:rgba(6,5,10,.97);backdrop-filter:blur(24px);
-  border-top:1px solid var(--rim2);
-  padding:6px 0 max(6px,env(safe-area-inset-bottom));
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:130;
+  background:rgba(4,3,8,.98);
+  border-top:1px solid rgba(255,255,255,.08);
+  padding-bottom:env(safe-area-inset-bottom,0px);
 }
-@media(max-width:900px){#mobileNav{display:flex}}
-.mn-items{display:flex;align-items:stretch;width:100%}
+@media(max-width:900px){#mobileNav{display:block}}
+.mn-items{display:flex;align-items:stretch}
 .mn-item{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;padding:6px 4px;cursor:pointer;
-  color:var(--text3);font-size:9px;font-weight:700;letter-spacing:1px;
+  gap:2px;padding:8px 2px 6px;cursor:pointer;
+  color:var(--text3);font-size:8.5px;font-weight:700;letter-spacing:.8px;
   text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;
-  transition:var(--tr);border:none;background:none;position:relative;
+  border:none;background:none;position:relative;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  min-height:52px;
 }
-.mn-item.active{color:var(--gold)}
-.mn-item.active::before{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--gold);border-radius:0 0 2px 2px;box-shadow:0 0 8px rgba(201,168,76,.5)}
-.mn-ic{font-size:18px;line-height:1}
-.mn-badge{
-  position:absolute;top:4px;right:calc(50% - 14px);
-  width:8px;height:8px;border-radius:50%;background:var(--rose);
-  border:1.5px solid var(--bg);display:none;
+.mn-item.mn-active{color:var(--gold)}
+.mn-item.mn-active .mn-ic{filter:drop-shadow(0 0 5px rgba(201,168,76,.5))}
+.mn-ic{font-size:17px;line-height:1}
+.mn-bdg{
+  position:absolute;top:6px;right:calc(50% - 16px);
+  min-width:14px;height:14px;border-radius:7px;
+  background:var(--rose);border:1.5px solid var(--bg);
+  font-size:8px;font-weight:800;color:#fff;
+  display:none;align-items:center;justify-content:center;padding:0 3px;
 }
-.mn-badge.show{display:block}
+.mn-bdg.on{display:flex}
 
-/* ════════ MOBILE PAGE ADJUSTMENTS ════════ */
+/* ════════ ADMIN FLOAT MOBILE FIX ════════ */
 @media(max-width:900px){
-  html,body{overflow:auto}
-  body{flex-direction:column}
-  .main{height:auto;min-height:100dvh;overflow:visible;padding-bottom:80px}
-  .page{padding:70px 14px 90px;min-height:auto}
-  .page-title{font-size:22px}
-  .hero-banner{padding:20px 18px;margin-bottom:16px}
-  .hero-h1{font-size:clamp(28px,7vw,48px)}
-  .hero-bee-bg{width:90px;height:90px;right:16px}
-  .hero-stats{flex-wrap:wrap}
-  .hs{padding:8px 14px}
-  .games-grid{grid-template-columns:repeat(2,1fr);gap:6px}
-  .two-col{grid-template-columns:1fr}
-  .three-col{grid-template-columns:1fr 1fr}
-  .stats-grid{grid-template-columns:1fr 1fr}
-  .modal{max-width:100%;margin:8px;border-radius:12px}
-  .modal-overlay{align-items:flex-end;padding:0}
-  .modal-overlay .modal{border-radius:16px 16px 0 0;max-height:85dvh;width:100%;margin:0}
-  .mbody{padding:12px}
-  .slots-row{gap:4px}
-  .slot{width:64px;height:70px;font-size:28px}
-  .vp-hand{gap:3px}
-  .vp-card{width:42px;height:60px;font-size:12px}
-  .bj-hand{gap:3px}
-  .card{width:34px;height:50px;font-size:10.5px}
-  .hilo-card{width:48px;height:68px}
-  .hilo-stage{gap:10px;padding:14px 10px}
-  #raceCanvas{height:160px}
-  .mines-grid{gap:4px}
-  .mine-cell{height:42px;font-size:13px}
-  table{font-size:11px}
-  th,td{padding:6px 8px}
-  .cases-grid{grid-template-columns:repeat(2,1fr);gap:6px}
-  .inv-grid{grid-template-columns:repeat(2,1fr)}
-  .crash-display{height:140px}
-  .crash-mult{font-size:40px}
-  .plinko-wrap canvas{height:200px!important}
-  #spotifyPlayer{width:calc(100vw - 32px);right:16px;bottom:76px}
-  #spToggle{bottom:76px}
-  .notif-pop{max-width:calc(100vw - 32px)}
-  #notifStack{right:8px;left:8px;top:8px}
-  .chat-msgs{height:160px}
-  .trivia-opts{grid-template-columns:1fr}
-  .tournament-banner{padding:14px}
-  .t-prizes{gap:4px}
-  .t-prize{padding:7px 4px}
-  .bank-card{padding:16px}
-  .bank-balance{font-size:28px}
-  .stat-card{padding:12px 10px}
-  .stat-val{font-size:18px}
-  .sec-hd{margin:14px 0 8px}
-  .pp-box{border-radius:16px 16px 0 0}
-  .pp-modal{align-items:flex-end;padding:0}
+  #adminFloat{bottom:68px !important;right:12px}
+  #spotifyPlayer{bottom:68px;width:calc(100vw - 24px);right:12px;left:12px}
+  #spToggle{bottom:68px;right:12px}
+  #notifStack{top:8px;right:8px;left:8px}
+  .notif-pop{max-width:100%}
 }
 
-@media(max-width:480px){
-  .games-grid{grid-template-columns:1fr 1fr}
-  .three-col{grid-template-columns:1fr}
-  .gc-img-wrap{height:100px}
-  .hero-h1{font-size:26px}
-  .vp-card{width:36px;height:52px;font-size:11px}
-  .hilo-acts{flex-wrap:wrap}
-  .hilo-btn{min-width:80px}
+/* ════════ MOBILE PAGE FIXES ════════ */
+@media(max-width:900px){
+  .main{padding-bottom:56px}
+  .page{padding:58px 12px 16px;min-height:auto}
+  .page-title{font-size:21px}
+  .page-sub{font-size:10px}
+  .hero-banner{padding:18px 14px 20px;margin-bottom:12px}
+  .hero-h1{font-size:clamp(22px,8vw,42px)}
+  .hero-bee-bg{width:75px;height:75px;right:10px;opacity:.05}
+  .hero-stats{flex-wrap:wrap}
+  .hs{padding:7px 10px}
+  .hs-v{font-size:13px}
+  .games-grid{grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:14px}
+  .gc-img-wrap{height:105px}
+  .gc-body{padding:8px 9px 10px}
+  .gc-name{font-size:12px}
+  .gc-desc{font-size:10.5px}
+  .two-col{grid-template-columns:1fr;gap:8px}
+  .three-col{grid-template-columns:1fr 1fr;gap:6px}
+  .stats-game-grid{grid-template-columns:1fr 1fr}
+  .stat-card{padding:10px 8px}
+  .stat-val{font-size:16px}
+  .modal-overlay{align-items:flex-end;padding:0}
+  .modal-overlay .modal{border-radius:18px 18px 0 0;max-height:88dvh;width:100%;margin:0;overflow-y:auto}
+  .mhd{padding:14px 14px 0}
+  .mbody{padding:10px 14px 14px}
+  .slots-row{gap:5px}
+  .slot{width:62px;height:66px;font-size:24px}
+  .vp-hand{gap:3px}
+  .vp-card{width:40px;height:57px;font-size:11px}
+  .bj-hand{gap:3px}
+  .card{width:32px;height:46px;font-size:10px;letter-spacing:-.5px}
+  .hilo-card{width:46px;height:64px}
+  .hilo-card .cv{font-size:16px}
+  .hilo-stage{gap:8px;padding:12px 6px;min-height:100px}
+  #raceCanvas{height:155px}
+  .mines-grid{gap:4px}
+  .mine-cell{height:40px;font-size:12px}
+  table{font-size:11px;min-width:320px}
+  th,td{padding:5px 6px}
+  .cases-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  .inv-grid{grid-template-columns:repeat(2,1fr);gap:5px}
+  .crash-display{height:128px}
+  .crash-mult{font-size:36px}
+  .plinko-wrap canvas{height:185px!important}
+  .chat-msgs{height:145px}
+  .trivia-opts{grid-template-columns:1fr}
+  .tournament-banner{padding:12px}
+  .t-prizes{gap:4px}
+  .t-prize{padding:8px 4px}
+  .bank-card{padding:14px}
+  .bank-balance{font-size:26px}
+  .sec-hd{margin:12px 0 7px}
+  .pp-modal{align-items:flex-end;padding:0}
+  .pp-box{border-radius:18px 18px 0 0;max-height:90dvh;overflow-y:auto}
+  .feed-scroll{max-height:180px}
+  .presets{gap:3px;flex-wrap:wrap}
+  .preset{padding:3px 8px;font-size:10px}
+  .finp{font-size:14px;padding:9px 11px}
+  .btn-primary{padding:11px}
+  .tabs{flex-wrap:wrap}
+  .two-col.live-grid{grid-template-columns:1fr}
+}
+
+@media(max-width:400px){
+  .games-grid{grid-template-columns:repeat(2,1fr)}
+  .three-col{grid-template-columns:1fr 1fr}
+  .hero-h1{font-size:20px}
+  .slot{width:54px;height:58px;font-size:20px}
+  .vp-card{width:34px;height:50px;font-size:10px}
+  .hilo-btn{font-size:10px;padding:7px 2px}
   .bac-opt-row{grid-template-columns:1fr}
 }
 
@@ -994,6 +1024,152 @@ body.light body::before{opacity:.04}
 .bank-hist-amt{font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;margin-left:auto}
 .bank-hist-time{font-size:9px;color:var(--text3);font-family:'Share Tech Mono',monospace}
 
+/* ════════ LOADING SCREEN ════════ */
+#loadScreen{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:20px;transition:opacity .5s ease;
+}
+#loadScreen.fade{opacity:0;pointer-events:none}
+.load-bee{
+  width:64px;height:64px;
+  animation:loadBee 1.4s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px rgba(201,168,76,.6));
+}
+@keyframes loadBee{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-12px) scale(1.06)}
+}
+.load-bar-wrap{
+  width:200px;height:3px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;
+}
+.load-bar{
+  height:3px;background:linear-gradient(90deg,var(--gold),var(--gold2));
+  border-radius:3px;width:0%;transition:width .3s ease;
+}
+.load-txt{
+  font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;color:var(--text3);
+}
+
+/* ════════ VIP TIER BADGE ════════ */
+.vip-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:2px 10px;border-radius:4px;
+  font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  font-family:'Barlow Condensed',sans-serif;
+}
+.vip-bronze{background:rgba(205,127,50,.1);color:#cd7f32;border:1px solid rgba(205,127,50,.3)}
+.vip-silver{background:rgba(192,192,192,.1);color:#c0c0c0;border:1px solid rgba(192,192,192,.3)}
+.vip-gold{background:rgba(255,215,0,.1);color:#ffd700;border:1px solid rgba(255,215,0,.3)}
+.vip-diamond{background:rgba(185,242,255,.1);color:#b9f2ff;border:1px solid rgba(185,242,255,.3)}
+.vip-card{
+  background:linear-gradient(135deg,var(--s1),var(--s2));
+  border:1px solid var(--rim);border-radius:var(--r2);
+  padding:18px;margin-bottom:8px;position:relative;overflow:hidden;
+  transition:var(--tr);
+}
+.vip-card:hover{border-color:var(--rim2)}
+.vip-card.current{border-color:rgba(201,168,76,.35)}
+.vip-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  opacity:.8;
+}
+.vip-card.bronze::before{background:linear-gradient(90deg,transparent,#cd7f32,transparent)}
+.vip-card.silver::before{background:linear-gradient(90deg,transparent,#c0c0c0,transparent)}
+.vip-card.gold::before{background:linear-gradient(90deg,transparent,#ffd700,transparent)}
+.vip-card.diamond::before{background:linear-gradient(90deg,transparent,#b9f2ff,transparent)}
+.vip-prog-wrap{height:4px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:10px;overflow:hidden}
+.vip-prog-bar{height:4px;border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+/* ════════ GAME CARD ANIMATIONS ════════ */
+.game-card{
+  background:var(--s1);border:1px solid var(--rim);
+  border-radius:var(--r2);overflow:hidden;cursor:pointer;
+  transition:transform .22s cubic-bezier(.4,0,.2,1),
+             border-color .22s,
+             box-shadow .22s;
+  position:relative;
+  transform-style:preserve-3d;
+}
+.game-card:hover{
+  border-color:rgba(201,168,76,0.4);
+  transform:translateY(-3px) scale(1.01);
+  box-shadow:0 16px 40px rgba(0,0,0,.55),0 0 24px rgba(201,168,76,.06);
+}
+.game-card:active{transform:translateY(-1px) scale(.99)}
+
+/* ════════ ARMS 3D PREVIEW ════════ */
+.inv-card{
+  transform-style:preserve-3d;transition:transform .3s ease,border-color .2s;
+}
+.inv-card:hover{
+  transform:perspective(600px) rotateY(8deg) rotateX(-3deg) translateY(-2px);
+  border-color:var(--rim2);
+}
+.inv-img{transition:filter .3s,transform .3s}
+.inv-card:hover .inv-img{
+  filter:drop-shadow(0 6px 16px rgba(0,0,0,.6));
+  transform:scale(1.05);
+}
+
+/* ════════ DASHBOARD MEJORADO ════════ */
+.chart-wrap{
+  background:var(--s1);border:1px solid var(--rim);border-radius:var(--r2);
+  padding:18px;position:relative;overflow:hidden;
+}
+.chart-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--rim2),transparent)}
+.chart-title{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+#profitChart,#heatmapCanvas{display:block;width:100%}
+.heatmap-grid{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;margin-top:8px}
+.hm-cell{
+  height:18px;border-radius:2px;background:rgba(255,255,255,.04);
+  transition:transform .1s;cursor:default;
+}
+.hm-cell:hover{transform:scale(1.2)}
+.hm-lbl{font-size:8.5px;color:var(--text3);font-family:'Share Tech Mono',monospace;text-align:center;margin-top:4px}
+
+/* ════════ EXPORT BTN ════════ */
+.export-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:6px;
+  background:rgba(91,200,255,.06);border:1px solid rgba(91,200,255,.2);
+  color:var(--sky);font-size:10px;font-weight:700;cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif;letter-spacing:1.5px;text-transform:uppercase;
+  transition:var(--tr);
+}
+.export-btn:hover{background:rgba(91,200,255,.12)}
+
+/* ════════ ANIMATED LEADERBOARD ════════ */
+.lead-row{
+  display:flex;align-items:center;gap:9px;padding:6px 0;
+  border-bottom:1px solid rgba(255,255,255,.025);
+  transition:background .2s;
+  border-radius:4px;
+}
+.lead-row:hover{background:rgba(255,255,255,.02)}
+.lead-row.lb-new{animation:lbSlide .35s ease}
+@keyframes lbSlide{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+
+/* ════════ WEB PUSH ════════ */
+.push-prompt{
+  background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.2);
+  border-radius:var(--r);padding:14px 16px;
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:14px;
+}
+.push-ic{font-size:22px;flex-shrink:0}
+.push-txt{flex:1;font-size:12px;color:var(--text2);line-height:1.5}
+.push-btn{
+  padding:6px 14px;border-radius:6px;
+  background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);
+  color:var(--purple);font-size:10px;font-weight:700;cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;
+  transition:var(--tr);white-space:nowrap;flex-shrink:0;
+}
+.push-btn:hover{background:rgba(167,139,250,.18)}
+
 /* ════════ CHAT EN VIVO ════════ */
 .chat-wrap{background:var(--s1);border:1px solid var(--rim);border-radius:var(--r2);overflow:hidden;margin-top:16px}
 .chat-hd{padding:10px 16px;border-bottom:1px solid var(--rim);display:flex;align-items:center;gap:8px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold)}
@@ -1088,6 +1264,13 @@ body.light body::before{opacity:.04}
 <div class="amb amb-c"></div>
 <div id="toast"></div>
 
+<!-- ── PANTALLA DE CARGA ── -->
+<div id="loadScreen">
+  <img src="/favicon.svg" class="load-bee" alt="Bee Casino">
+  <div class="load-bar-wrap"><div class="load-bar" id="loadBar"></div></div>
+  <div class="load-txt" id="loadTxt">Iniciando casino...</div>
+</div>
+
 <!-- ── MOBILE HAMBURGER ── -->
 <button id="hambBtn" onclick="toggleSidebar()" aria-label="Menú">
   <span></span><span></span><span></span>
@@ -1097,7 +1280,7 @@ body.light body::before{opacity:.04}
 <div id="sbOverlay" onclick="closeSidebar()"></div>
 
 <!-- Admin float -->
-<div id="adminFloat" style="display:none;position:fixed;bottom:20px;right:20px;z-index:500">
+<div id="adminFloat" style="display:none;position:fixed;bottom:20px;right:20px;z-index:90">
   <a href="/dashboard" style="display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:6px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);color:var(--gold);font-weight:700;font-size:10.5px;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif">
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
     Dashboard
@@ -1106,13 +1289,12 @@ body.light body::before{opacity:.04}
 
 <!-- ══════════════════ SIDEBAR ══════════════════ -->
 <aside class="sidebar" id="sidebar">
-  <div class="sb-logo" onclick="navTo('home');closeSidebar()">
+  <div class="sb-logo" onclick="navTo('home',this);closeSidebar()">
     <img src="/favicon.svg" alt="Bee" class="sb-logo-bee">
     <div>
       <div class="sb-logo-text">Bee</div>
       <div class="sb-logo-sub">Casino</div>
     </div>
-    <button onclick="event.stopPropagation();closeSidebar()" style="margin-left:auto;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:4px;display:none" id="sbCloseBtn">×</button>
   </div>
 
   <nav class="sb-nav">
@@ -1162,6 +1344,12 @@ body.light body::before{opacity:.04}
     </div>
     <div class="sb-item" id="sbMissions" data-page="missions" onclick="navTo('missions',this)" style="display:none">
       <span class="sb-ic">✦</span> Misiones
+    </div>
+    <div class="sb-item" id="sbVip" data-page="vip" onclick="navTo('vip',this)" style="display:none">
+      <span class="sb-ic">♛</span> VIP
+    </div>
+    <div class="sb-item" id="sbDashboard" data-page="mydashboard" onclick="navTo('mydashboard',this)" style="display:none">
+      <span class="sb-ic">◈</span> Mi Dashboard
     </div>
     <div class="sb-item" data-page="friends" id="sbFriends" onclick="navTo('friends',this)" style="display:none">
       <span class="sb-ic">◎</span> Amigos
@@ -1559,6 +1747,62 @@ body.light body::before{opacity:.04}
     <div class="page-sub">Tus armas coleccionadas</div>
   </div>
   <div class="inv-grid" id="inventoryContent"></div>
+</div>
+
+<!-- ── VIP PAGE ── -->
+<div class="page" id="pg-vip">
+  <div class="page-hd">
+    <div class="page-title"><span class="page-title-accent"></span>VIP</div>
+    <div class="page-sub">Niveles de membresía · Beneficios exclusivos</div>
+  </div>
+  <div style="max-width:520px">
+    <div id="vipCurrentBadge" style="margin-bottom:16px"></div>
+    <div id="vipCards"></div>
+    <div class="sec-hd" style="margin-top:20px"><span class="sec-hd-line">Beneficios activos</span></div>
+    <div id="vipBenefits" class="panel"></div>
+  </div>
+</div>
+
+<!-- ── MY DASHBOARD PAGE ── -->
+<div class="page" id="pg-mydashboard">
+  <div class="page-hd">
+    <div class="page-title"><span class="page-title-accent"></span>Mi Dashboard</div>
+    <div class="page-sub">Tu rendimiento en detalle</div>
+  </div>
+  <!-- Push notification prompt -->
+  <div class="push-prompt" id="pushPrompt" style="display:none">
+    <span class="push-ic">🔔</span>
+    <div class="push-txt">Activa las notificaciones del navegador para recibir alertas aunque no estés en el casino.</div>
+    <button class="push-btn" onclick="requestPushPermission()">Activar</button>
+  </div>
+  <!-- Stats overview -->
+  <div class="three-col" id="dbOverview" style="margin-bottom:16px"></div>
+  <!-- Profit chart -->
+  <div class="chart-wrap" style="margin-bottom:12px">
+    <div class="chart-title">
+      <span>Ganancias / Pérdidas — últimos 30 días</span>
+      <button class="export-btn" onclick="exportHistoryCSV()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+    </div>
+    <canvas id="profitChart" height="120"></canvas>
+  </div>
+  <!-- Heatmap -->
+  <div class="chart-wrap" style="margin-bottom:12px">
+    <div class="chart-title">Mapa de calor — juegos por hora</div>
+    <div class="heatmap-grid" id="heatmapGrid"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px">
+      <span style="font-size:8px;color:var(--text3)">00:00</span>
+      <span style="font-size:8px;color:var(--text3)">12:00</span>
+      <span style="font-size:8px;color:var(--text3)">23:00</span>
+    </div>
+  </div>
+  <!-- Limits panel -->
+  <div class="chart-wrap">
+    <div class="chart-title">Límites de apuesta</div>
+    <div id="limitsPanel"></div>
+  </div>
 </div>
 
 </div><!-- /main -->
@@ -2624,13 +2868,24 @@ try{
       if(!d.registered)document.getElementById('notReg').style.display='flex';
       if(me.isAdmin)document.getElementById('adminFloat').style.display='block';
       // Mostrar items de cuenta
-      ['sbProfile','sbInventory','sbHistory','sbStats','sbBank','sbMissions','sbFriends','sbLoans','sbTrades'].forEach(id=>{
+      ['sbProfile','sbInventory','sbHistory','sbStats','sbBank',
+       'sbMissions','sbVip','sbDashboard','sbFriends','sbLoans'].forEach(id=>{
         const el=document.getElementById(id);if(el)el.style.display='flex';
       });
+      const mnm=document.getElementById('mn-missions');
+      if(mnm)mnm.style.display='flex';
       // Agregar Trades a sidebar si no existe
       if(!document.getElementById('sbTrades')){
         const sbLoans=document.getElementById('sbLoans');
-        if(sbLoans){const t=document.createElement('div');t.id='sbTrades';t.className='sb-item';t.setAttribute('data-page','trades');t.onclick=()=>navTo('trades',t);t.innerHTML='<span class="sb-ic">⇄</span> Intercambios';t.style.display='flex';sbLoans.insertAdjacentElement('afterend',t);}
+        if(sbLoans){
+          const t=document.createElement('div');
+          t.id='sbTrades';t.className='sb-item';
+          t.setAttribute('data-page','trades');
+          t.onclick=()=>navTo('trades',t);
+          t.innerHTML='<span class="sb-ic">⇄</span> Intercambios';
+          t.style.display='flex';
+          sbLoans.insertAdjacentElement('afterend',t);
+        }
       }
     }
   }catch{}
@@ -2695,18 +2950,18 @@ try{
 <!-- ══ MOBILE BOTTOM NAV ══ -->
 <nav id="mobileNav">
   <div class="mn-items">
-    <button class="mn-item active" id="mn-home" onclick="navTo('home');mnActive('home')">
+    <button class="mn-item mn-active" id="mn-home" onclick="navTo('home',this);mnActive('home')">
       <span class="mn-ic">◈</span><span>Juegos</span>
     </button>
-    <button class="mn-item" id="mn-ranking" onclick="navTo('ranking');mnActive('ranking')">
+    <button class="mn-item" id="mn-ranking" onclick="navTo('ranking',this);mnActive('ranking')">
       <span class="mn-ic">△</span><span>Ranking</span>
     </button>
-    <button class="mn-item" id="mn-live" onclick="navTo('live');mnActive('live')">
+    <button class="mn-item" id="mn-live" onclick="navTo('live',this);mnActive('live')">
       <span class="mn-ic">●</span><span>En vivo</span>
     </button>
-    <button class="mn-item" id="mn-missions" onclick="navTo('missions');mnActive('missions')" style="display:none">
+    <button class="mn-item" id="mn-missions" onclick="navTo('missions',this);mnActive('missions')" style="display:none">
       <span class="mn-ic">✦</span><span>Misiones</span>
-      <span class="mn-badge" id="mn-missions-badge"></span>
+      <span class="mn-bdg" id="mn-missions-bdg"></span>
     </button>
     <button class="mn-item" id="mn-menu" onclick="toggleSidebar()">
       <span class="mn-ic">☰</span><span>Menú</span>
@@ -2746,50 +3001,39 @@ try{
 <script>
 
 // ════════════════════════════════════════════════
-//  MOBILE SIDEBAR
+//  MOBILE SIDEBAR — limpio y correcto
 // ════════════════════════════════════════════════
 function toggleSidebar(){
   const sb=document.getElementById('sidebar');
-  const ov=document.getElementById('sbOverlay');
-  const hb=document.getElementById('hambBtn');
-  const cl=document.getElementById('sbCloseBtn');
-  const isOpen=sb.classList.contains('open');
-  if(isOpen){ closeSidebar(); }
-  else{
-    sb.classList.add('open');ov.classList.add('show');hb.classList.add('open');
-    if(cl)cl.style.display='block';
-  }
+  if(!sb)return;
+  const open=sb.classList.contains('sb-open');
+  open?closeSidebar():openSidebar();
+}
+function openSidebar(){
+  document.getElementById('sidebar')?.classList.add('sb-open');
+  document.getElementById('sbOverlay')?.classList.add('sb-show');
+  document.getElementById('hambBtn')?.classList.add('hb-open');
 }
 function closeSidebar(){
-  const sb=document.getElementById('sidebar');
-  const ov=document.getElementById('sbOverlay');
-  const hb=document.getElementById('hambBtn');
-  const cl=document.getElementById('sbCloseBtn');
-  sb.classList.remove('open');ov.classList.remove('show');hb.classList.remove('open');
-  if(cl)cl.style.display='none';
+  document.getElementById('sidebar')?.classList.remove('sb-open');
+  document.getElementById('sbOverlay')?.classList.remove('sb-show');
+  document.getElementById('hambBtn')?.classList.remove('hb-open');
 }
-// Show close btn on mobile
-function checkMobile(){
-  const cl=document.getElementById('sbCloseBtn');
-  if(cl)cl.style.display=window.innerWidth<=900?'block':'none';
-  // Sidebar always visible on desktop
-  if(window.innerWidth>900){
-    const sb=document.getElementById('sidebar');
-    if(sb)sb.classList.remove('open');
-    const ov=document.getElementById('sbOverlay');
-    if(ov)ov.classList.remove('show');
-  }
+// En desktop no mostrar sidebar abierta ni overlay
+function onResize(){
+  if(window.innerWidth>900)closeSidebar();
 }
-window.addEventListener('resize',checkMobile);
-checkMobile();
+window.addEventListener('resize',onResize,{passive:true});
+// Asegurar sidebar cerrada al cargar en mobile
+if(window.innerWidth<=900)closeSidebar();
 
 // ════════════════════════════════════════════════
 //  MOBILE BOTTOM NAV
 // ════════════════════════════════════════════════
 function mnActive(page){
-  document.querySelectorAll('.mn-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.mn-item').forEach(b=>b.classList.remove('mn-active'));
   const el=document.getElementById('mn-'+page);
-  if(el)el.classList.add('active');
+  if(el)el.classList.add('mn-active');
 }
 
 // Patch navTo to also close sidebar on mobile and update bottom nav
@@ -3282,8 +3526,297 @@ function addFriendFromProfile(){
 }
 
 // ════════════════════════════════════════════════
-//  PATCH leaderboard — perfiles clickeables
+//  LOADING SCREEN
 // ════════════════════════════════════════════════
+(function initLoadScreen(){
+  const msgs=['Iniciando casino...','Cargando juegos...','Conectando al servidor...','¡Listo!'];
+  const bar=document.getElementById('loadBar');
+  const txt=document.getElementById('loadTxt');
+  let p=0;
+  const iv=setInterval(()=>{
+    p+=Math.random()*25+10;
+    if(p>100)p=100;
+    if(bar)bar.style.width=p+'%';
+    const mi=Math.floor((p/100)*(msgs.length-1));
+    if(txt)txt.textContent=msgs[Math.min(mi,msgs.length-1)];
+    if(p>=100){
+      clearInterval(iv);
+      setTimeout(()=>{
+        const ls=document.getElementById('loadScreen');
+        if(ls){ls.classList.add('fade');setTimeout(()=>ls.style.display='none',500);}
+      },300);
+    }
+  },180);
+})();
+
+// ════════════════════════════════════════════════
+//  VIP TIER SYSTEM
+// ════════════════════════════════════════════════
+const VIP_TIERS=[
+  {id:'bronze', name:'Bronce',  icon:'🥉', min:0,      max:10000,  color:'#cd7f32', bonus:2,  cashback:0,   label:'Nivel base'},
+  {id:'silver', name:'Plata',   icon:'🥈', min:10000,  max:50000,  color:'#c0c0c0', bonus:5,  cashback:1,   label:'Jugador frecuente'},
+  {id:'gold',   name:'Oro',     icon:'🥇', min:50000,  max:200000, color:'#ffd700', bonus:10, cashback:2,   label:'Apostador élite'},
+  {id:'diamond',name:'Diamante',icon:'💎', min:200000, max:Infinity,color:'#b9f2ff',bonus:20, cashback:5,   label:'Leyenda del casino'},
+];
+function getVipTier(totalBet){
+  return VIP_TIERS.slice().reverse().find(t=>totalBet>=t.min)||VIP_TIERS[0];
+}
+async function loadVip(){
+  if(!CS.user)return;
+  try{
+    const d=await xfetch('/api/casino/my-stats');
+    const totalBet=d.totalBet||0;
+    const tier=getVipTier(totalBet);
+    const nextTier=VIP_TIERS[VIP_TIERS.indexOf(tier)+1];
+    // Current badge
+    const cb=document.getElementById('vipCurrentBadge');
+    if(cb)cb.innerHTML=`
+      <div style="display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid rgba(${tier.id==='diamond'?'185,242,255':tier.id==='gold'?'255,215,0':tier.id==='silver'?'192,192,192':'205,127,50'},.25);border-radius:var(--r2);padding:16px">
+        <span style="font-size:36px">${tier.icon}</span>
+        <div style="flex:1">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:${tier.color}">${tier.name}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">${tier.label}</div>
+          ${nextTier?`
+            <div style="margin-top:8px">
+              <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-bottom:4px">
+                <span>Progreso a ${nextTier.name}</span>
+                <span style="font-family:'Share Tech Mono',monospace">${totalBet.toLocaleString()} / ${nextTier.min.toLocaleString()}</span>
+              </div>
+              <div class="vip-prog-wrap"><div class="vip-prog-bar ${tier.id}" style="width:${Math.min(100,Math.round((totalBet-tier.min)/(nextTier.min-tier.min)*100))}%;background:${tier.color}"></div></div>
+            </div>`:'<div style="margin-top:6px;font-size:10px;color:var(--gold)">⭐ Nivel máximo alcanzado</div>'}
+        </div>
+      </div>`;
+    // All tier cards
+    const vc=document.getElementById('vipCards');
+    if(vc)vc.innerHTML=VIP_TIERS.map(t=>`
+      <div class="vip-card ${t.id}${t.id===tier.id?' current':''}">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="font-size:22px">${t.icon}</span>
+          <div style="flex:1">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:${t.color}">${t.name} ${t.id===tier.id?'<span style="font-size:8px;background:rgba(255,255,255,.08);padding:1px 6px;border-radius:3px;letter-spacing:2px;margin-left:4px">ACTUAL</span>':''}</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:1px">Desde ${t.min.toLocaleString()} apostado</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="font-size:11px;color:var(--text2)">+${t.bonus}% bonus apuestas</div>
+          ${t.cashback>0?`<div style="font-size:11px;color:var(--em)">${t.cashback}% cashback pérdidas</div>`:''}
+        </div>
+      </div>`).join('');
+    // Benefits
+    const vb=document.getElementById('vipBenefits');
+    if(vb)vb.innerHTML=`
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--rim)">
+          <span style="font-size:12px;color:var(--text2)">Bonus en cada apuesta</span>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--em)">+${tier.bonus}%</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--rim)">
+          <span style="font-size:12px;color:var(--text2)">Cashback en pérdidas</span>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:13px;color:${tier.cashback>0?'var(--em)':'var(--text3)'}">${tier.cashback>0?tier.cashback+'%':'Sin cashback'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
+          <span style="font-size:12px;color:var(--text2)">Límite de apuesta diaria</span>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--gold)">${tier.id==='diamond'?'Sin límite':(100000+VIP_TIERS.indexOf(tier)*50000).toLocaleString()}</span>
+        </div>
+      </div>`;
+  }catch(e){console.error('[vip]',e);}
+}
+
+// ════════════════════════════════════════════════
+//  MY DASHBOARD — Gráfica, heatmap, limits, CSV
+// ════════════════════════════════════════════════
+async function loadMyDashboard(){
+  if(!CS.user)return;
+
+  // Push notification prompt
+  if('Notification' in window && Notification.permission==='default'){
+    document.getElementById('pushPrompt').style.display='flex';
+  }
+
+  try{
+    const d=await xfetch('/api/casino/my-stats');
+
+    // Overview cards
+    const ov=document.getElementById('dbOverview');
+    if(ov)ov.innerHTML=`
+      <div class="stat-card"><div class="stat-val" style="color:var(--em)">${(d.totalWins||0).toLocaleString()}</div><div class="stat-lbl">Victorias</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--gold)">${(d.totalBet||0).toLocaleString()}</div><div class="stat-lbl">Total apostado</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:${(d.netProfit||0)>=0?'var(--em)':'var(--rose)'}">${(d.netProfit||0)>=0?'+':''}${(d.netProfit||0).toLocaleString()}</div><div class="stat-lbl">Neto</div></div>`;
+
+    // VIP tier info in limits panel
+    const tier=getVipTier(d.totalBet||0);
+    const lp=document.getElementById('limitsPanel');
+    if(lp)lp.innerHTML=`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="font-size:18px">${tier.icon}</span>
+        <span class="vip-badge vip-${tier.id}">${tier.name}</span>
+        <span style="font-size:11px;color:var(--text2);flex:1">Tu nivel VIP actual</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;justify-content:space-between"><span style="font-size:11.5px;color:var(--text2)">Pérdida máx. diaria</span><span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--amber)">100,000</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="font-size:11.5px;color:var(--text2)">Apuestas por minuto</span><span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--amber)">15 máx</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="font-size:11.5px;color:var(--text2)">Bonus VIP en apuestas</span><span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--em)">+${tier.bonus}%</span></div>
+      </div>`;
+
+    // Build profit chart (last 30 days from logs)
+    drawProfitChart(d.dailyData||[]);
+
+    // Build heatmap
+    drawHeatmap(d.hourlyData||[]);
+
+  }catch(e){console.error('[dashboard]',e);}
+}
+
+function drawProfitChart(data){
+  const canvas=document.getElementById('profitChart');
+  if(!canvas)return;
+  const W=canvas.offsetWidth||500;canvas.width=W;canvas.height=120;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,120);
+
+  // Generate 30 days of dummy/real data
+  const days=30;
+  const pts=data.length?data:Array.from({length:days},(_,i)=>({
+    day:i,profit:0
+  }));
+  const vals=pts.map(p=>p.profit||0);
+  const max=Math.max(Math.abs(Math.max(...vals)),Math.abs(Math.min(...vals)),1);
+  const padX=8,padY=16,barW=Math.floor((W-padX*2)/days)-1;
+
+  // Zero line
+  ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(padX,60);ctx.lineTo(W-padX,60);ctx.stroke();
+
+  // Bars
+  pts.forEach((p,i)=>{
+    const v=p.profit||0;
+    const h=Math.max(2,Math.abs(v)/max*44);
+    const x=padX+i*(barW+1);
+    const y=v>=0?60-h:60;
+    const color=v>=0?'rgba(62,207,142,.7)':'rgba(240,83,122,.7)';
+    ctx.fillStyle=color;
+    ctx.beginPath();
+    if(v>=0)ctx.roundRect(x,y,barW,h,2);
+    else ctx.roundRect(x,y,barW,h,2);
+    ctx.fill();
+  });
+
+  // Labels
+  ctx.fillStyle='rgba(240,238,255,.25)';ctx.font='8px "Share Tech Mono",monospace';ctx.textAlign='center';
+  ['30d','20d','10d','Hoy'].forEach((lbl,i)=>{
+    const x=padX+(i*(days/3))*(barW+1)+barW/2;
+    ctx.fillText(lbl,x,112);
+  });
+}
+
+function drawHeatmap(data){
+  const grid=document.getElementById('heatmapGrid');
+  if(!grid)return;
+  const maxVal=Math.max(...(data.length?data:[1]),1);
+  grid.innerHTML=Array.from({length:24},(_,h)=>{
+    const val=data[h]||0;
+    const pct=val/maxVal;
+    const alpha=0.06+pct*0.7;
+    const color=pct>0.7?`rgba(240,83,122,${alpha})`:pct>0.4?`rgba(232,147,32,${alpha})`:pct>0.1?`rgba(62,207,142,${alpha})`:`rgba(255,255,255,0.04)`;
+    return`<div class="hm-cell" style="background:${color}" title="${h}:00 — ${val} partidas"></div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════
+//  EXPORT HISTORIAL CSV
+// ════════════════════════════════════════════════
+async function exportHistoryCSV(){
+  if(!rAuth())return;
+  try{
+    const d=await xfetch('/api/casino/history?filter=all&limit=500');
+    const logs=d.logs||[];
+    if(!logs.length){toast('Sin historial para exportar','lose');return;}
+    const header='Fecha,Juego,Apuesta,Resultado,Ganancia/Perdida';
+    const rows=logs.map(l=>{
+      const dt=new Date(l.timestamp).toLocaleDateString('es-PE',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+      return`"${dt}","${l.game}",${l.bet||0},"${l.result||''}",${l.profit||0}`;
+    });
+    const csv=header+'\n'+rows.join('\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;
+    a.download=`bee-casino-historial-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();URL.revokeObjectURL(url);
+    toast('CSV descargado','win');
+  }catch(e){toast(e.message||'Error','lose');}
+}
+
+// ════════════════════════════════════════════════
+//  WEB PUSH NOTIFICATIONS
+// ════════════════════════════════════════════════
+async function requestPushPermission(){
+  if(!('Notification' in window)){toast('Tu navegador no soporta notificaciones','lose');return;}
+  const perm=await Notification.requestPermission();
+  if(perm==='granted'){
+    document.getElementById('pushPrompt').style.display='none';
+    toast('¡Notificaciones activadas!','win');
+    // Guardar preferencia
+    localStorage.setItem('push_enabled','1');
+  } else {
+    toast('Permiso de notificaciones denegado','lose');
+  }
+}
+function sendLocalNotif(title,body,icon='/favicon.svg'){
+  if(Notification.permission!=='granted')return;
+  if(document.visibilityState==='visible')return; // solo si no está en foco
+  try{ new Notification(title,{body,icon}); }catch{}
+}
+// Hook en eventos socket para notificaciones del navegador
+function setupPushHooks(){
+  // Se llama después de que socket esté disponible
+  const origAppend=appendChatMsg;
+  // Notificar batalla
+  document.addEventListener('casino:battle_challenge',e=>{
+    sendLocalNotif('⚔️ ¡Te retaron en Batalla!',`${e.detail.username} apostó ${(e.detail.bet||0).toLocaleString()} monedas`);
+  });
+}
+
+// ════════════════════════════════════════════════
+//  INTEGRACIÓN BOT DISCORD
+// ════════════════════════════════════════════════
+// Comando /casino en Discord genera un link: /casino?user=USERID&token=TOKEN
+// El token es temporal y se verifica en el servidor
+(function checkDiscordLink(){
+  const params=new URLSearchParams(window.location.search);
+  const userId=params.get('user');
+  const token=params.get('token');
+  if(userId&&token){
+    // Mostrar perfil del usuario si viene desde Discord
+    setTimeout(()=>openPlayerProfile(userId),1000);
+    // Limpiar URL
+    history.replaceState({},'','/casino.html');
+  }
+  // Jackpot notification to Discord — se envía desde el backend cuando profit >= 10000
+  // Ver: /api/casino/play → checkSuspiciousWin → io.emit('casino:alert')
+})();
+
+// ════════════════════════════════════════════════
+//  PATCH navTo — añadir nuevas páginas
+// ════════════════════════════════════════════════
+const _extraNavTo=navTo;
+navTo=function(name,el){
+  _extraNavTo(name,el);
+  if(name==='vip')loadVip();
+  if(name==='mydashboard')loadMyDashboard();
+};
+
+// ════════════════════════════════════════════════
+//  SHOW NEW SIDEBAR ITEMS ON LOGIN
+// ════════════════════════════════════════════════
+const _origShowSidebar=window._showSidebarItems;
+window._showSidebarItems=function(){
+  ['sbProfile','sbInventory','sbHistory','sbStats','sbBank',
+   'sbMissions','sbVip','sbDashboard','sbFriends','sbLoans'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display='flex';
+  });
+  const mnm=document.getElementById('mn-missions');
+  if(mnm)mnm.style.display='flex';
+};
 const _origRenderLead=renderLead;
 renderLead=function(items,container,vk,vl){
   const el=document.getElementById(container);if(!el)return;
@@ -3296,7 +3829,7 @@ renderLead=function(items,container,vk,vl){
 };
 
 // ════════════════════════════════════════════════
-//  PATCH navTo — nuevas páginas
+//  PATCH navTo — nuevas páginas + mobile
 // ════════════════════════════════════════════════
 const _origNavTo=navTo;
 navTo=function(name,el){
@@ -3306,6 +3839,7 @@ navTo=function(name,el){
   // Actualizar bottom nav
   const mnMap={home:'home',ranking:'ranking',live:'live',missions:'missions'};
   if(mnMap[name])mnActive(mnMap[name]);
+  // Cargar datos de páginas nuevas
   if(name==='history')loadHistory();
   if(name==='stats')loadStats();
   if(name==='bank')loadBank();
@@ -3342,20 +3876,21 @@ try{
 // ════════════════════════════════════════════════
 (function initExtras(){
   spRenderPresets();
-  // Show close btn on mobile
-  const cl=document.getElementById('sbCloseBtn');
-  if(cl&&window.innerWidth<=900)cl.style.display='block';
+  // Cerrar sidebar al inicio en mobile
+  if(window.innerWidth<=900)closeSidebar();
+
   document.getElementById('ppModal').addEventListener('click',e=>{
     if(e.target===document.getElementById('ppModal'))document.getElementById('ppModal').classList.remove('open');
   });
-  // Show missions badge if logged in
+
+  // Mostrar badge misiones si hay pendientes
   setInterval(async()=>{
     if(!CS.user)return;
     try{
       const d=await xfetch('/api/casino/missions/daily');
       const unclaimed=(d.missions||[]).filter(m=>m.completed&&!m.claimed).length;
-      const b=document.getElementById('mn-missions-badge');
-      if(b)b.classList.toggle('show',unclaimed>0);
+      const b=document.getElementById('mn-missions-bdg');
+      if(b){ b.textContent=unclaimed>0?unclaimed:''; b.classList.toggle('on',unclaimed>0); }
       const mnm=document.getElementById('mn-missions');
       if(mnm)mnm.style.display='flex';
     }catch{}
