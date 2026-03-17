@@ -4228,13 +4228,14 @@ try{
         // Imagen de fondo con overlay para mantener legible el texto
         slide.style.backgroundImage = `url('${src}')`;
         slide.style.backgroundSize = 'cover';
-        slide.style.backgroundPosition = 'center';
+        slide.style.backgroundPosition = 'center right';
+        slide.style.backgroundRepeat = 'no-repeat';
  
         // Añadir overlay oscuro si no existe ya
         if (!slide.querySelector('.ci-bg-overlay')) {
           const overlay = document.createElement('div');
           overlay.className = 'ci-bg-overlay';
-          overlay.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,0.6);z-index:0;pointer-events:none';
+          overlay.style.cssText = 'position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.45) 50%,rgba(0,0,0,0.15) 100%);z-index:0;pointer-events:none';
           slide.insertBefore(overlay, slide.firstChild);
           // Asegurar que el contenido quede por encima del overlay
           Array.from(slide.children).forEach((c, i) => {
@@ -4254,7 +4255,8 @@ try{
           if (!slide) return;
           slide.style.backgroundImage = `url('${src}')`;
           slide.style.backgroundSize = 'cover';
-          slide.style.backgroundPosition = 'center';
+          slide.style.backgroundPosition = 'center right';
+          slide.style.backgroundRepeat = 'no-repeat';
           // Oscurecer overlay
           const overlay = slide.querySelector('.gc-banner-overlay');
           if (overlay) overlay.style.background = 'rgba(0,0,0,0.5)';
