@@ -233,6 +233,7 @@ body::before{
   content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,var(--gold2),var(--gold),var(--gold2),transparent);
   opacity:0.5;
+  z-index:15;
 }
 .hero-bee-bg{
   position:absolute;right:40px;top:50%;transform:translateY(-50%);
@@ -4228,7 +4229,7 @@ try{
         // Imagen de fondo con overlay para mantener legible el texto
         slide.style.backgroundImage = `url('${src}')`;
         slide.style.backgroundSize = 'cover';
-        slide.style.backgroundPosition = 'center right';
+        slide.style.backgroundPosition = 'center top';
         slide.style.backgroundRepeat = 'no-repeat';
  
         // Añadir overlay oscuro si no existe ya
@@ -4255,7 +4256,7 @@ try{
           if (!slide) return;
           slide.style.backgroundImage = `url('${src}')`;
           slide.style.backgroundSize = 'cover';
-          slide.style.backgroundPosition = 'center right';
+          slide.style.backgroundPosition = 'center top';
           slide.style.backgroundRepeat = 'no-repeat';
           // Oscurecer overlay
           const overlay = slide.querySelector('.gc-banner-overlay');
