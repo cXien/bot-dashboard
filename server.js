@@ -7,6 +7,8 @@ const path     = require('path');
 const crypto   = require('crypto');
 const http     = require('http');
 const socketIo = require('socket.io');
+const fs = require('fs');
+const multer = require('multer');
 
 const app    = express();
 const server = http.createServer(app);
@@ -1606,6 +1608,104 @@ setInterval(async () => {
   const stats = await getStats();
   if (stats) io.emit('stats:update', stats);
 }, 5000);
+
+// Crear carpeta si no existe
+const BANNERS_DIR = path.join(__dirname, 'public', 'banners');
+if (!fs.existsSync(BANNERS_DIR)) fs.mkdirSync(BANNERS_DIR, { recursive: true });
+
+// Storage para multer
+const bannerStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, BANNERS_DIR),
+  destination: (req, file, cb) => cb(null, BANNERS_DIR),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname) || '.jpg';
+    const slot = req.body.slot || ('img_' + Date.now());
+    cb(null, slot.replace(/[^a-z0-9_-]/gi, '_') + ext);
+  }
+});
+const bannerUpload = multer({
+  storage: bannerStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB máx
+  fileFilter: (req, file, cb) => {
+    const allowed = ['image/jpeg','image/png','image/webp','image/gif'];
+    cb(null, allowed.includes(file.mimetype));
+  }
+});
+
+// Schema para guardar config de imágenes
+const CasinoImages = mongoose.models.CasinoImages || model('CasinoImages', new Schema({
+  guildId: String,
+  slot: { type: String, unique: false },    // e.g. "hero_0", "game_ruleta_0"
+  type: String,                              // "hero" | "game"
+  gameId: String,                           // solo si type === "game"
+  slideIndex: Number,
+  imageUrl: String,                          // URL externa
+  imagePath: String,                         // ruta local /banners/xxx.jpg
+  active: { type: Boolean, default: true },
+  updatedAt: { type: Date, default: Date.now },
+  updatedBy: String,
+}));
+
+// GET — obtener todas las imágenes configuradas
+app.get('/api/admin/casino-images', requireAuth, async (req, res) => {
+  try {
+    const images = await CasinoImages.find({ guildId: GUILD_ID }).lean();
+    res.json({ images });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+// GET público — para que el casino las cargue
+app.get('/api/casino/images', async (req, res) => {
+  try {
+    const images = await CasinoImages.find({ guildId: GUILD_ID, active: true }).lean();
+    res.json({ images });
+  } catch { res.json({ images: [] }); }
+});
+
+// POST — guardar por URL externa
+app.post('/api/admin/casino-images/url', requireAuth, async (req, res) => {
+  try {
+    const { slot, type, gameId, slideIndex, imageUrl } = req.body;
+    if (!slot || !imageUrl) return res.status(400).json({ error: 'Faltan datos' });
+    await CasinoImages.findOneAndUpdate(
+      { guildId: GUILD_ID, slot },
+      { guildId: GUILD_ID, slot, type, gameId: gameId || null, slideIndex: slideIndex ?? 0, imageUrl, imagePath: null, active: true, updatedAt: new Date(), updatedBy: req.session.user.id },
+      { upsert: true, new: true }
+    );
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: 'Error' }); }
+});
+
+// POST — subir archivo
+app.post('/api/admin/casino-images/upload', requireAuth, bannerUpload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No se recibió imagen' });
+    const { slot, type, gameId, slideIndex } = req.body;
+    const imagePath = '/banners/' + req.file.filename;
+    await CasinoImages.findOneAndUpdate(
+      { guildId: GUILD_ID, slot },
+      { guildId: GUILD_ID, slot, type, gameId: gameId || null, slideIndex: slideIndex ?? 0, imageUrl: null, imagePath, active: true, updatedAt: new Date(), updatedBy: req.session.user.id },
+      { upsert: true, new: true }
+    );
+    res.json({ success: true, imagePath });
+  } catch (e) { console.error('[upload]', e); res.status(500).json({ error: 'Error' }); }
+});
+
+// DELETE — quitar imagen de un slot
+app.delete('/api/admin/casino-images/:slot', requireAuth, async (req, res) => {
+  try {
+    const img = await CasinoImages.findOne({ guildId: GUILD_ID, slot: req.params.slot });
+    if (img?.imagePath) {
+      const filePath = path.join(__dirname, 'public', img.imagePath);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    }
+    await CasinoImages.deleteOne({ guildId: GUILD_ID, slot: req.params.slot });
+    res.json({ success: true });
+  } catch { res.status(500).json({ error: 'Error' }); }
+});
+
+// Servir carpeta banners
+app.use('/banners', express.static(BANNERS_DIR));
 
 // ── PÁGINAS ───────────────────────────────────────────────────────────────
 app.get('/login',     (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));

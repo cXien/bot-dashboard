@@ -10,39 +10,14 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --void:#03030a;
-  --dp1:rgba(255,255,255,0.028);
-  --dp2:rgba(255,255,255,0.048);
-  --dp3:rgba(255,255,255,0.07);
-  --glass:rgba(255,255,255,0.045);
-  --rim:rgba(255,255,255,0.07);
-  --rim2:rgba(255,255,255,0.11);
-  --text:rgba(255,255,255,0.92);
-  --text2:rgba(255,255,255,0.45);
-  --text3:rgba(255,255,255,0.22);
-  --ink:rgba(255,255,255,0.6);
-  --gold:#c9a84c;
-  --em:#3ecf8e;
-  --rose:#f06292;
-  --sky:#64b5f6;
-  --amb:#ffca28;
-  --sidebar:220px;
-  --r:12px;
+  --void:#03030a;--dp1:rgba(255,255,255,0.028);--dp2:rgba(255,255,255,0.048);--dp3:rgba(255,255,255,0.07);
+  --glass:rgba(255,255,255,0.045);--rim:rgba(255,255,255,0.07);--rim2:rgba(255,255,255,0.11);
+  --text:rgba(255,255,255,0.92);--text2:rgba(255,255,255,0.45);--text3:rgba(255,255,255,0.22);
+  --ink:rgba(255,255,255,0.6);--gold:#c9a84c;--em:#3ecf8e;--rose:#f06292;--sky:#64b5f6;--amb:#ffca28;--sidebar:220px;--r:12px;
 }
 html,body{height:100%}
-body{
-  background:var(--void);
-  color:var(--text);
-  font-family:'Instrument Sans',sans-serif;
-  font-size:13px;
-  display:flex;
-  min-height:100vh;
-  line-height:1.55;
-  background-image:
-    radial-gradient(ellipse 700px 500px at 15% 10%,rgba(100,181,246,0.04) 0%,transparent 70%),
-    radial-gradient(ellipse 600px 600px at 85% 90%,rgba(62,207,142,0.03) 0%,transparent 70%),
-    radial-gradient(ellipse 400px 400px at 50% 50%,rgba(201,168,76,0.015) 0%,transparent 70%);
-}
+body{background:var(--void);color:var(--text);font-family:'Instrument Sans',sans-serif;font-size:13px;display:flex;min-height:100vh;line-height:1.55;
+  background-image:radial-gradient(ellipse 700px 500px at 15% 10%,rgba(100,181,246,0.04) 0%,transparent 70%),radial-gradient(ellipse 600px 600px at 85% 90%,rgba(62,207,142,0.03) 0%,transparent 70%),radial-gradient(ellipse 400px 400px at 50% 50%,rgba(201,168,76,0.015) 0%,transparent 70%);}
 .sb{width:var(--sidebar);min-height:100vh;position:fixed;top:0;bottom:0;left:0;z-index:50;display:flex;flex-direction:column;background:rgba(3,3,10,0.72);backdrop-filter:blur(40px) saturate(160%);-webkit-backdrop-filter:blur(40px) saturate(160%);border-right:1px solid var(--rim)}
 .sb-top{padding:22px 18px 18px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--rim)}
 .sb-bee{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.3));border:1px solid rgba(201,168,76,0.28);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 0 20px rgba(201,168,76,0.07)}
@@ -158,6 +133,40 @@ tr:hover td{background:rgba(255,255,255,0.018)}
 .ban-inp:focus{border-color:var(--rim2)}
 .ban-btn{padding:7px 18px;border-radius:6px;background:rgba(240,98,146,.08);border:1px solid rgba(240,98,146,.2);color:var(--rose);font-size:11px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:.15s}
 .ban-btn:hover{background:rgba(240,98,146,.14)}
+
+/* ════ CASINO IMAGES PANEL ════ */
+.ci-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden;transition:border-color .2s}
+.ci-card:hover{border-color:rgba(201,168,76,.3)}
+.ci-thumb{height:110px;background:#0a0810;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.ci-thumb img{width:100%;height:100%;object-fit:cover;opacity:.85}
+.ci-info{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ci-label{font-family:'Instrument Serif',serif;font-size:13px;font-style:italic;color:var(--text);margin-bottom:2px}
+.ci-file{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+.ci-btn{padding:7px 14px;border-radius:7px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);color:var(--gold);cursor:pointer;font-family:'Instrument Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.3px;white-space:nowrap;transition:all .18s}
+.ci-btn:hover{background:rgba(201,168,76,.18)}
+.ci-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);backdrop-filter:blur(16px);align-items:center;justify-content:center;padding:16px}
+.ci-modal.open{display:flex;animation:rv .2s ease}
+.ci-box{background:#111019;border:1px solid rgba(255,255,255,.13);border-radius:16px;width:100%;max-width:480px;overflow:hidden}
+.ci-modal-hd{padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07)}
+.ci-modal-title{font-family:'Instrument Serif',serif;font-size:17px;font-style:italic;color:var(--text)}
+.ci-modal-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:20px;line-height:1}
+.ci-modal-body{padding:18px 20px}
+.ci-preview{width:100%;height:140px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:16px}
+.ci-preview img{width:100%;height:100%;object-fit:cover}
+.ci-preview-empty{font-size:11px;color:rgba(255,255,255,.2);letter-spacing:1px;text-transform:uppercase}
+.ci-inp-row{display:flex;gap:8px;margin-bottom:6px}
+.ci-inp{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:9px 12px;color:var(--text);font-size:12px;outline:none;font-family:'Instrument Sans',sans-serif}
+.ci-inp:focus{border-color:rgba(201,168,76,.4)}
+.ci-save-btn{padding:9px 16px;border-radius:7px;background:linear-gradient(135deg,#c9a84c,#a87c28);color:#000;border:none;cursor:pointer;font-family:'Instrument Sans',sans-serif;font-size:11px;font-weight:700;white-space:nowrap}
+.ci-sep{display:flex;align-items:center;gap:10px;margin:14px 0}
+.ci-sep-line{flex:1;height:1px;background:rgba(255,255,255,.06)}
+.ci-sep-txt{font-size:10px;color:rgba(255,255,255,.2);letter-spacing:2px;text-transform:uppercase}
+.ci-upload-label{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:28px;border:2px dashed rgba(255,255,255,.1);border-radius:8px;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.4);font-family:'Instrument Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:16px}
+.ci-upload-label:hover{border-color:rgba(201,168,76,.4);color:var(--gold)}
+.ci-del-btn{padding:8px 16px;border-radius:7px;background:rgba(240,98,146,.08);border:1px solid rgba(240,98,146,.2);color:var(--rose);cursor:pointer;font-family:'Instrument Sans',sans-serif;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.ci-tab-bar{display:flex;gap:3px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:3px;width:fit-content;margin-bottom:18px}
+.ci-tab{padding:7px 18px;border-radius:6px;border:none;cursor:pointer;font-family:'Instrument Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.3px;transition:all .18s;background:none;color:rgba(255,255,255,.4)}
+.ci-tab.active{background:rgba(201,168,76,.15);color:var(--gold)}
 </style>
 </head>
 <body>
@@ -174,10 +183,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
 <aside class="sb">
   <div class="sb-top">
     <div class="sb-bee"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -55 100 110" width="20" height="20" style="display:block;overflow:visible"><defs><style>@media(prefers-reduced-motion:no-preference){.wl{animation:wl .2s ease-in-out infinite;transform-origin:0 -16px;transform-box:fill-box}.wr{animation:wr .2s ease-in-out infinite;transform-origin:0 -16px;transform-box:fill-box}.bd{animation:fl .55s ease-in-out infinite;transform-box:fill-box}.al{animation:al .55s ease-in-out infinite;transform-origin:0 18px;transform-box:fill-box}.ar{animation:ar .55s ease-in-out infinite;transform-origin:0 18px;transform-box:fill-box}@keyframes wl{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.3)}}@keyframes wr{0%,100%{transform:scaleX(1)}50%{transform:scaleX(.3)}}@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}@keyframes al{0%,100%{transform:rotate(0)}50%{transform:rotate(-6deg)}}@keyframes ar{0%,100%{transform:rotate(0)}50%{transform:rotate(6deg)}}}</style><linearGradient id="igg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8c96a"/><stop offset="100%" stop-color="#b8892a"/></linearGradient><linearGradient id="igb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#161616"/></linearGradient></defs><polygon fill="#141008" stroke="#c9a84c" stroke-width="1.2" points="0,-48 41.6,-24 41.6,24 0,48 -41.6,24 -41.6,-24"/><g class="bd"><g class="wl"><ellipse fill="rgba(180,220,255,0.16)" stroke="rgba(160,200,255,0.55)" stroke-width="0.8" cx="-17" cy="-16" rx="17" ry="9" transform="rotate(-22,-17,-16)"/></g><g class="wr"><ellipse fill="rgba(180,220,255,0.16)" stroke="rgba(160,200,255,0.55)" stroke-width="0.8" cx="17" cy="-16" rx="17" ry="9" transform="rotate(22,17,-16)"/></g><path fill="url(#igg)" stroke="none" d="M-11,0 Q0,-1.5 11,0 Q12,5 11,10 Q0,8.5 -11,10 Q-12,5 -11,0Z"/><path fill="url(#igb)" stroke="none" d="M-12,10 Q0,8.5 12,10 Q12.5,16 11,21 Q0,19.5 -11,21 Q-12.5,16 -12,10Z"/><path fill="url(#igg)" stroke="none" d="M-11,21 Q0,19.5 11,21 Q11,26 9.5,30 Q0,28.5 -9.5,30 Q-11,26 -11,21Z"/><path fill="url(#igb)" stroke="#c9a84c" stroke-width="0.6" d="M-12,-3 Q-12,-11 0,-14 Q12,-11 12,-3 Q12,0 11,0 Q0,-1 -11,0 Q-12,0 -12,-3Z"/><circle fill="url(#igb)" stroke="#c9a84c" stroke-width="0.7" cx="0" cy="-19" r="9"/><circle fill="#c9a84c" cx="-3.8" cy="-20" r="2.6"/><circle fill="#c9a84c" cx="3.8" cy="-20" r="2.6"/><circle fill="rgba(0,0,0,0.75)" cx="-3.8" cy="-20" r="1.2"/><circle fill="rgba(0,0,0,0.75)" cx="3.8" cy="-20" r="1.2"/><g class="al"><path fill="none" stroke="#c9a84c" stroke-width="0.9" stroke-linecap="round" d="M-3,-27 Q-7,-35 -5,-42"/><circle fill="#c9a84c" cx="-5" cy="-42" r="1.9"/></g><g class="ar"><path fill="none" stroke="#c9a84c" stroke-width="0.9" stroke-linecap="round" d="M3,-27 Q7,-35 5,-42"/><circle fill="#c9a84c" cx="5" cy="-42" r="1.9"/></g></g></svg></div>
-    <div>
-      <div class="sb-wordmark">Bee</div>
-      <div class="sb-tag">Dashboard</div>
-    </div>
+    <div><div class="sb-wordmark">Bee</div><div class="sb-tag">Dashboard</div></div>
   </div>
   <nav class="sb-nav">
     <div class="nav-lbl">General</div>
@@ -195,6 +201,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
     <button class="nav-btn" onclick="nav('casino',this)"><span class="nav-ic">⬡</span> Casino</button>
     <button class="nav-btn" onclick="nav('arms',this)"><span class="nav-ic">⬢</span> Armas</button>
     <button class="nav-btn" onclick="nav('market',this)"><span class="nav-ic">⟆</span> Mercado</button>
+    <button class="nav-btn" onclick="nav('casinobans',this)"><span class="nav-ic">⊗</span> Bans Casino</button>
     <div class="nav-lbl">Jugadores</div>
     <button class="nav-btn" onclick="nav('achievements',this)"><span class="nav-ic">✦</span> Logros & Misiones</button>
     <button class="nav-btn" onclick="nav('trades',this)"><span class="nav-ic">⇄</span> Trades</button>
@@ -205,27 +212,24 @@ tr:hover td{background:rgba(255,255,255,0.018)}
     <button class="nav-btn" onclick="nav('gwblacklist',this)"><span class="nav-ic">⊘</span> Blacklist Sorteos</button>
     <button class="nav-btn" onclick="nav('autoroles',this)"><span class="nav-ic">◉</span> AutoRoles</button>
     <button class="nav-btn" onclick="nav('backgrounds',this)"><span class="nav-ic">▣</span> Fondos de perfil</button>
+    <div class="nav-lbl">Casino — Imágenes</div>
+    <button class="nav-btn" onclick="nav('casino-images',this)"><span class="nav-ic">🖼</span> Imágenes Casino</button>
     <div class="nav-lbl">Sistema</div>
     <button class="nav-btn" onclick="nav('purchases',this)"><span class="nav-ic">🛒</span> Compras tienda</button>
     <button class="nav-btn" onclick="nav('config',this)"><span class="nav-ic">⊞</span> Configuración</button>
   </nav>
   <div class="sb-foot">
     <img class="sb-av" id="sbAvatar" src="" alt="">
-    <div style="flex:1;min-width:0">
-      <div class="sb-uname" id="sbName">—</div>
-      <div class="sb-urole">Admin</div>
-    </div>
+    <div style="flex:1;min-width:0"><div class="sb-uname" id="sbName">—</div><div class="sb-urole">Admin</div></div>
     <a href="/auth/logout" class="sb-exit" title="Salir">↩</a>
   </div>
 </aside>
 
 <main class="main">
 
+<!-- OVERVIEW -->
 <div class="section active" id="s-overview">
-  <div class="ph">
-    <div class="pt">Estadísticas</div>
-    <div class="ps"><span class="live-dot"></span><span id="lastUp">actualizando…</span></div>
-  </div>
+  <div class="ph"><div class="pt">Estadísticas</div><div class="ps"><span class="live-dot"></span><span id="lastUp">actualizando…</span></div></div>
   <div class="sg">
     <div class="sc"><div class="si">👥</div><div class="sl">Miembros</div><div class="sv" id="st-members">—</div></div>
     <div class="sc"><div class="si">●</div><div class="sl">En línea</div><div class="sv" id="st-online" style="color:var(--em)">—</div></div>
@@ -240,13 +244,19 @@ tr:hover td{background:rgba(255,255,255,0.018)}
     <div class="card"><div class="card-hd">Actividad — últimos 7 días</div><div class="bchart" id="joinChart"></div></div>
     <div class="card"><div class="card-hd">Resumen</div><div id="summaryBox"></div></div>
   </div>
+  <div class="two-col" style="margin-top:12px">
+    <div class="card" style="margin-bottom:0"><div class="card-hd">Alertas recientes</div><div id="adminAlertsBox" style="color:var(--text3);font-size:11px;padding:14px 0;text-align:center;letter-spacing:.5px">Sin alertas</div></div>
+    <div class="card" style="margin-bottom:0"><div class="card-hd">Estado extendido</div><div id="extStatsBox"></div></div>
+  </div>
 </div>
 
+<!-- INVITES -->
 <div class="section" id="s-invites">
   <div class="ph"><div class="pt">Invitaciones</div><div class="ps">Ranking del servidor</div></div>
   <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Usuario</th><th>Reales</th><th>Total</th><th>Salidas</th><th>Falsas</th></tr></thead><tbody id="inviteTable"></tbody></table></div><div class="pag" id="invitePag"></div></div>
 </div>
 
+<!-- GIVEAWAYS -->
 <div class="section" id="s-giveaways">
   <div class="ph"><div class="pt">Sorteos</div><div class="ps">Historial del servidor</div></div>
   <div class="tabs">
@@ -260,20 +270,15 @@ tr:hover td{background:rgba(255,255,255,0.018)}
       <button class="fbtn" onclick="filterGw('active',this)">Activos</button>
       <button class="fbtn" onclick="filterGw('ended',this)">Finalizados</button>
     </div>
-    <div id="gwList"></div>
-    <div class="pag" id="gwPag"></div>
+    <div id="gwList"></div><div class="pag" id="gwPag"></div>
   </div>
   <div id="gwTabBl" style="display:none">
-    <div class="card"><div class="tw"><table>
-      <thead><tr><th>Usuario</th><th>Razón</th><th>Añadido por</th><th>Fecha</th></tr></thead>
-      <tbody id="gwBLTable"></tbody>
-    </table></div><div class="pag" id="gwBLPag"></div></div>
+    <div class="card"><div class="tw"><table><thead><tr><th>Usuario</th><th>Razón</th><th>Añadido por</th><th>Fecha</th></tr></thead><tbody id="gwBLTable"></tbody></table></div><div class="pag" id="gwBLPag"></div></div>
   </div>
-  <div id="gwTabCfg" style="display:none">
-    <div class="card"><div id="gwCfgBox"></div></div>
-  </div>
+  <div id="gwTabCfg" style="display:none"><div class="card"><div id="gwCfgBox"></div></div></div>
 </div>
 
+<!-- ECONOMY -->
 <div class="section" id="s-economy">
   <div class="ph"><div class="pt">Economía</div><div class="ps">Rankings del servidor</div></div>
   <div class="tabs">
@@ -284,6 +289,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Usuario</th><th id="ecol1">Monedas</th><th id="ecol2">Total ganado</th><th id="ecol3" style="display:none">Fondos</th></tr></thead><tbody id="econTable"></tbody></table></div><div class="pag" id="econPag"></div></div>
 </div>
 
+<!-- LOANS -->
 <div class="section" id="s-loans">
   <div class="ph"><div class="pt">Préstamos</div><div class="ps">Estado de todos los préstamos</div></div>
   <div class="filters">
@@ -295,6 +301,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   <div class="card"><div class="tw"><table><thead><tr><th>Usuario</th><th>Monto</th><th>Deuda</th><th>Interés</th><th>Estado</th><th>Fecha</th></tr></thead><tbody id="loanTable"></tbody></table></div><div class="pag" id="loanPag"></div></div>
 </div>
 
+<!-- LEVELS -->
 <div class="section" id="s-levels">
   <div class="ph"><div class="pt">Niveles</div><div class="ps">Sistema de XP del servidor</div></div>
   <div class="two-col" style="margin-bottom:12px">
@@ -304,23 +311,25 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   <div class="card"><div class="tw"><table><thead><tr><th>#</th><th>Usuario</th><th>Nivel</th><th>XP</th><th>Racha</th><th>Desafíos hoy</th></tr></thead><tbody id="levelTable"></tbody></table></div><div class="pag" id="levelPag"></div></div>
 </div>
 
+<!-- MODERATION -->
 <div class="section" id="s-moderation">
   <div class="ph"><div class="pt">Moderación</div><div class="ps">Warns, mutes y logs de seguridad</div></div>
   <div class="tabs">
     <button class="tab active" onclick="modTab('warns',this)">Warns</button>
     <button class="tab" onclick="modTab('mutes',this)">Mutes</button>
-    <!-- La pestaña Logs se muestra/oculta según permisos en JS -->
     <button class="tab" id="modLogsTab" onclick="modTab('logs',this)" style="display:none">Logs</button>
   </div>
   <div class="note" id="logNote" style="display:none">Los logs de IP solo aparecen cuando el usuario se verifica mediante el sistema web.</div>
   <div class="card"><div class="tw"><table><thead id="modHead"></thead><tbody id="modTable"></tbody></table></div><div class="pag" id="modPag"></div></div>
 </div>
 
+<!-- BANS -->
 <div class="section" id="s-bans">
   <div class="ph"><div class="pt">Bans</div><div class="ps">Usuarios baneados del servidor</div></div>
   <div class="card"><div class="tw"><table><thead><tr><th>Usuario</th><th>Razón</th></tr></thead><tbody id="banTable"></tbody></table></div><div class="pag" id="banPag"></div></div>
 </div>
 
+<!-- CONFIG -->
 <div class="section" id="s-config">
   <div class="ph"><div class="pt">Configuración</div><div class="ps">Canales, recompensas y estilo del servidor</div></div>
   <div class="two-col">
@@ -330,6 +339,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   <div class="card" style="margin-top:12px"><div class="card-hd">Estilo del servidor (GuildStyle)</div><div id="cfgStyle"></div></div>
 </div>
 
+<!-- CASINO -->
 <div class="section" id="s-casino" style="display:none">
   <div class="ph"><div class="pt">Casino</div><div class="ps">Historial y estadísticas</div></div>
   <div class="sg" style="grid-template-columns:repeat(4,1fr)">
@@ -360,6 +370,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </div>
 </div>
 
+<!-- ARMS -->
 <div class="section" id="s-arms" style="display:none">
   <div class="ph"><div class="pt">Armas</div><div class="ps">Inventarios, precios y estadísticas</div></div>
   <div class="tabs">
@@ -371,6 +382,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   <div class="card" id="armsContent"><div class="tw"><table><thead id="armsHead"></thead><tbody id="armsTable"></tbody></table></div><div class="pag" id="armsPag"></div></div>
 </div>
 
+<!-- MARKET -->
 <div class="section" id="s-market" style="display:none">
   <div class="ph"><div class="pt">Mercado</div><div class="ps">Listings, historial y precios</div></div>
   <div class="tabs">
@@ -389,6 +401,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   </div>
 </div>
 
+<!-- ACHIEVEMENTS -->
 <div class="section" id="s-achievements" style="display:none">
   <div class="ph"><div class="pt">Logros & Misiones</div><div class="ps">Progreso de jugadores del servidor</div></div>
   <div class="tabs">
@@ -399,6 +412,7 @@ tr:hover td{background:rgba(255,255,255,0.018)}
   <div class="card"><div class="tw"><table><thead id="achHead"></thead><tbody id="achTable"></tbody></table></div><div class="pag" id="achPag"></div></div>
 </div>
 
+<!-- TRADES -->
 <div class="section" id="s-trades" style="display:none">
   <div class="ph"><div class="pt">Trades</div><div class="ps">Intercambios entre usuarios</div></div>
   <div class="filters">
@@ -408,12 +422,10 @@ tr:hover td{background:rgba(255,255,255,0.018)}
     <button class="fbtn" onclick="filterTrade('rejected',this)">Rechazados</button>
     <button class="fbtn" onclick="filterTrade('expired',this)">Expirados</button>
   </div>
-  <div class="card"><div class="tw"><table>
-    <thead><tr><th>De</th><th>Para</th><th>Ofrece</th><th>Pide</th><th>Estado</th><th>Fecha</th></tr></thead>
-    <tbody id="tradeTable"></tbody>
-  </table></div><div class="pag" id="tradePag"></div></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>De</th><th>Para</th><th>Ofrece</th><th>Pide</th><th>Estado</th><th>Fecha</th></tr></thead><tbody id="tradeTable"></tbody></table></div><div class="pag" id="tradePag"></div></div>
 </div>
 
+<!-- SHOP -->
 <div class="section" id="s-shop" style="display:none">
   <div class="ph"><div class="pt">Tienda</div><div class="ps">Items disponibles en el servidor</div></div>
   <div class="filters">
@@ -421,12 +433,10 @@ tr:hover td{background:rgba(255,255,255,0.018)}
     <button class="fbtn" onclick="filterShop('true',this)">Activos</button>
     <button class="fbtn" onclick="filterShop('false',this)">Inactivos</button>
   </div>
-  <div class="card"><div class="tw"><table>
-    <thead><tr><th>Item</th><th>Descripción</th><th>Precio</th><th>Estado</th><th>Creado por</th><th>Fecha</th></tr></thead>
-    <tbody id="shopTable"></tbody>
-  </table></div><div class="pag" id="shopPag"></div></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>Item</th><th>Descripción</th><th>Precio</th><th>Estado</th><th>Creado por</th><th>Fecha</th></tr></thead><tbody id="shopTable"></tbody></table></div><div class="pag" id="shopPag"></div></div>
 </div>
 
+<!-- GAMES -->
 <div class="section" id="s-games" style="display:none">
   <div class="ph"><div class="pt">Juegos</div><div class="ps">Historial de partidas grupales</div></div>
   <div class="two-col" style="margin-bottom:12px">
@@ -440,36 +450,28 @@ tr:hover td{background:rgba(255,255,255,0.018)}
     <button class="fbtn" onclick="filterGame('carreras',this)">Carreras</button>
     <button class="fbtn" onclick="filterGame('ruleta',this)">Ruleta grupal</button>
   </div>
-  <div class="card"><div class="tw"><table>
-    <thead><tr><th>Juego</th><th>Jugadores</th><th>Pot total</th><th>Ganador(es)</th><th>Fecha</th></tr></thead>
-    <tbody id="gamesTable"></tbody>
-  </table></div><div class="pag" id="gamesPag"></div></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>Juego</th><th>Jugadores</th><th>Pot total</th><th>Ganador(es)</th><th>Fecha</th></tr></thead><tbody id="gamesTable"></tbody></table></div><div class="pag" id="gamesPag"></div></div>
 </div>
 
+<!-- XP BOOSTS -->
 <div class="section" id="s-xpboosts" style="display:none">
   <div class="ph"><div class="pt">XP Boosts</div><div class="ps">Multiplicadores de XP activos</div></div>
-  <div class="card"><div class="tw"><table>
-    <thead><tr><th>Usuario</th><th>Multiplicador</th><th>Otorgado por</th><th>Expira en</th><th>Expira</th></tr></thead>
-    <tbody id="boostTable"></tbody>
-  </table></div><div class="pag" id="boostPag"></div></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>Usuario</th><th>Multiplicador</th><th>Otorgado por</th><th>Expira en</th><th>Expira</th></tr></thead><tbody id="boostTable"></tbody></table></div><div class="pag" id="boostPag"></div></div>
 </div>
 
+<!-- GW BLACKLIST -->
 <div class="section" id="s-gwblacklist" style="display:none">
   <div class="ph"><div class="pt">Blacklist de Sorteos</div><div class="ps">Usuarios bloqueados de participar</div></div>
-  <div class="card"><div class="tw"><table>
-    <thead><tr><th>Usuario</th><th>Razón</th><th>Añadido por</th><th>Fecha</th></tr></thead>
-    <tbody id="gwblTable"></tbody>
-  </table></div><div class="pag" id="gwblPag"></div></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>Usuario</th><th>Razón</th><th>Añadido por</th><th>Fecha</th></tr></thead><tbody id="gwblTable"></tbody></table></div><div class="pag" id="gwblPag"></div></div>
 </div>
 
+<!-- AUTOROLES -->
 <div class="section" id="s-autoroles" style="display:none">
   <div class="ph"><div class="pt">AutoRoles</div><div class="ps">Paneles de roles reactivos del servidor</div></div>
-  <div class="card"><div class="tw"><table>
-    <thead><tr><th>Panel</th><th>Canal</th><th>Roles</th><th>Req. confirmar</th><th>Máx roles</th><th>Actualizado</th></tr></thead>
-    <tbody id="autorolesTable"></tbody>
-  </table></div><div class="pag" id="autorolesPag"></div></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>Panel</th><th>Canal</th><th>Roles</th><th>Req. confirmar</th><th>Máx roles</th><th>Actualizado</th></tr></thead><tbody id="autorolesTable"></tbody></table></div><div class="pag" id="autorolesPag"></div></div>
 </div>
 
+<!-- BACKGROUNDS -->
 <div class="section" id="s-backgrounds" style="display:none">
   <div class="ph"><div class="pt">Fondos de perfil</div><div class="ps">Backgrounds disponibles en el servidor</div></div>
   <div class="filters">
@@ -477,29 +479,19 @@ tr:hover td{background:rgba(255,255,255,0.018)}
     <button class="fbtn" onclick="filterBg('default',this)">Por defecto</button>
     <button class="fbtn" onclick="filterBg('custom',this)">Personalizados</button>
   </div>
-  <div class="card"><div class="tw"><table>
-    <thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Precio</th><th>Tipo</th><th>Creado por</th><th>Fecha</th></tr></thead>
-    <tbody id="bgTable"></tbody>
-  </table></div><div class="pag" id="bgPag"></div></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Precio</th><th>Tipo</th><th>Creado por</th><th>Fecha</th></tr></thead><tbody id="bgTable"></tbody></table></div><div class="pag" id="bgPag"></div></div>
 </div>
 
+<!-- PURCHASES -->
 <div class="section" id="s-purchases" style="display:none">
   <div class="ph"><div class="pt">Compras en tienda</div><div class="ps">Historial de lo que han comprado los usuarios</div></div>
-  <div class="card"><div class="tw"><table>
-    <thead><tr><th>Usuario</th><th>Item</th><th>Precio</th><th>Fecha</th></tr></thead>
-    <tbody id="purchasesTable"></tbody>
-  </table></div><div class="pag" id="purchasesPag"></div></div>
+  <div class="card"><div class="tw"><table><thead><tr><th>Usuario</th><th>Item</th><th>Precio</th><th>Fecha</th></tr></thead><tbody id="purchasesTable"></tbody></table></div><div class="pag" id="purchasesPag"></div></div>
 </div>
 
-<!-- Añadir en sidebar nav, sección "Economía avanzada" -->
-<button class="nav-btn" onclick="nav('casinobans',this)"><span class="nav-ic">⊗</span> Bans Casino</button>
-
-<!-- SECCIÓN BANS CASINO (añadir como hermana de otras secciones) -->
+<!-- CASINO BANS -->
 <div class="section" id="s-casinobans" style="display:none">
   <div class="ph"><div class="pt">Bans de Casino</div><div class="ps">Control de acceso al casino web bee</div></div>
-
-  <div class="card">
-    <div class="card-hd">Nueva ban</div>
+  <div class="card"><div class="card-hd">Nueva ban</div>
     <div class="ban-form">
       <input class="ban-inp" id="banUserId" placeholder="ID de Discord del usuario (ej: 123456789012345678)">
       <input class="ban-inp" id="banReason" placeholder="Razón del ban">
@@ -507,27 +499,76 @@ tr:hover td{background:rgba(255,255,255,0.018)}
       <button class="ban-btn" onclick="banCasinoUser()">Banear del casino</button>
     </div>
   </div>
-
-  <div class="card">
-    <div class="card-hd">Usuarios baneados</div>
-    <div class="tw">
-      <table>
-        <thead><tr><th>Usuario</th><th>Razón</th><th>Baneado por</th><th>Duración</th><th></th></tr></thead>
-        <tbody id="casinoBanTable"><tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text3)">Sin bans activos</td></tr></tbody>
-      </table>
-    </div>
+  <div class="card"><div class="card-hd">Usuarios baneados</div>
+    <div class="tw"><table><thead><tr><th>Usuario</th><th>Razón</th><th>Baneado por</th><th>Duración</th><th></th></tr></thead><tbody id="casinoBanTable"><tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text3)">Sin bans activos</td></tr></tbody></table></div>
   </div>
 </div>
 
-<!-- ALERTAS ADMIN (añadir en la sección de overview) -->
-<div class="two-col" style="margin-top:12px">
-  <div class="card" style="margin-bottom:0">
-    <div class="card-hd">Alertas recientes</div>
-    <div id="adminAlertsBox" style="color:var(--text3);font-size:11px;padding:14px 0;text-align:center;letter-spacing:.5px">Sin alertas</div>
+<!-- ════════════════════════════════════════════════
+     CASINO IMAGES PANEL — Nueva sección
+════════════════════════════════════════════════ -->
+<div class="section" id="s-casino-images" style="display:none">
+  <div class="ph">
+    <div class="pt">Imágenes del Casino</div>
+    <div class="ps">Gestiona los banners del hero y las tarjetas de juegos · Solo admins</div>
   </div>
-  <div class="card" style="margin-bottom:0">
-    <div class="card-hd">Estado extendido</div>
-    <div id="extStatsBox"></div>
+
+  <!-- Tabs Hero / Juegos -->
+  <div class="ci-tab-bar">
+    <button class="ci-tab active" id="ci-tab-hero" onclick="ciTab('hero')">Hero Banner (4 slides)</button>
+    <button class="ci-tab" id="ci-tab-games" onclick="ciTab('games')">Tarjetas de juegos (36 slides)</button>
+  </div>
+
+  <!-- Descripción -->
+  <div id="ci-desc-hero" style="font-size:11px;color:var(--text3);margin-bottom:16px;letter-spacing:.3px">
+    El hero banner tiene 4 slides que rotan automáticamente cada 5 segundos. Puedes asignar una imagen de fondo a cada slide.
+  </div>
+  <div id="ci-desc-games" style="font-size:11px;color:var(--text3);margin-bottom:16px;letter-spacing:.3px;display:none">
+    Cada juego tiene 3 slides que se activan al hacer hover. Asigna imágenes para que aparezcan como fondo de la tarjeta.
+  </div>
+
+  <!-- Grids -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px" id="ci-hero-grid"></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;display:none" id="ci-games-grid"></div>
+</div>
+
+<!-- MODAL edición de imagen -->
+<div class="ci-modal" id="ci-modal">
+  <div class="ci-box">
+    <div class="ci-modal-hd">
+      <div class="ci-modal-title" id="ci-modal-title">Editar imagen</div>
+      <button class="ci-modal-close" onclick="ciCloseModal()">×</button>
+    </div>
+    <div class="ci-modal-body">
+      <!-- Preview -->
+      <div style="font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Preview actual</div>
+      <div class="ci-preview" id="ci-preview">
+        <span class="ci-preview-empty">Sin imagen</span>
+      </div>
+
+      <!-- URL -->
+      <div style="font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Opción 1 · URL externa</div>
+      <div class="ci-inp-row">
+        <input type="text" class="ci-inp" id="ci-url-input" placeholder="https://ejemplo.com/imagen.jpg" oninput="ciPreviewUrl(this.value)">
+        <button class="ci-save-btn" onclick="ciSaveUrl()">Guardar URL</button>
+      </div>
+
+      <!-- Separador -->
+      <div class="ci-sep"><div class="ci-sep-line"></div><span class="ci-sep-txt">o</span><div class="ci-sep-line"></div></div>
+
+      <!-- Upload -->
+      <div style="font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Opción 2 · Subir archivo (máx 5MB · JPG/PNG/WEBP)</div>
+      <label class="ci-upload-label" id="ci-upload-label">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span id="ci-upload-label-text">Arrastra o haz clic para subir</span>
+        <input type="file" id="ci-file-input" accept="image/*" style="display:none" onchange="ciFileSelected(this)">
+      </label>
+
+      <!-- Eliminar -->
+      <div style="display:flex;justify-content:flex-end">
+        <button class="ci-del-btn" onclick="ciDeleteImage()">Eliminar imagen</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -540,7 +581,7 @@ const S={currentSection:'overview',invites:{page:1},giveaways:{status:'all',page
 const socket=io();
 let wsTmr;
 const wsEl=document.getElementById('wsS'),wsDot=document.getElementById('wsd'),wsTxt=document.getElementById('wst');
-function showWS(on,msg){wsDot.className='on'+(on?'':' off').replace('on off','off');if(on)wsDot.className='on';else wsDot.className='off';wsTxt.textContent=msg;wsEl.classList.add('show');clearTimeout(wsTmr);if(on)wsTmr=setTimeout(()=>wsEl.classList.remove('show'),2500);}
+function showWS(on,msg){if(on)wsDot.className='on';else wsDot.className='off';wsTxt.textContent=msg;wsEl.classList.add('show');clearTimeout(wsTmr);if(on)wsTmr=setTimeout(()=>wsEl.classList.remove('show'),2500);}
 socket.on('connect',()=>showWS(true,'en línea'));
 socket.on('disconnect',()=>showWS(false,'sin conexión'));
 socket.on('stats:update',d=>{ applyStats(d); });
@@ -554,14 +595,10 @@ setInterval(()=>{
 function applyStats(d){
   if(!d) return;
   const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
-  set('st-members',(d.members||0).toLocaleString());
-  set('st-online',(d.online||0).toLocaleString());
-  set('st-users',(d.registeredUsers||0).toLocaleString());
-  set('st-flagged',d.flaggedJoins||0);
-  set('st-giveaways',d.activeGiveaways||0);
-  set('st-loans',d.activeLoans||0);
-  set('st-bets',(d.casinoBets||0).toLocaleString());
-  set('st-warns',d.totalWarns||0);
+  set('st-members',(d.members||0).toLocaleString());set('st-online',(d.online||0).toLocaleString());
+  set('st-users',(d.registeredUsers||0).toLocaleString());set('st-flagged',d.flaggedJoins||0);
+  set('st-giveaways',d.activeGiveaways||0);set('st-loans',d.activeLoans||0);
+  set('st-bets',(d.casinoBets||0).toLocaleString());set('st-warns',d.totalWarns||0);
 }
 
 (async()=>{
@@ -569,16 +606,11 @@ function applyStats(d){
   if(!me){location.href='/login';return;}
   document.getElementById('sbName').textContent=me.username;
   document.getElementById('sbAvatar').src=me.avatar;
-
-  // ── Guardar ID del usuario actual globalmente ──────────────────────────
   window._myId = me.id;
-
-  // ── Mostrar pestaña Logs SOLO si el usuario tiene permiso ──────────────
   if(IP_LOG_ALLOWED.includes(me.id)){
     const logsTab = document.getElementById('modLogsTab');
     if(logsTab) logsTab.style.display = '';
   }
-
   loadOverview();
 })();
 
@@ -591,18 +623,13 @@ window.nav=function(name,btn){
   if(sec){sec.classList.add('active');sec.style.display='block';}
   if(btn)btn.classList.add('active');
   S.currentSection=name;
-  const map={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket,achievements:loadAchievements,trades:loadTrades,shop:loadShop,games:loadGames,xpboosts:loadXpBoosts,gwblacklist:loadGwBlacklist,autoroles:loadAutoRoles,backgrounds:loadBackgrounds,purchases:loadPurchases};
+  const map={overview:loadOverview,invites:loadInvites,giveaways:loadGiveaways,economy:loadEconomy,loans:loadLoans,levels:loadLevels,moderation:loadModeration,bans:loadBans,config:loadConfig,casino:loadCasino,arms:loadArms,market:loadMarket,achievements:loadAchievements,trades:loadTrades,shop:loadShop,games:loadGames,xpboosts:loadXpBoosts,gwblacklist:loadGwBlacklist,autoroles:loadAutoRoles,backgrounds:loadBackgrounds,purchases:loadPurchases,casinobans:loadCasinoBans,'casino-images':loadCasinoImages};
   if(!S.loaded[name]&&map[name])map[name]();
 };
 
 const uc=(av,nm)=>{const img=av?`<img src="${av}" onerror="this.style.display='none'">`:`<div class="fa">${(nm||'?')[0].toUpperCase()}</div>`;return`<div class="uc">${img}<span>${nm||'—'}</span></div>`;};
 const rk=n=>{const m={1:'rk1',2:'rk2',3:'rk3'},e={1:'🥇',2:'🥈',3:'🥉'};return`<span class="rk ${m[n]||''}">${e[n]||'#'+n}</span>`;};
-function pag(id,page,pages,fnName){
-  const el=document.getElementById(id);
-  if(!el||pages<=1){if(el)el.innerHTML='';return;}
-  const fn=typeof fnName==='string'?fnName:fnName.name||'';
-  el.innerHTML=`<button class="pg" onclick="${fn}(${page-1})" ${page<=1?'disabled':''}>← anterior</button><span class="pi">${page} / ${pages}</span><button class="pg" onclick="${fn}(${page+1})" ${page>=pages?'disabled':''}>siguiente →</button>`;
-}
+function pag(id,page,pages,fnName){const el=document.getElementById(id);if(!el||pages<=1){if(el)el.innerHTML='';return;}const fn=typeof fnName==='string'?fnName:fnName.name||'';el.innerHTML=`<button class="pg" onclick="${fn}(${page-1})" ${page<=1?'disabled':''}>← anterior</button><span class="pi">${page} / ${pages}</span><button class="pg" onclick="${fn}(${page+1})" ${page>=pages?'disabled':''}>siguiente →</button>`;}
 const empty=(msg='Sin datos')=>`<div class="empty"><div class="ei">—</div><div>${msg}</div></div>`;
 const coin=n=>`<span class="mono" style="color:var(--gold)">🪙 ${n.toLocaleString()}</span>`;
 const dt=d=>`<span class="mono">${new Date(d).toLocaleDateString('es-PE')}</span>`;
@@ -649,19 +676,8 @@ async function loadLevels(page){
 }
 
 async function loadModeration(page){
-  if(page)S.moderation.page=page;
-  const{tab}=S.moderation;
-
-  // ── Protección en frontend: redirigir si no tiene permiso ──────────────
-  if(tab==='logs' && !IP_LOG_ALLOWED.includes(window._myId)){
-    S.moderation.tab='warns';
-    document.querySelectorAll('#s-moderation .tab').forEach(x=>x.classList.remove('active'));
-    const warnsTabBtn=document.querySelector('#s-moderation .tab');
-    if(warnsTabBtn)warnsTabBtn.classList.add('active');
-    return loadModeration();
-  }
-  // ──────────────────────────────────────────────────────────────────────
-
+  if(page)S.moderation.page=page;const{tab}=S.moderation;
+  if(tab==='logs' && !IP_LOG_ALLOWED.includes(window._myId)){S.moderation.tab='warns';document.querySelectorAll('#s-moderation .tab').forEach(x=>x.classList.remove('active'));const w=document.querySelector('#s-moderation .tab');if(w)w.classList.add('active');return loadModeration();}
   document.getElementById('logNote').style.display=tab==='logs'?'':'none';
   const d=await api(`/api/moderation?tab=${tab}&page=${S.moderation.page}`);if(!d)return;
   const h=document.getElementById('modHead'),tb=document.getElementById('modTable');
@@ -670,13 +686,7 @@ async function loadModeration(page){
   else if(tab==='logs'){h.innerHTML='<tr><th>Usuario</th><th>IP</th><th>País</th><th>Estado</th><th>Fecha</th></tr>';tb.innerHTML=d.items.length?d.items.map(l=>`<tr><td>${uc(l.avatar,l.username)}</td><td><span class="mono">${l.ip||'—'}</span></td><td>${l.countryCode&&l.countryCode!=='??'?l.countryCode+' ':''}<span style="color:var(--text2)">${l.country||'—'}</span></td><td><span class="badge ${l.flagged?'b-r':'b-g'}">${l.flagged?'Alerta':'OK'}</span></td><td>${dt(l.joinedAt)}</td></tr>`).join(''):`<tr><td colspan="5">${empty()}</td></tr>`;}
   pag('modPag',S.moderation.page,d.pages,'loadModeration');S.loaded.moderation=true;
 }
-function modTab(t,b){
-  // ── Bloquear cambio a logs si no tiene permiso ─────────────────────────
-  if(t==='logs' && !IP_LOG_ALLOWED.includes(window._myId)) return;
-  document.querySelectorAll('#s-moderation .tab').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');
-  S.moderation.tab=t;S.moderation.page=1;S.loaded.moderation=false;loadModeration();
-}
+function modTab(t,b){if(t==='logs' && !IP_LOG_ALLOWED.includes(window._myId)) return;document.querySelectorAll('#s-moderation .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');S.moderation.tab=t;S.moderation.page=1;S.loaded.moderation=false;loadModeration();}
 
 async function loadBans(page){if(page)S.bans.page=page;const d=await api(`/api/bans?page=${S.bans.page}`);if(!d)return;document.getElementById('banTable').innerHTML=d.bans.length?d.bans.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink)">${b.reason}</td></tr>`).join(''):`<tr><td colspan="2">${empty()}</td></tr>`;pag('banPag',S.bans.page,d.pages,'loadBans');S.loaded.bans=true;}
 
@@ -735,8 +745,7 @@ function marketTab(t,b){document.querySelectorAll('#s-market .tab').forEach(x=>x
 
 const achState={tab:'achievements',page:1};
 async function loadAchievements(page){
-  if(page)achState.page=page;
-  const d=await api(`/api/achievements?tab=${achState.tab}&page=${achState.page}`);if(!d)return;
+  if(page)achState.page=page;const d=await api(`/api/achievements?tab=${achState.tab}&page=${achState.page}`);if(!d)return;
   const h=document.getElementById('achHead'),tb=document.getElementById('achTable');
   if(achState.tab==='achievements'){h.innerHTML='<tr><th>#</th><th>Usuario</th><th>Logros</th><th>Wins casino</th><th>Wins trivia</th><th>Racha máx</th><th>Apuesta máx</th></tr>';tb.innerHTML=d.items.length?d.items.map(a=>`<tr><td>${rk(a.rank)}</td><td>${uc(a.avatar,a.username)}</td><td><span class="badge b-o">★ ${a.badges}</span></td><td><span class="mono" style="color:var(--em)">${a.casino_wins}</span></td><td><span class="mono" style="color:var(--sky)">${a.trivia_wins}</span></td><td><span class="mono">${a.win_streak}</span></td><td>${coin(a.max_bet)}</td></tr>`).join(''):`<tr><td colspan="7">${empty()}</td></tr>`;}
   else if(achState.tab==='missions'){h.innerHTML='<tr><th>Usuario</th><th>Completadas</th><th>Progreso</th><th>Reclamado</th></tr>';tb.innerHTML=d.items.length?d.items.map(m=>{const pct=m.total>0?Math.round(m.completed/m.total*100):0;return`<tr><td>${uc(m.avatar,m.username)}</td><td><strong>${m.completed} / ${m.total}</strong></td><td><div style="display:flex;align-items:center;gap:8px;min-width:120px"><div class="prog-wrap" style="flex:1"><div class="prog-bar" style="width:${pct}%"></div></div><span class="mono">${pct}%</span></div></td><td><span class="badge ${m.claimed?'b-g':'b-m'}">${m.claimed?'Reclamado':'Pendiente'}</span></td></tr>`;}).join(''):`<tr><td colspan="4">${empty('Sin progreso esta semana')}</td></tr>`;}
@@ -746,219 +755,270 @@ async function loadAchievements(page){
 function achTab(t,b){document.querySelectorAll('#s-achievements .tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');achState.tab=t;achState.page=1;S.loaded.achievements=false;loadAchievements();}
 
 const tradeState={status:'all',page:1};
-async function loadTrades(page){
-  if(page)tradeState.page=page;const d=await api(`/api/trades?status=${tradeState.status}&page=${tradeState.page}`);if(!d)return;
-  const statusBadge=s=>({pending:'<span class="badge b-a">Pendiente</span>',accepted:'<span class="badge b-g">Aceptado</span>',rejected:'<span class="badge b-r">Rechazado</span>',cancelled:'<span class="badge b-m">Cancelado</span>',expired:'<span class="badge b-m">Expirado</span>'}[s]||`<span class="badge b-m">${s}</span>`);
-  document.getElementById('tradeTable').innerHTML=d.trades.length?d.trades.map(t=>`<tr><td>${uc(t.fromAvatar,t.fromUsername)}</td><td>${uc(t.toAvatar,t.toUsername)}</td><td>${t.fromCoins>0?coin(t.fromCoins):'<span class="mono" style="color:var(--text3)">—</span>'}</td><td>${t.toCoins>0?coin(t.toCoins):'<span class="mono" style="color:var(--text3)">—</span>'}</td><td>${statusBadge(t.status)}</td><td>${dt(t.createdAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty('Sin trades')}</td></tr>`;
-  pag('tradePag',tradeState.page,d.pages,'loadTrades');S.loaded.trades=true;
-}
+async function loadTrades(page){if(page)tradeState.page=page;const d=await api(`/api/trades?status=${tradeState.status}&page=${tradeState.page}`);if(!d)return;const statusBadge=s=>({pending:'<span class="badge b-a">Pendiente</span>',accepted:'<span class="badge b-g">Aceptado</span>',rejected:'<span class="badge b-r">Rechazado</span>',cancelled:'<span class="badge b-m">Cancelado</span>',expired:'<span class="badge b-m">Expirado</span>'}[s]||`<span class="badge b-m">${s}</span>`);document.getElementById('tradeTable').innerHTML=d.trades.length?d.trades.map(t=>`<tr><td>${uc(t.fromAvatar,t.fromUsername)}</td><td>${uc(t.toAvatar,t.toUsername)}</td><td>${t.fromCoins>0?coin(t.fromCoins):'<span class="mono" style="color:var(--text3)">—</span>'}</td><td>${t.toCoins>0?coin(t.toCoins):'<span class="mono" style="color:var(--text3)">—</span>'}</td><td>${statusBadge(t.status)}</td><td>${dt(t.createdAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty('Sin trades')}</td></tr>`;pag('tradePag',tradeState.page,d.pages,'loadTrades');S.loaded.trades=true;}
 function filterTrade(s,b){document.querySelectorAll('#s-trades .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');tradeState.status=s;tradeState.page=1;loadTrades();}
 
 const shopState={active:'all',page:1};
-async function loadShop(page){
-  if(page)shopState.page=page;const active=shopState.active==='all'?'':shopState.active;const d=await api(`/api/shop?active=${active}&page=${shopState.page}`);if(!d)return;
-  document.getElementById('shopTable').innerHTML=d.items.length?d.items.map(item=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">${item.emoji||'🛒'}</span><strong style="color:var(--text)">${item.name}</strong></div></td><td style="color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.description}</td><td>${coin(item.price)}</td><td><span class="badge ${item.active?'b-g':'b-r'}">${item.active?'Activo':'Inactivo'}</span></td><td><span class="mono" style="color:var(--text2)">${item.createdByName||'—'}</span></td><td>${dt(item.createdAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty('Tienda vacía')}</td></tr>`;
-  pag('shopPag',shopState.page,d.pages,'loadShop');S.loaded.shop=true;
-}
+async function loadShop(page){if(page)shopState.page=page;const active=shopState.active==='all'?'':shopState.active;const d=await api(`/api/shop?active=${active}&page=${shopState.page}`);if(!d)return;document.getElementById('shopTable').innerHTML=d.items.length?d.items.map(item=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">${item.emoji||'🛒'}</span><strong style="color:var(--text)">${item.name}</strong></div></td><td style="color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.description}</td><td>${coin(item.price)}</td><td><span class="badge ${item.active?'b-g':'b-r'}">${item.active?'Activo':'Inactivo'}</span></td><td><span class="mono" style="color:var(--text2)">${item.createdByName||'—'}</span></td><td>${dt(item.createdAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty('Tienda vacía')}</td></tr>`;pag('shopPag',shopState.page,d.pages,'loadShop');S.loaded.shop=true;}
 function filterShop(a,b){document.querySelectorAll('#s-shop .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');shopState.active=a;shopState.page=1;loadShop();}
 
 const gamesState={game:'all',page:1};
-async function loadGames(page){
-  if(page)gamesState.page=page;const d=await api(`/api/games?game=${gamesState.game}&page=${gamesState.page}`);if(!d)return;
-  if(d.topGames?.length){document.getElementById('topGamesBox').innerHTML=d.topGames.map(g=>`<div class="ms"><span class="ms-label">${g._id}</span><span class="ms-val"><span class="mono">${g.count} partidas</span></span></div>`).join('');}
-  document.getElementById('gamesSummaryBox').innerHTML=`<div class="ms"><span class="ms-label">Total partidas</span><span class="ms-val">${d.games.length>0?(gamesState.page>1?'...':d.games.length):0}</span></div><div class="ms"><span class="ms-label">Juegos distintos</span><span class="ms-val">${d.topGames?.length||0}</span></div>`;
-  document.getElementById('gamesTable').innerHTML=d.games.length?d.games.map(g=>{const winners=g.players?.filter(p=>p.won).map(p=>p.username).join(', ')||'—';const totalPot=g.players?.reduce((acc,p)=>acc+(p.amount||0),0)||0;return`<tr><td><span class="badge b-s">${g.game}</span></td><td><span class="mono">${g.players?.length||0}</span></td><td>${totalPot>0?coin(totalPot):'<span class="mono" style="color:var(--text3)">—</span>'}</td><td style="color:var(--em);font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${winners}</td><td>${dt(g.endedAt)}</td></tr>`;}).join(''):`<tr><td colspan="5">${empty('Sin partidas')}</td></tr>`;
-  pag('gamesPag',gamesState.page,d.pages,'loadGames');S.loaded.games=true;
-}
+async function loadGames(page){if(page)gamesState.page=page;const d=await api(`/api/games?game=${gamesState.game}&page=${gamesState.page}`);if(!d)return;if(d.topGames?.length){document.getElementById('topGamesBox').innerHTML=d.topGames.map(g=>`<div class="ms"><span class="ms-label">${g._id}</span><span class="ms-val"><span class="mono">${g.count} partidas</span></span></div>`).join('');}document.getElementById('gamesSummaryBox').innerHTML=`<div class="ms"><span class="ms-label">Total partidas</span><span class="ms-val">${d.games.length>0?(gamesState.page>1?'...':d.games.length):0}</span></div><div class="ms"><span class="ms-label">Juegos distintos</span><span class="ms-val">${d.topGames?.length||0}</span></div>`;document.getElementById('gamesTable').innerHTML=d.games.length?d.games.map(g=>{const winners=g.players?.filter(p=>p.won).map(p=>p.username).join(', ')||'—';const totalPot=g.players?.reduce((acc,p)=>acc+(p.amount||0),0)||0;return`<tr><td><span class="badge b-s">${g.game}</span></td><td><span class="mono">${g.players?.length||0}</span></td><td>${totalPot>0?coin(totalPot):'<span class="mono" style="color:var(--text3)">—</span>'}</td><td style="color:var(--em);font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${winners}</td><td>${dt(g.endedAt)}</td></tr>`;}).join(''):`<tr><td colspan="5">${empty('Sin partidas')}</td></tr>`;pag('gamesPag',gamesState.page,d.pages,'loadGames');S.loaded.games=true;}
 function filterGame(g,b){document.querySelectorAll('#s-games .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');gamesState.game=g;gamesState.page=1;S.loaded.games=false;loadGames();}
 
 const boostState={page:1};
-async function loadXpBoosts(page){
-  if(page)boostState.page=page;const d=await api(`/api/xpboosts?page=${boostState.page}`);if(!d)return;
-  document.getElementById('boostTable').innerHTML=d.items.length?d.items.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td><span class="badge b-o">×${b.multiplier} XP</span></td><td><span class="mono" style="color:var(--text2)">${b.grantedByName||'—'}</span></td><td><span class="mono" style="color:${b.hoursLeft<2?'var(--rose)':'var(--amb)'}">${b.hoursLeft}h</span></td><td>${dt(b.expiresAt)}</td></tr>`).join(''):`<tr><td colspan="5">${empty('Sin boosts activos')}</td></tr>`;
-  pag('boostPag',boostState.page,d.pages,'loadXpBoosts');S.loaded.xpboosts=true;
-}
+async function loadXpBoosts(page){if(page)boostState.page=page;const d=await api(`/api/xpboosts?page=${boostState.page}`);if(!d)return;document.getElementById('boostTable').innerHTML=d.items.length?d.items.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td><span class="badge b-o">×${b.multiplier} XP</span></td><td><span class="mono" style="color:var(--text2)">${b.grantedByName||'—'}</span></td><td><span class="mono" style="color:${b.hoursLeft<2?'var(--rose)':'var(--amb)'}">${b.hoursLeft}h</span></td><td>${dt(b.expiresAt)}</td></tr>`).join(''):`<tr><td colspan="5">${empty('Sin boosts activos')}</td></tr>`;pag('boostPag',boostState.page,d.pages,'loadXpBoosts');S.loaded.xpboosts=true;}
 
 const gwblState={page:1};
-async function loadGwBlacklist(page){
-  if(page)gwblState.page=page;const d=await api(`/api/giveaway-blacklist?page=${gwblState.page}`);if(!d)return;
-  document.getElementById('gwblTable').innerHTML=d.items.length?d.items.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.reason||'—'}</td><td><span class="mono" style="color:var(--text2)">${b.addedByName||'—'}</span></td><td>${dt(b.addedAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;
-  pag('gwblPag',gwblState.page,d.pages,'loadGwBlacklist');S.loaded.gwblacklist=true;
-}
+async function loadGwBlacklist(page){if(page)gwblState.page=page;const d=await api(`/api/giveaway-blacklist?page=${gwblState.page}`);if(!d)return;document.getElementById('gwblTable').innerHTML=d.items.length?d.items.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.reason||'—'}</td><td><span class="mono" style="color:var(--text2)">${b.addedByName||'—'}</span></td><td>${dt(b.addedAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;pag('gwblPag',gwblState.page,d.pages,'loadGwBlacklist');S.loaded.gwblacklist=true;}
 
 const arState={page:1};
-async function loadAutoRoles(page){
-  if(page)arState.page=page;const d=await api(`/api/autoroles?page=${arState.page}`);if(!d)return;
-  document.getElementById('autorolesTable').innerHTML=d.items.length?d.items.map(ar=>`<tr><td><div style="font-weight:600;color:var(--text)">${ar.name}</div><div style="font-size:10px;color:var(--text3)">${ar.title}</div></td><td><span class="mono" style="font-size:10px;color:var(--sky)">#${ar.channelId}</span></td><td><span class="badge b-o">${ar.roles?.length||0} roles</span></td><td><span class="badge ${ar.requireConfirm?'b-g':'b-m'}">${ar.requireConfirm?'Sí':'No'}</span></td><td><span class="mono">${ar.maxRoles===0?'Sin límite':ar.maxRoles}</span></td><td>${dt(ar.updatedAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty('Sin paneles de autoroles')}</td></tr>`;
-  pag('autorolesPag',arState.page,d.pages,'loadAutoRoles');S.loaded.autoroles=true;
-}
+async function loadAutoRoles(page){if(page)arState.page=page;const d=await api(`/api/autoroles?page=${arState.page}`);if(!d)return;document.getElementById('autorolesTable').innerHTML=d.items.length?d.items.map(ar=>`<tr><td><div style="font-weight:600;color:var(--text)">${ar.name}</div><div style="font-size:10px;color:var(--text3)">${ar.title}</div></td><td><span class="mono" style="font-size:10px;color:var(--sky)">#${ar.channelId}</span></td><td><span class="badge b-o">${ar.roles?.length||0} roles</span></td><td><span class="badge ${ar.requireConfirm?'b-g':'b-m'}">${ar.requireConfirm?'Sí':'No'}</span></td><td><span class="mono">${ar.maxRoles===0?'Sin límite':ar.maxRoles}</span></td><td>${dt(ar.updatedAt)}</td></tr>`).join(''):`<tr><td colspan="6">${empty('Sin paneles de autoroles')}</td></tr>`;pag('autorolesPag',arState.page,d.pages,'loadAutoRoles');S.loaded.autoroles=true;}
 
 const bgState={filter:'all',page:1};
-async function loadBackgrounds(page){
-  if(page)bgState.page=page;const d=await api(`/api/backgrounds?filter=${bgState.filter}&page=${bgState.page}`);if(!d)return;
-  document.getElementById('bgTable').innerHTML=d.items.length?d.items.map(bg=>`<tr><td><span class="mono" style="color:var(--gold)">${bg.bgId}</span></td><td><strong style="color:var(--text)">${bg.name}</strong></td><td style="color:var(--text2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${bg.description||'—'}</td><td>${bg.price===0?'<span class="badge b-g">Gratis</span>':coin(bg.price)}</td><td><span class="badge ${bg.isDefault?'b-s':'b-m'}">${bg.isDefault?'Por defecto':'Personalizado'}</span></td><td><span class="mono" style="color:var(--text2)">${bg.createdByName||'—'}</span></td><td>${dt(bg.createdAt)}</td></tr>`).join(''):`<tr><td colspan="7">${empty('Sin fondos configurados')}</td></tr>`;
-  pag('bgPag',bgState.page,d.pages,'loadBackgrounds');S.loaded.backgrounds=true;
-}
+async function loadBackgrounds(page){if(page)bgState.page=page;const d=await api(`/api/backgrounds?filter=${bgState.filter}&page=${bgState.page}`);if(!d)return;document.getElementById('bgTable').innerHTML=d.items.length?d.items.map(bg=>`<tr><td><span class="mono" style="color:var(--gold)">${bg.bgId}</span></td><td><strong style="color:var(--text)">${bg.name}</strong></td><td style="color:var(--text2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${bg.description||'—'}</td><td>${bg.price===0?'<span class="badge b-g">Gratis</span>':coin(bg.price)}</td><td><span class="badge ${bg.isDefault?'b-s':'b-m'}">${bg.isDefault?'Por defecto':'Personalizado'}</span></td><td><span class="mono" style="color:var(--text2)">${bg.createdByName||'—'}</span></td><td>${dt(bg.createdAt)}</td></tr>`).join(''):`<tr><td colspan="7">${empty('Sin fondos configurados')}</td></tr>`;pag('bgPag',bgState.page,d.pages,'loadBackgrounds');S.loaded.backgrounds=true;}
 function filterBg(f,b){document.querySelectorAll('#s-backgrounds .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');bgState.filter=f;bgState.page=1;loadBackgrounds();}
 
 const gwTabState={tab:'list',blPage:1};
-function gwMainTab(tab,btn){
-  document.querySelectorAll('#s-giveaways .tab').forEach(x=>x.classList.remove('active'));
-  btn.classList.add('active');gwTabState.tab=tab;
-  document.getElementById('gwTabList').style.display=tab==='list'?'':'none';
-  document.getElementById('gwTabBl').style.display=tab==='blacklist'?'':'none';
-  document.getElementById('gwTabCfg').style.display=tab==='config'?'':'none';
-  if(tab==='blacklist'&&!gwTabState.blLoaded)loadGwBLInline();
-  if(tab==='config'&&!gwTabState.cfgLoaded)loadGwCfgInline();
-}
-async function loadGwBLInline(page){
-  if(page)gwTabState.blPage=page;const d=await api(`/api/giveaway-blacklist?page=${gwTabState.blPage}`);if(!d)return;
-  document.getElementById('gwBLTable').innerHTML=d.items.length?d.items.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink)">${b.reason||'—'}</td><td><span class="mono" style="color:var(--text2)">${b.addedByName||'—'}</span></td><td>${dt(b.addedAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;
-  pag('gwBLPag',gwTabState.blPage,d.pages,'loadGwBLInline');gwTabState.blLoaded=true;
-}
-async function loadGwCfgInline(){
-  const d=await api('/api/giveaway-config');if(!d)return;
-  const hrs=d.config?Math.round(d.config.claimTimeout/3600000):24;
-  document.getElementById('gwCfgBox').innerHTML=`<div class="ms"><span class="ms-label">Tiempo para reclamar premio</span><span class="ms-val"><span class="mono">${hrs} horas</span></span></div><div class="ms"><span class="ms-label">En milisegundos</span><span class="ms-val"><span class="mono">${d.config?.claimTimeout||86400000}</span></span></div>`;
-  gwTabState.cfgLoaded=true;
-}
+function gwMainTab(tab,btn){document.querySelectorAll('#s-giveaways .tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');gwTabState.tab=tab;document.getElementById('gwTabList').style.display=tab==='list'?'':'none';document.getElementById('gwTabBl').style.display=tab==='blacklist'?'':'none';document.getElementById('gwTabCfg').style.display=tab==='config'?'':'none';if(tab==='blacklist'&&!gwTabState.blLoaded)loadGwBLInline();if(tab==='config'&&!gwTabState.cfgLoaded)loadGwCfgInline();}
+async function loadGwBLInline(page){if(page)gwTabState.blPage=page;const d=await api(`/api/giveaway-blacklist?page=${gwTabState.blPage}`);if(!d)return;document.getElementById('gwBLTable').innerHTML=d.items.length?d.items.map(b=>`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink)">${b.reason||'—'}</td><td><span class="mono" style="color:var(--text2)">${b.addedByName||'—'}</span></td><td>${dt(b.addedAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Blacklist vacía')}</td></tr>`;pag('gwBLPag',gwTabState.blPage,d.pages,'loadGwBLInline');gwTabState.blLoaded=true;}
+async function loadGwCfgInline(){const d=await api('/api/giveaway-config');if(!d)return;const hrs=d.config?Math.round(d.config.claimTimeout/3600000):24;document.getElementById('gwCfgBox').innerHTML=`<div class="ms"><span class="ms-label">Tiempo para reclamar premio</span><span class="ms-val"><span class="mono">${hrs} horas</span></span></div><div class="ms"><span class="ms-label">En milisegundos</span><span class="ms-val"><span class="mono">${d.config?.claimTimeout||86400000}</span></span></div>`;gwTabState.cfgLoaded=true;}
 
 const purchasesState={page:1};
-async function loadPurchases(page){
-  if(page)purchasesState.page=page;const d=await api('/api/admin/purchases?page='+purchasesState.page);if(!d)return;
-  document.getElementById('purchasesTable').innerHTML=d.items.length?d.items.map(p=>`<tr><td>${uc(p.avatar,p.username)}</td><td><strong style="color:var(--text)">${p.itemName||'—'}</strong></td><td>${coin(p.price)}</td><td>${dt(p.purchasedAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Sin compras registradas')}</td></tr>`;
-  pag('purchasesPag',purchasesState.page,d.pages,'loadPurchases');S.loaded.purchases=true;
+async function loadPurchases(page){if(page)purchasesState.page=page;const d=await api('/api/admin/purchases?page='+purchasesState.page);if(!d)return;document.getElementById('purchasesTable').innerHTML=d.items.length?d.items.map(p=>`<tr><td>${uc(p.avatar,p.username)}</td><td><strong style="color:var(--text)">${p.itemName||'—'}</strong></td><td>${coin(p.price)}</td><td>${dt(p.purchasedAt)}</td></tr>`).join(''):`<tr><td colspan="4">${empty('Sin compras registradas')}</td></tr>`;pag('purchasesPag',purchasesState.page,d.pages,'loadPurchases');S.loaded.purchases=true;}
+
+// ════════════════════════════════════════════════
+//  CASINO BANS
+// ════════════════════════════════════════════════
+async function loadCasinoBans(){
+  try{
+    const d=await api('/api/admin/casino-bans');
+    const bans=d?.bans||[];
+    const tbody=document.getElementById('casinoBanTable');if(!tbody)return;
+    tbody.innerHTML=bans.length?bans.map(b=>{const exp=b.expiresAt?new Date(b.expiresAt)<new Date()?'<span class="badge b-m">Expirado</span>':`<span class="badge b-r">Hasta ${new Date(b.expiresAt).toLocaleDateString('es-PE')}</span>`:'<span class="badge b-r">Permanente</span>';return`<tr><td>${uc(b.avatar,b.username)}</td><td style="color:var(--ink);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.reason}</td><td><span class="mono">${b.bannedByName||'—'}</span></td><td>${exp}</td><td><button onclick="unbanCasino('${b.userId}')" style="padding:3px 10px;border-radius:5px;border:1px solid rgba(62,207,142,.3);background:rgba(62,207,142,.05);color:var(--em);font-size:10px;cursor:pointer;font-family:'Instrument Sans',sans-serif">Desbanear</button></td></tr>`;}).join(''):`<tr><td colspan="5">${empty('Sin bans activos')}</td></tr>`;
+  }catch(e){console.error('[casinobans]',e);}
 }
-
-const origNav = window.nav;
-window.nav = function (name, btn) {
-  origNav(name, btn);
-  if (name === 'casinobans') loadCasinoBans();
-};
-
-const casinoBanState = { page: 1 };
-
-async function loadCasinoBans() {
-  try {
-    const d = await api('/api/admin/casino-bans');
-    const bans = d.bans || [];
-    const tbody = document.getElementById('casinoBanTable');
-    if (!tbody) return;
-
-    tbody.innerHTML = bans.length
-      ? bans.map(b => {
-          const exp = b.expiresAt
-            ? new Date(b.expiresAt) < new Date() ? '<span class="badge b-m">Expirado</span>' : `<span class="badge b-r">Hasta ${new Date(b.expiresAt).toLocaleDateString('es-PE')}</span>`
-            : '<span class="badge b-r">Permanente</span>';
-          return `<tr>
-            <td>${uc(b.avatar, b.username)}</td>
-            <td style="color:var(--ink);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.reason}</td>
-            <td><span class="mono">${b.bannedByName || '—'}</span></td>
-            <td>${exp}</td>
-            <td><button onclick="unbanCasino('${b.userId}')" style="padding:3px 10px;border-radius:5px;border:1px solid rgba(62,207,142,.3);background:rgba(62,207,142,.05);color:var(--em);font-size:10px;cursor:pointer;font-family:'Instrument Sans',sans-serif">Desbanear</button></td>
-          </tr>`;
-        }).join('')
-      : `<tr><td colspan="5">${empty('Sin bans activos')}</td></tr>`;
-  } catch (e) { console.error('[casinobans]', e); }
+async function banCasinoUser(){
+  const userId=document.getElementById('banUserId').value.trim();
+  const reason=document.getElementById('banReason').value.trim();
+  const hours=parseInt(document.getElementById('banHours').value)||0;
+  if(!userId||!reason){alert('Rellena ID y razón');return;}
+  try{await fetch('/api/admin/casino-ban',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId,reason,hours:hours||null})});document.getElementById('banUserId').value='';document.getElementById('banReason').value='';document.getElementById('banHours').value='';loadCasinoBans();alert('Usuario baneado del casino');}catch(e){alert('Error al banear');}
 }
-
-async function banCasinoUser() {
-  const userId = document.getElementById('banUserId').value.trim();
-  const reason = document.getElementById('banReason').value.trim();
-  const hours = parseInt(document.getElementById('banHours').value) || 0;
-  if (!userId || !reason) { alert('Rellena ID y razón'); return; }
-  try {
-    await fetch('/api/admin/casino-ban', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, reason, hours: hours || null })
-    });
-    document.getElementById('banUserId').value = '';
-    document.getElementById('banReason').value = '';
-    document.getElementById('banHours').value = '';
-    loadCasinoBans();
-    alert('Usuario baneado del casino');
-  } catch (e) { alert('Error al banear'); }
-}
-
-async function unbanCasino(userId) {
-  if (!confirm('¿Quitar ban de casino?')) return;
-  await fetch(`/api/admin/casino-ban/${userId}`, { method: 'DELETE' });
+async function unbanCasino(userId){
+  if(!confirm('¿Quitar ban de casino?'))return;
+  await fetch(`/api/admin/casino-ban/${userId}`,{method:'DELETE'});
   loadCasinoBans();
 }
 
-/* ── 2. ALERTAS EN TIEMPO REAL (admin) ───────────────────────────────── */
-let adminAlerts = [];
-
-function initAdminAlerts() {
-  const wsEl = document.getElementById('wsS');
-  const socket = io();
-
-  socket.on('admin:alert', (data) => {
-    adminAlerts.unshift({ ...data, seen: false, id: Date.now() });
-    if (adminAlerts.length > 20) adminAlerts.pop();
+// ════════════════════════════════════════════════
+//  ALERTAS ADMIN
+// ════════════════════════════════════════════════
+let adminAlerts=[];
+function initAdminAlerts(){
+  socket.on('admin:alert',(data)=>{
+    adminAlerts.unshift({...data,seen:false,id:Date.now()});
+    if(adminAlerts.length>20)adminAlerts.pop();
     renderAdminAlerts();
-
-    // Mostrar notificación flotante
-    const notif = document.createElement('div');
-    notif.style.cssText = `
-      position:fixed;top:20px;right:20px;z-index:9999;
-      background:rgba(3,3,10,.95);border:1px solid rgba(255,202,40,.4);
-      border-radius:10px;padding:12px 16px;font-size:11px;
-      box-shadow:0 12px 40px rgba(0,0,0,.6);
-      animation:rv .3s ease;max-width:280px;
-      display:flex;align-items:flex-start;gap:10px;
-    `;
-    notif.innerHTML = `
-      <span style="font-size:18px;flex-shrink:0">⚠️</span>
-      <div>
-        <div style="font-weight:600;color:var(--amb);margin-bottom:3px;font-size:11px;letter-spacing:.5px">ALERTA SOSPECHOSA</div>
-        <div style="color:var(--text2);font-size:10px">Usuario ganó ${(data.amount || 0).toLocaleString()} en ${data.game}</div>
-      </div>
-    `;
+    const notif=document.createElement('div');
+    notif.style.cssText=`position:fixed;top:20px;right:20px;z-index:9999;background:rgba(3,3,10,.95);border:1px solid rgba(255,202,40,.4);border-radius:10px;padding:12px 16px;font-size:11px;box-shadow:0 12px 40px rgba(0,0,0,.6);animation:rv .3s ease;max-width:280px;display:flex;align-items:flex-start;gap:10px;`;
+    notif.innerHTML=`<span style="font-size:18px;flex-shrink:0">⚠️</span><div><div style="font-weight:600;color:var(--amb);margin-bottom:3px;font-size:11px;letter-spacing:.5px">ALERTA SOSPECHOSA</div><div style="color:var(--text2);font-size:10px">Usuario ganó ${(data.amount||0).toLocaleString()} en ${data.game}</div></div>`;
     document.body.appendChild(notif);
-    setTimeout(() => notif.remove(), 7000);
+    setTimeout(()=>notif.remove(),7000);
   });
 }
+function renderAdminAlerts(){
+  const el=document.getElementById('adminAlertsBox');if(!el)return;
+  el.innerHTML=adminAlerts.length?adminAlerts.slice(0,10).map(a=>`<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.035)"><span style="color:var(--amb);font-size:12px">⚠</span><div style="flex:1"><div style="font-size:11px;color:var(--text2)">Ganancia de <strong style="color:var(--amb)">${(a.amount||0).toLocaleString()}</strong> en ${a.game}</div><div style="font-size:9px;color:var(--text3);margin-top:2px">${new Date(a.ts).toLocaleTimeString('es-PE')}</div></div></div>`).join(''):'<div style="color:var(--text3);font-size:11px;padding:14px 0;text-align:center;letter-spacing:.5px">Sin alertas recientes</div>';
+}
 
-function renderAdminAlerts() {
-  const el = document.getElementById('adminAlertsBox');
-  if (!el) return;
-  el.innerHTML = adminAlerts.length
-    ? adminAlerts.slice(0, 10).map(a => `
-        <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.035)">
-          <span style="color:var(--amb);font-size:12px">⚠</span>
-          <div style="flex:1">
-            <div style="font-size:11px;color:var(--text2)">Ganancia de <strong style="color:var(--amb)">${(a.amount||0).toLocaleString()}</strong> en ${a.game}</div>
-            <div style="font-size:9px;color:var(--text3);margin-top:2px">${new Date(a.ts).toLocaleTimeString('es-PE')}</div>
-          </div>
+// ════════════════════════════════════════════════
+//  CASINO IMAGES PANEL
+// ════════════════════════════════════════════════
+const CI_HERO_SLIDES=[
+  {slot:'hero_0',label:'Slide 1 · Bee Casino (default)',type:'hero',slideIndex:0},
+  {slot:'hero_1',label:'Slide 2 · Torneo semanal',type:'hero',slideIndex:1},
+  {slot:'hero_2',label:'Slide 3 · Cajas exclusivas',type:'hero',slideIndex:2},
+  {slot:'hero_3',label:'Slide 4 · Juega y Gana',type:'hero',slideIndex:3},
+];
+const CI_GAMES=[
+  {id:'ruleta',name:'Ruleta'},{id:'slots',name:'Slots'},{id:'blackjack',name:'Blackjack'},
+  {id:'crash',name:'Crash'},{id:'hilo',name:'Hi-Lo'},{id:'baccarat',name:'Baccarat'},
+  {id:'plinko',name:'Plinko'},{id:'videopoker',name:'Video Poker'},{id:'carreras',name:'Carreras'},
+  {id:'loteria',name:'Raspadita'},{id:'minas',name:'Minas'},{id:'batalla',name:'Batalla'},
+];
+
+let ciImages={};
+let ciCurrentSlot=null;
+let ciCurrentMeta={};
+let ciCurrentTab='hero';
+
+function ciTab(tab){
+  ciCurrentTab=tab;
+  document.getElementById('ci-tab-hero').classList.toggle('active',tab==='hero');
+  document.getElementById('ci-tab-games').classList.toggle('active',tab==='games');
+  document.getElementById('ci-desc-hero').style.display=tab==='hero'?'':'none';
+  document.getElementById('ci-desc-games').style.display=tab==='games'?'':'none';
+  const hg=document.getElementById('ci-hero-grid');
+  const gg=document.getElementById('ci-games-grid');
+  if(hg)hg.style.display=tab==='hero'?'grid':'none';
+  if(gg)gg.style.display=tab==='games'?'grid':'none';
+}
+
+async function loadCasinoImages(){
+  try{
+    const d=await api('/api/admin/casino-images');
+    ciImages={};
+    (d?.images||[]).forEach(img=>{ ciImages[img.slot]=img; });
+    renderCiHeroGrid();
+    renderCiGamesGrid();
+    ciTab(ciCurrentTab);
+  }catch(e){console.error('[ci]',e);}
+}
+
+function ciGetSrc(slot){
+  const img=ciImages[slot];
+  if(!img)return null;
+  return img.imagePath||img.imageUrl||null;
+}
+
+function ciCardHtml(slot,label,meta){
+  const src=ciGetSrc(slot);
+  return `
+    <div class="ci-card">
+      <div class="ci-thumb">
+        ${src
+          ?`<img src="${src}" onerror="this.style.display='none'">`
+          :`<div style="text-align:center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg><div style="font-size:9px;color:rgba(255,255,255,.15);margin-top:6px;letter-spacing:1.5px;text-transform:uppercase">Sin imagen</div></div>`
+        }
+        <div style="position:absolute;top:8px;right:8px;padding:2px 8px;border-radius:4px;font-size:8px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;${src?'background:rgba(62,207,142,.15);border:1px solid rgba(62,207,142,.3);color:#3ecf8e':'background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.3)'}">
+          ${src?'Activa':'Vacía'}
         </div>
-      `).join('')
-    : '<div style="color:var(--text3);font-size:11px;padding:14px 0;text-align:center;letter-spacing:.5px">Sin alertas recientes</div>';
+      </div>
+      <div class="ci-info">
+        <div style="min-width:0">
+          <div class="ci-label">${label}</div>
+          <div class="ci-file">${src?src.split('/').pop():'—'}</div>
+        </div>
+        <button class="ci-btn" onclick="ciOpenModal('${slot}',${JSON.stringify(meta).replace(/"/g,"'")})">
+          ${src?'Cambiar':'Agregar'}
+        </button>
+      </div>
+    </div>`;
 }
 
-/* ── 3. ESTADÍSTICAS EXTENDIDAS DEL DASHBOARD ────────────────────────── */
-async function loadExtendedStats() {
-  // Rate limit overview
-  const el = document.getElementById('extStatsBox');
-  if (!el) return;
-  el.innerHTML = `
-    <div class="ms"><span class="ms-label">Alertas hoy</span><span class="ms-val" style="color:var(--amb)">${adminAlerts.length}</span></div>
-    <div class="ms"><span class="ms-label">Bans casino activos</span><span class="ms-val" id="casinoBanCount">—</span></div>
-  `;
+function renderCiHeroGrid(){
+  const grid=document.getElementById('ci-hero-grid');if(!grid)return;
+  grid.innerHTML=CI_HERO_SLIDES.map(s=>ciCardHtml(s.slot,s.label,{type:'hero',slideIndex:s.slideIndex})).join('');
 }
 
-/* ── INIT ─────────────────────────────────────────────────────────────── */
-window.loadCasinoBans = loadCasinoBans;
-window.banCasinoUser = banCasinoUser;
-window.unbanCasino = unbanCasino;
+function renderCiGamesGrid(){
+  const grid=document.getElementById('ci-games-grid');if(!grid)return;
+  grid.innerHTML=CI_GAMES.map(g=>
+    [0,1,2].map(i=>ciCardHtml(
+      `game_${g.id}_${i}`,
+      `${g.name} · Slide ${i+1}`,
+      {type:'game',gameId:g.id,slideIndex:i}
+    )).join('')
+  ).join('');
+}
 
-// Solo inicializar alertas admin si el usuario las puede ver
-setTimeout(() => {
-  if (window._myId) initAdminAlerts();
-}, 500);
+function ciOpenModal(slot,metaStr){
+  ciCurrentSlot=slot;
+  // metaStr puede ser objeto o string
+  try{ciCurrentMeta=typeof metaStr==='object'?metaStr:JSON.parse(metaStr.replace(/'/g,'"'));}catch{ciCurrentMeta={};}
+  document.getElementById('ci-url-input').value='';
+  document.getElementById('ci-upload-label-text').textContent='Arrastra o haz clic para subir';
+  document.getElementById('ci-file-input').value='';
+  // título
+  const hSlide=CI_HERO_SLIDES.find(s=>s.slot===slot);
+  const game=CI_GAMES.find(g=>slot.startsWith(`game_${g.id}_`));
+  if(hSlide)document.getElementById('ci-modal-title').textContent=hSlide.label;
+  else if(game)document.getElementById('ci-modal-title').textContent=`${game.name} · Slide ${(ciCurrentMeta.slideIndex||0)+1}`;
+  else document.getElementById('ci-modal-title').textContent='Editar imagen';
+  // preview
+  const src=ciGetSrc(slot);
+  const prev=document.getElementById('ci-preview');
+  if(src)prev.innerHTML=`<img src="${src}" style="width:100%;height:100%;object-fit:cover">`;
+  else prev.innerHTML='<span class="ci-preview-empty">Sin imagen</span>';
+  document.getElementById('ci-modal').classList.add('open');
+}
 
-// ── Exponer todas las funciones globalmente para los handlers de pag() ─────
+function ciCloseModal(){
+  document.getElementById('ci-modal').classList.remove('open');
+  ciCurrentSlot=null;
+}
+
+function ciPreviewUrl(url){
+  if(!url)return;
+  const prev=document.getElementById('ci-preview');
+  prev.innerHTML=`<img src="${url}" style="width:100%;height:100%;object-fit:cover" onerror="this.innerHTML='<span class=ci-preview-empty>URL inválida</span>'">`;
+}
+
+async function ciSaveUrl(){
+  if(!ciCurrentSlot)return;
+  const url=document.getElementById('ci-url-input').value.trim();
+  if(!url){alert('Ingresa una URL');return;}
+  try{
+    const r=await fetch('/api/admin/casino-images/url',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot:ciCurrentSlot,...ciCurrentMeta,imageUrl:url})});
+    const d=await r.json();
+    if(d.success){ciToast('URL guardada ✓');ciCloseModal();loadCasinoImages();}
+    else ciToast('Error: '+(d.error||''),true);
+  }catch{ciToast('Error de red',true);}
+}
+
+function ciFileSelected(input){
+  const file=input.files[0];if(!file)return;
+  document.getElementById('ci-upload-label-text').textContent=file.name;
+  const reader=new FileReader();
+  reader.onload=e=>{document.getElementById('ci-preview').innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;};
+  reader.readAsDataURL(file);
+  ciUploadFile(file);
+}
+
+async function ciUploadFile(file){
+  if(!ciCurrentSlot||!file)return;
+  const form=new FormData();
+  form.append('image',file);
+  form.append('slot',ciCurrentSlot);
+  form.append('type',ciCurrentMeta.type||'hero');
+  if(ciCurrentMeta.gameId)form.append('gameId',ciCurrentMeta.gameId);
+  form.append('slideIndex',ciCurrentMeta.slideIndex??0);
+  try{
+    const r=await fetch('/api/admin/casino-images/upload',{method:'POST',body:form});
+    const d=await r.json();
+    if(d.success){ciToast('Imagen subida ✓');ciCloseModal();loadCasinoImages();}
+    else ciToast('Error: '+(d.error||''),true);
+  }catch{ciToast('Error al subir',true);}
+}
+
+async function ciDeleteImage(){
+  if(!ciCurrentSlot)return;
+  if(!confirm('¿Eliminar imagen de este slot?'))return;
+  try{
+    await fetch(`/api/admin/casino-images/${encodeURIComponent(ciCurrentSlot)}`,{method:'DELETE'});
+    ciToast('Imagen eliminada');ciCloseModal();loadCasinoImages();
+  }catch{ciToast('Error',true);}
+}
+
+function ciToast(msg,isError=false){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText=`position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:99999;background:${isError?'rgba(240,98,146,.15)':'rgba(62,207,142,.12)'};border:1px solid ${isError?'rgba(240,98,146,.3)':'rgba(62,207,142,.3)'};color:${isError?'#f06292':'#3ecf8e'};padding:8px 20px;border-radius:8px;font-family:'Instrument Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.3px;box-shadow:0 10px 40px rgba(0,0,0,.5)`;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2800);
+}
+
+// Cerrar modal al click fuera
+document.getElementById('ci-modal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('ci-modal'))ciCloseModal();
+});
+
+// ════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════
+setTimeout(()=>{if(window._myId)initAdminAlerts();},500);
+
 window.loadOverview=loadOverview;window.loadInvites=loadInvites;window.loadGiveaways=loadGiveaways;
 window.loadEconomy=loadEconomy;window.loadLoans=loadLoans;window.loadLevels=loadLevels;
 window.loadModeration=loadModeration;window.loadBans=loadBans;window.loadConfig=loadConfig;
@@ -967,6 +1027,8 @@ window.loadAchievements=loadAchievements;window.loadTrades=loadTrades;window.loa
 window.loadGames=loadGames;window.loadXpBoosts=loadXpBoosts;window.loadGwBlacklist=loadGwBlacklist;
 window.loadAutoRoles=loadAutoRoles;window.loadBackgrounds=loadBackgrounds;window.loadPurchases=loadPurchases;
 window.loadGwBLInline=loadGwBLInline;window.loadChartData=loadChartData;
+window.loadCasinoBans=loadCasinoBans;window.banCasinoUser=banCasinoUser;window.unbanCasino=unbanCasino;
+window.loadCasinoImages=loadCasinoImages;window.ciOpenModal=ciOpenModal;
 </script>
 </body>
 </html>
