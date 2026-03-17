@@ -4211,39 +4211,34 @@ try{
     const d = await fetch('/api/casino/images').then(r => r.json());
     const imgs = d.images || [];
     if (!imgs.length) return;
- 
+
     imgs.forEach(img => {
       const src = img.imagePath || img.imageUrl;
       if (!src) return;
- 
+
       if (img.type === 'hero') {
-        // Aplicar imagen de fondo al slide del hero
         const slides = document.querySelectorAll('.hero-slide');
         const slide = slides[img.slideIndex];
         if (!slide) return;
- 
-        // Imagen de fondo con overlay para mantener legible el texto
+
+        // Imagen de fondo
         slide.style.backgroundImage = `url('${src}')`;
-        slide.style.backgroundSize = 'cover';
-        slide.style.backgroundPosition = 'center top';
+        slide.style.backgroundSize = '100% auto';
+        slide.style.backgroundPosition = 'center center';
         slide.style.backgroundRepeat = 'no-repeat';
- 
-        // Añadir overlay oscuro si no existe ya
+
+        // Overlay gradiente solo en el lado izquierdo
         if (!slide.querySelector('.ci-bg-overlay')) {
           const overlay = document.createElement('div');
           overlay.className = 'ci-bg-overlay';
-          overlay.style.cssText = 'position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.45) 50%,rgba(0,0,0,0.15) 100%);z-index:0;pointer-events:none';
+          overlay.style.cssText = 'position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0.72) 0%,rgba(0,0,0,0.35) 45%,rgba(0,0,0,0.08) 100%);z-index:0;pointer-events:none';
           slide.insertBefore(overlay, slide.firstChild);
-          // Asegurar que el contenido quede por encima del overlay
           Array.from(slide.children).forEach((c, i) => {
             if (i > 0) c.style.position = 'relative';
           });
         }
- 
+
       } else if (img.type === 'game') {
-        // Aplicar imagen al slide de la tarjeta del juego
-        // Los banners de juegos se inicializan en initGameCardBanners()
-        // Hay que esperar a que estén listos
         const applyToGame = () => {
           const slider = document.getElementById(`gcslider-${img.gameId}`);
           if (!slider) return;
@@ -4252,13 +4247,10 @@ try{
           if (!slide) return;
           slide.style.backgroundImage = `url('${src}')`;
           slide.style.backgroundSize = 'cover';
-          slide.style.backgroundPosition = 'center top';
-          slide.style.backgroundRepeat = 'no-repeat';
-          // Oscurecer overlay
+          slide.style.backgroundPosition = 'center';
           const overlay = slide.querySelector('.gc-banner-overlay');
           if (overlay) overlay.style.background = 'rgba(0,0,0,0.5)';
         };
-        // Intentar aplicar ahora y también después de que se inicialicen los banners
         applyToGame();
         setTimeout(applyToGame, 500);
       }
