@@ -78,9 +78,8 @@ body::before{
   will-change:transform;
 }
 .sidebar::before{
-  content:'';position:absolute;top:0;right:0;bottom:0;width:1px;
-  background:linear-gradient(180deg,transparent,var(--gold-glow) 30%,var(--gold-glow) 70%,transparent);
-  opacity:0.5;
+  display:none;
+
 }
 
 .sb-logo{
@@ -218,11 +217,8 @@ body::before{
 .sec-hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--rim2),transparent)}
 
 /* ════════ HERO BANNER ════════ */
-.hero-banner{
-  border:1px solid rgba(201,168,76,0.2);
-  border-radius:var(--r2);overflow:hidden;
-  position:relative;background:linear-gradient(135deg,#0c0814 0%,#0f0c1a 60%,#080c14 100%);
-  padding:32px 36px;margin-bottom:24px;
+.hero-banner::after{
+  display:none;
 }
 .hero-banner::before{
   content:'';position:absolute;inset:0;
@@ -1270,9 +1266,7 @@ body.light body::before{opacity:.04}
   min-height:220px;
 }
 .hero-slide::before{
-  content:'';position:absolute;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='64'%3E%3Cpath d='M28 0 L56 16 L56 48 L28 64 L0 48 L0 16Z' fill='none' stroke='%23c9a84c' stroke-width='0.4'/%3E%3C/svg%3E");
-  opacity:0.04;pointer-events:none;
+  display:none;
 }
 .hero-controls{
   position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
