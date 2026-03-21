@@ -28,10 +28,6 @@ app.use(session({
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log('[DB] Conectado')).catch(console.error);
 
-// ══════════════════════════════════════════════════════════════════════════
-//  SCHEMAS — exactamente los mismos que usa el bot de Discord
-//  Las monedas se guardan en UserCoins, que es compartido con el bot
-// ══════════════════════════════════════════════════════════════════════════
 const { Schema, model } = mongoose;
 const Level           = model('Level',           new Schema({ userId: String, guildId: String, xp: { type: Number, default: 0 }, level: { type: Number, default: 0 }, lastMessage: Date, streak: { type: Number, default: 0 }, lastMessageDate: Date, dailyChallenges: { date: String, messages: Number, messagesCompleted: Boolean, vcMinutes: Number, vcCompleted: Boolean } }));
 const Warn            = model('Warn',            new Schema({ userId: String, guildId: String, moderator: String, reason: String, createdAt: { type: Date, default: Date.now } }));
@@ -66,17 +62,11 @@ const ArmPrice        = model('ArmPrice',        new Schema({ guildId: String, i
 const MarketTx        = model('MarketTx',        new Schema({ guildId: String, itemId: String, name: String, skin: String, rarity: String, price: Number, sellerId: String, buyerId: String, timestamp: { type: Date, default: Date.now } }));
 const ShopPurchase    = mongoose.models.ShopPurchase || model('ShopPurchase', new Schema({ userId: String, guildId: String, itemId: String, itemName: String, price: Number, purchasedAt: { type: Date, default: Date.now } }));
 
-// ══════════════════════════════════════════════════════════════════════════
-//  CONFIG
-// ══════════════════════════════════════════════════════════════════════════
 const IP_LOG_ALLOWED = ['990868869449121852', '751153328326443109'];
 const GUILD_ID       = process.env.GUILD_ID;
 const ADMIN_ROLE_IDS = (process.env.ADMIN_ROLE_IDS || process.env.ADMIN_ROLE_ID || '').split(',').map(r => r.trim()).filter(Boolean);
 const userCache      = new Map();
 
-// ══════════════════════════════════════════════════════════════════════════
-//  HELPERS DISCORD
-// ══════════════════════════════════════════════════════════════════════════
 function discordReq(endpoint, bearer, isBot) {
   return new Promise(resolve => {
     const req = https.request({
@@ -128,9 +118,6 @@ function exchangeCode(code) {
 
 const requireAuth = (req, res, next) => req.session?.user ? next() : res.status(401).json({ error: 'No autenticado' });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  AUTH
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/auth/discord', (req, res) => {
   if (req.query.from) req.session.casinoFrom = req.query.from;
   res.redirect(`https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.DISCORD_REDIRECT_URI)}&response_type=code&scope=identify`);
@@ -171,9 +158,6 @@ app.get('/auth/logout', (req, res) => {
 });
 app.get('/api/me', (req, res) => req.session?.user ? res.json(req.session.user) : res.status(401).json({ error: 'No autenticado' }));
 
-// ══════════════════════════════════════════════════════════════════════════
-//  STATS HELPER
-// ══════════════════════════════════════════════════════════════════════════
 async function getStats() {
   try {
     const [guild, totalUsers, activeGiveaways, activeLoans, flaggedJoins, recentLogs, casinoAgg, totalWarns] = await Promise.all([
@@ -204,10 +188,6 @@ async function getStats() {
   } catch (e) { console.error('[stats]', e); return null; }
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  HELPER: Actualizar monedas y notificar al bot via Socket + DB
-//  Esto garantiza que el bot de Discord vea el cambio inmediatamente
-// ══════════════════════════════════════════════════════════════════════════
 async function applyCoins(userId, delta, isWin = false) {
   const update = { $inc: { coins: delta } };
   if (isWin && delta > 0) update.$inc.totalEarned = delta;
@@ -217,9 +197,9 @@ async function applyCoins(userId, delta, isWin = false) {
     { new: true }
   );
   if (updated && global.io) {
-    // Notifica al frontend del casino (actualiza saldo en tiempo real)
+    
     global.io.emit('coins:update', { userId, coins: updated.coins });
-    // Notifica al bot de Discord si está escuchando el mismo socket
+    
     global.io.emit('bot:coins:update', { userId, guildId: GUILD_ID, coins: updated.coins, delta });
   }
   return updated;
@@ -234,16 +214,13 @@ async function logAndAchieve(userId, game, bet, won, delta) {
       { upsert: true }
     );
   }
-  // Emitir al feed en vivo del casino
+
   if (global.io) {
     const u = await getUser(userId);
     global.io.emit('casino:bet', { userId, username: u.username, game, bet, profit: delta });
   }
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  APIS DEL DASHBOARD (requieren rol admin)
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/stats', requireAuth, async (req, res) => {
   const stats = await getStats();
   if (!stats) return res.status(500).json({ error: 'Error' });
@@ -543,9 +520,6 @@ app.get('/api/backgrounds', requireAuth, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  APIs DEL CASINO PÚBLICO
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/casino/public/stats', async (req, res) => {
   try {
     const [totalBets, totalPlayers, volAgg, topWinners, topCoins] = await Promise.all([
@@ -622,13 +596,6 @@ app.get('/api/casino/me/full', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  CASINO PLAY — juegos principales + NUEVOS (hilo, baccarat, plinko, videopoker)
-//  Las monedas se modifican en UserCoins (mismo modelo que el bot)
-//  El bot verá el cambio inmediatamente al consultar la DB
-// ══════════════════════════════════════════════════════════════════════════
-
-// Juegos manejados por handleExtendedPlay
 const EXT_GAMES = ['carreras', 'loteria', 'minas', 'hilo', 'baccarat', 'plinko', 'videopoker'];
 
 app.post('/api/casino/play', async (req, res) => {
@@ -675,7 +642,6 @@ app.post('/api/casino/play', async (req, res) => {
   } catch (e) { console.error('[casino/play]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-// ── CRASH ─────────────────────────────────────────────────────────────────
 app.post('/api/casino/crash/start', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -712,7 +678,6 @@ app.post('/api/casino/crash/cashout', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ── SHOP BUY ──────────────────────────────────────────────────────────────
 app.post('/api/casino/buy', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -727,13 +692,9 @@ app.post('/api/casino/buy', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  handleExtendedPlay — carreras, lotería, minas + NUEVOS JUEGOS
-//  Todos modifican UserCoins → el bot de Discord los verá en tiempo real
-// ══════════════════════════════════════════════════════════════════════════
 const HORSES_DATA = { A:{baseSpeed:.35,variance:.40}, B:{baseSpeed:.38,variance:.30}, C:{baseSpeed:.32,variance:.50}, D:{baseSpeed:.40,variance:.20}, E:{baseSpeed:.30,variance:.60} };
 
-// Helpers para juegos del servidor
+
 function bacCV(rank){ if(['J','Q','K','10'].includes(rank)) return 0; if(rank==='A') return 1; return parseInt(rank); }
 function bacTotal(hand){ return hand.reduce((s,c)=>s+bacCV(c.rank),0)%10; }
 function bacSimulate(){
@@ -770,7 +731,6 @@ async function handleExtendedPlay(req, res) {
 
     let won = false, delta = -bet;
 
-    // ── Juegos originales ──────────────────────────────────────────────────
     if (game === 'carreras') {
       const pos = Object.fromEntries(Object.keys(HORSES_DATA).map(k => [k, 0]));
       let serverWinner = null;
@@ -800,24 +760,19 @@ async function handleExtendedPlay(req, res) {
     } else if (game === 'minas') {
       if (result === 'cashout' && clientProfit > 0) {
         won = true;
-        delta = Math.min(clientProfit, bet * 20); // techo anti-cheat: máx 20×
+        delta = Math.min(clientProfit, bet * 20); 
       } else {
         won = false; delta = -bet;
       }
 
-    // ── NUEVOS JUEGOS ──────────────────────────────────────────────────────
-    // Hi-Lo: el cliente controla la lógica de cartas (son aleatorias en JS)
-    // El servidor valida que el profit no exceda un límite razonable
     } else if (game === 'hilo') {
       if (result === 'cashout' && clientProfit > 0) {
         won = true;
-        delta = Math.min(clientProfit, bet * 500); // techo: máx 500× (racha de ~9)
+        delta = Math.min(clientProfit, bet * 500); 
       } else {
         won = false; delta = -bet;
       }
 
-    // Baccarat: el servidor re-simula las cartas independientemente
-    // Garantiza que el resultado no se puede falsificar desde el cliente
     } else if (game === 'baccarat') {
       const serverOutcome = bacSimulate();
       const betTarget = myBet || 'player';
@@ -826,8 +781,6 @@ async function handleExtendedPlay(req, res) {
       const m = multMap[betTarget] || 2;
       delta = won ? Math.floor(bet * (m - 1)) : -bet;
 
-    // Plinko: el servidor re-simula el camino de la bola
-    // El cliente solo ve la animación; el resultado real viene del servidor
     } else if (game === 'plinko') {
       const riskLevel = risk || 'low';
       const { mult: serverMult } = plinkoSimulate(riskLevel);
@@ -835,11 +788,10 @@ async function handleExtendedPlay(req, res) {
       won = serverProfit > 0;
       delta = serverProfit;
 
-    // Video Poker: el servidor valida el profit contra el máximo posible (800×)
     } else if (game === 'videopoker') {
       if (result === 'win' && clientProfit > 0) {
         won = true;
-        delta = Math.min(clientProfit, bet * 800); // techo: Royal Flush 800×
+        delta = Math.min(clientProfit, bet * 800); 
       } else {
         won = false; delta = -bet;
       }
@@ -848,14 +800,12 @@ async function handleExtendedPlay(req, res) {
       return res.status(400).json({ error: 'Juego no reconocido' });
     }
 
-    // Aplicar cambio de monedas en DB (compartida con el bot)
     const updated = await applyCoins(userId, delta, won);
     await logAndAchieve(userId, game, bet, won, delta);
     res.json({ won, profit: delta, newBalance: updated.coins });
   } catch (e) { console.error('[casino/extended]', e); res.status(500).json({ error: 'Error' }); }
 }
 
-// ── BATALLA ───────────────────────────────────────────────────────────────
 app.post('/api/casino/battle', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -888,7 +838,6 @@ app.post('/api/casino/battle', async (req, res) => {
   } catch (e) { console.error('[battle]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-// ── TRIVIA ────────────────────────────────────────────────────────────────
 const TRIVIA_POOL = [
   {q:'¿Cuántos continentes hay?',o:['5','6','7','8'],c:2,d:'easy'},
   {q:'Capital de Francia',o:['Lyon','París','Roma','Berlín'],c:1,d:'easy'},
@@ -950,7 +899,6 @@ app.post('/api/casino/trivia/answer', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ── CAJAS ─────────────────────────────────────────────────────────────────
 const CASES_CONFIG = {
   iniciacion:  { price: 800,   rarities: ['consumer','industrial','milspec'],   weights: [7992,1598,320], specialChance: 0 },
   clasificada: { price: 2000,  rarities: ['industrial','milspec','restricted'], weights: [1598,320,64],   specialChance: 0 },
@@ -1050,9 +998,6 @@ app.get('/api/admin/purchases', requireAuth, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  NUEVOS SCHEMAS
-// ══════════════════════════════════════════════════════════════════════════
 const BankAccount = mongoose.models.BankAccount || model('BankAccount', new Schema({
   userId: String, guildId: String, balance: { type: Number, default: 0 },
   lastInterest: { type: Date, default: null },
@@ -1089,7 +1034,6 @@ const FriendRequest = mongoose.models.FriendRequest || model('FriendRequest', ne
   status: { type: String, default: 'pending' }, createdAt: { type: Date, default: Date.now },
 }));
 
-// ── Rate limiting ─────────────────────────────────────────────────────────
 const betRateMap = new Map();
 function checkRateLimit(userId) {
   const now = Date.now(), window = 60000, max = 15;
@@ -1098,11 +1042,11 @@ function checkRateLimit(userId) {
   if (times.length >= max) return false;
   times.push(now); betRateMap.set(userId, times); return true;
 }
-// ── Ban check ─────────────────────────────────────────────────────────────
+
 async function checkCasinoBan(userId) {
   return CasinoBan.findOne({ userId, guildId: GUILD_ID, $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }] }).lean();
 }
-// ── Límite pérdida diaria ─────────────────────────────────────────────────
+
 const dailyLossMap = new Map();
 const MAX_DAILY_LOSS = 100000;
 function trackDailyLoss(userId, loss) {
@@ -1112,7 +1056,7 @@ function trackDailyLoss(userId, loss) {
   e.loss += Math.max(0, loss);
   return e.loss <= MAX_DAILY_LOSS;
 }
-// ── Alerta ganancias sospechosas ──────────────────────────────────────────
+
 async function checkSuspiciousWin(userId, profit, game) {
   if (profit >= 50000) {
     const u = await getUser(userId);
@@ -1120,7 +1064,7 @@ async function checkSuspiciousWin(userId, profit, game) {
     if (global.io) global.io.emit('casino:alert', { type: 'big_win', userId, username: u.username, profit, game, timestamp: new Date() });
   }
 }
-// ── Actualizar misiones ───────────────────────────────────────────────────
+
 async function updateMissionProgress(userId, game, won, betAmount) {
   try {
     const today = new Date().toISOString().split('T')[0];
@@ -1140,9 +1084,6 @@ async function updateMissionProgress(userId, game, won, betAmount) {
   } catch {}
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-//  HISTORIAL PERSONAL
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/casino/history', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -1156,9 +1097,6 @@ app.get('/api/casino/history', async (req, res) => {
   } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  ESTADÍSTICAS PERSONALES
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/casino/my-stats', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -1182,7 +1120,7 @@ app.get('/api/casino/my-stats', async (req, res) => {
     let currentStreak = 0;
     for (const l of logs.slice(0, 20)) { if (l.profit > 0) currentStreak++; else break; }
 
-    // Daily data — last 30 days
+  
     const now = new Date();
     const dailyData = [];
     for (let i = 29; i >= 0; i--) {
@@ -1192,7 +1130,7 @@ app.get('/api/casino/my-stats', async (req, res) => {
       dailyData.push({ day: 29-i, profit: dayLogs.reduce((s,l) => s+(l.profit||0), 0), bets: dayLogs.length });
     }
 
-    // Hourly heatmap — all time
+    
     const hourlyData = Array(24).fill(0);
     logs.forEach(l => { const h = new Date(l.timestamp).getHours(); hourlyData[h]++; });
 
@@ -1200,9 +1138,6 @@ app.get('/api/casino/my-stats', async (req, res) => {
   } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  BANCO
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/casino/bank/info', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -1246,9 +1181,6 @@ app.post('/api/casino/bank', async (req, res) => {
   } catch (e) { console.error('[bank]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  PRÉSTAMOS WEB
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/casino/loans/my', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try { res.json({ loans: await Loan.find({ userId: req.session.user.id, guildId: GUILD_ID }).sort({ createdAt: -1 }).lean() }); }
@@ -1282,9 +1214,6 @@ app.post('/api/casino/loans/pay', async (req, res) => {
   } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  MISIONES DIARIAS
-// ══════════════════════════════════════════════════════════════════════════
 const MISSION_POOL = [
   { id: 'play5',   name: 'Jugador activo',   desc: 'Juega 5 partidas',       target: 5,    reward: 200 },
   { id: 'play10',  name: 'Apostador nato',   desc: 'Juega 10 partidas',      target: 10,   reward: 400 },
@@ -1324,9 +1253,6 @@ app.post('/api/casino/missions/claim', async (req, res) => {
   } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  TORNEO SEMANAL
-// ══════════════════════════════════════════════════════════════════════════
 function getCurrentWeek() {
   const now = new Date(), start = new Date(now.getFullYear(), 0, 1);
   return { week: Math.ceil(((now - start) / 86400000 + start.getDay() + 1) / 7), year: now.getFullYear() };
@@ -1347,7 +1273,7 @@ app.get('/api/casino/tournament', async (req, res) => {
     res.json({ leaderboard, prizes: [{ place:1,reward:10000},{place:2,reward:5000},{place:3,reward:2500}], week, year });
   } catch { res.status(500).json({ error: 'Error' }); }
 });
-// Cron premios semanales (domingos a medianoche)
+
 setInterval(async () => {
   const now = new Date();
   if (now.getDay() === 0 && now.getHours() === 0 && now.getMinutes() < 5) {
@@ -1369,9 +1295,6 @@ setInterval(async () => {
   }
 }, 300000);
 
-// ══════════════════════════════════════════════════════════════════════════
-//  INTERCAMBIO DE ARMAS
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/casino/trades', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -1420,9 +1343,6 @@ app.post('/api/casino/trades/respond', async (req, res) => {
   } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  CHAT EN VIVO
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/casino/chat', async (req, res) => {
   try { res.json({ messages: await ChatMessage.find({ guildId: GUILD_ID }).sort({ timestamp: -1 }).limit(50).lean().then(m => m.reverse()) }); }
   catch { res.status(500).json({ error: 'Error' }); }
@@ -1441,9 +1361,6 @@ app.post('/api/casino/chat', async (req, res) => {
   } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  PERFIL PÚBLICO
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/casino/player/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -1460,9 +1377,6 @@ app.get('/api/casino/player/:userId', async (req, res) => {
   } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  SISTEMA DE AMIGOS
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/casino/friends', async (req, res) => {
   if (!req.session?.user) return res.status(401).json({ error: 'No autenticado' });
   try {
@@ -1497,9 +1411,6 @@ app.post('/api/casino/friends/respond', async (req, res) => {
   } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  ADMIN — BANS Y ALERTAS
-// ══════════════════════════════════════════════════════════════════════════
 app.get('/api/admin/casino/bans', requireAuth, async (req, res) => {
   try {
     const bans = await CasinoBan.find({ guildId: GUILD_ID }).sort({ createdAt: -1 }).lean();
@@ -1529,9 +1440,6 @@ app.get('/api/admin/casino/alerts', requireAuth, async (req, res) => {
   } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════
-//  CRON: Interés bancario cada hora
-// ══════════════════════════════════════════════════════════════════════════
 setInterval(async () => {
   try {
     const banks = await BankAccount.find({ guildId: GUILD_ID, balance: { $gt: 0 } });
@@ -1549,13 +1457,10 @@ setInterval(async () => {
   } catch (e) { console.error('[bank cron]', e); }
 }, 3600000);
 
-// ══════════════════════════════════════════════════════════════════════════
-//  DISCORD BOT — link /casino al perfil web
-// ══════════════════════════════════════════════════════════════════════════
-const casinoTokens = new Map(); // token -> { userId, expires }
+const casinoTokens = new Map(); 
 
 app.post('/api/casino/generate-link', async (req, res) => {
-  // Solo el bot puede llamar esto (via API key interna)
+
   const { userId, apiKey } = req.body;
   if (apiKey !== process.env.BOT_API_KEY) return res.status(401).json({ error: 'No autorizado' });
   const token = Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -1564,13 +1469,11 @@ app.post('/api/casino/generate-link', async (req, res) => {
   res.json({ url });
 });
 
-// Limpiar tokens expirados cada 10 min
 setInterval(() => {
   const now = Date.now();
   casinoTokens.forEach((v, k) => { if (v.expires < now) casinoTokens.delete(k); });
 }, 600000);
 
-// Notificación Discord cuando alguien gana jackpot (llamado desde checkSuspiciousWin)
 async function notifyDiscordJackpot(userId, profit, game) {
   try {
     if (!process.env.DISCORD_WEBHOOK_URL) return;
@@ -1591,7 +1494,6 @@ async function notifyDiscordJackpot(userId, profit, game) {
   } catch (e) { console.error('[discord webhook]', e); }
 }
 
-// Patch checkSuspiciousWin to also notify Discord
 const _origCheckSuspicious = checkSuspiciousWin;
 checkSuspiciousWin = async function(userId, profit, game) {
   await _origCheckSuspicious(userId, profit, game);
@@ -1609,11 +1511,11 @@ setInterval(async () => {
   if (stats) io.emit('stats:update', stats);
 }, 5000);
 
-// Crear carpeta si no existe
+
 const BANNERS_DIR = path.join(__dirname, 'public', 'banners');
 if (!fs.existsSync(BANNERS_DIR)) fs.mkdirSync(BANNERS_DIR, { recursive: true });
 
-// Storage para multer
+
 const bannerStorage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, BANNERS_DIR),
   destination: (req, file, cb) => cb(null, BANNERS_DIR),
@@ -1625,28 +1527,27 @@ const bannerStorage = multer.diskStorage({
 });
 const bannerUpload = multer({
   storage: bannerStorage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB máx
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowed = ['image/jpeg','image/png','image/webp','image/gif'];
     cb(null, allowed.includes(file.mimetype));
   }
 });
 
-// Schema para guardar config de imágenes
+
 const CasinoImages = mongoose.models.CasinoImages || model('CasinoImages', new Schema({
   guildId: String,
-  slot: { type: String, unique: false },    // e.g. "hero_0", "game_ruleta_0"
-  type: String,                              // "hero" | "game"
-  gameId: String,                           // solo si type === "game"
+  slot: { type: String, unique: false },   
+  type: String,                            
+  gameId: String,                           
   slideIndex: Number,
-  imageUrl: String,                          // URL externa
-  imagePath: String,                         // ruta local /banners/xxx.jpg
+  imageUrl: String,                       
+  imagePath: String,                      
   active: { type: Boolean, default: true },
   updatedAt: { type: Date, default: Date.now },
   updatedBy: String,
 }));
 
-// GET — obtener todas las imágenes configuradas
 app.get('/api/admin/casino-images', requireAuth, async (req, res) => {
   try {
     const images = await CasinoImages.find({ guildId: GUILD_ID }).lean();
@@ -1654,7 +1555,6 @@ app.get('/api/admin/casino-images', requireAuth, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// GET público — para que el casino las cargue
 app.get('/api/casino/images', async (req, res) => {
   try {
     const images = await CasinoImages.find({ guildId: GUILD_ID, active: true }).lean();
@@ -1662,7 +1562,6 @@ app.get('/api/casino/images', async (req, res) => {
   } catch { res.json({ images: [] }); }
 });
 
-// POST — guardar por URL externa
 app.post('/api/admin/casino-images/url', requireAuth, async (req, res) => {
   try {
     const { slot, type, gameId, slideIndex, imageUrl } = req.body;
@@ -1676,7 +1575,6 @@ app.post('/api/admin/casino-images/url', requireAuth, async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Error' }); }
 });
 
-// POST — subir archivo
 app.post('/api/admin/casino-images/upload', requireAuth, bannerUpload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No se recibió imagen' });
@@ -1691,7 +1589,6 @@ app.post('/api/admin/casino-images/upload', requireAuth, bannerUpload.single('im
   } catch (e) { console.error('[upload]', e); res.status(500).json({ error: 'Error' }); }
 });
 
-// DELETE — quitar imagen de un slot
 app.delete('/api/admin/casino-images/:slot', requireAuth, async (req, res) => {
   try {
     const img = await CasinoImages.findOne({ guildId: GUILD_ID, slot: req.params.slot });
@@ -1704,10 +1601,8 @@ app.delete('/api/admin/casino-images/:slot', requireAuth, async (req, res) => {
   } catch { res.status(500).json({ error: 'Error' }); }
 });
 
-// Servir carpeta banners
 app.use('/banners', express.static(BANNERS_DIR));
 
-// ── PÁGINAS ───────────────────────────────────────────────────────────────
 app.get('/login',     (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
 app.get('/dashboard', (req, res) => { if (!req.session?.user) return res.redirect('/login'); res.sendFile(path.join(__dirname, 'public', 'dashboard.html')); });
 app.get('/casino',    (req, res) => res.sendFile(path.join(__dirname, 'public', 'casino.html')));
